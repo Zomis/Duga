@@ -2,6 +2,7 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
+import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.store.Store;
@@ -37,5 +38,11 @@ public class GithubHookController {
     @ResponseBody
     public void create(final @RequestBody CreateEvent createEvent) {
         Store.INSTANCE.getChatBot().postMessage("**[" + createEvent.getRepository().getFullName() + "]** **" + createEvent.getSender().getRealName()+ "** created " + createEvent.getRefType() + " **" + createEvent.getRef() + "**");
+    }
+    
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=delete")
+    @ResponseBody
+    public void delete(final @RequestBody DeleteEvent deleteEvent) {
+        Store.INSTANCE.getChatBot().postMessage("**[" + deleteEvent.getRepository().getFullName() + "]** **" + deleteEvent.getSender().getRealName()+ "** deleted " + deleteEvent.getRefType() + " **" + deleteEvent.getRef() + "**");
     }
 }
