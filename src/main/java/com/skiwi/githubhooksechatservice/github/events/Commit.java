@@ -27,10 +27,10 @@ public class Commit {
     private String url;
     
     @JsonProperty
-    private User author;
+    private Account author;
     
     @JsonProperty
-    private User committer;
+    private Account committer;
     
     @JsonProperty
     private String[] added;
@@ -61,11 +61,11 @@ public class Commit {
         return url;
     }
 
-    public User getAuthor() {
+    public Account getAuthor() {
         return author;
     }
 
-    public User getCommitter() {
+    public Account getCommitter() {
         return committer;
     }
 

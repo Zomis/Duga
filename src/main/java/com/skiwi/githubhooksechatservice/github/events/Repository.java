@@ -18,7 +18,7 @@ public class Repository {
     private String fullName;
     
     @JsonProperty
-    private SimpleUser owner;
+    private Account owner;
     
     @JsonProperty("private")
     private boolean isPrivate;
@@ -224,7 +224,7 @@ public class Repository {
         return fullName;
     }
 
-    public SimpleUser getOwner() {
+    public Account getOwner() {
         return owner;
     }
 

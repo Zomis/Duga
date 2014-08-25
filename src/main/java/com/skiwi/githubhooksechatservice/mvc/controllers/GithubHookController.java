@@ -1,6 +1,7 @@
 
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
+import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.store.Store;
@@ -27,7 +28,7 @@ public class GithubHookController {
     @ResponseBody
     public void push(final @RequestBody PushEvent pushEvent) {
         pushEvent.getCommits().forEach(commit -> {
-            Store.INSTANCE.getChatBot().postMessage("**[" + pushEvent.getRepository().getFullName() + "]** **" + commit.getCommitter().getUsername() + "** pushed commit [**" + commit.getId().substring(0, 8) + "**](" + commit.getUrl() + ") to **" + pushEvent.getRef().replace("refs/heads/", "") + "**");
+            Store.INSTANCE.getChatBot().postMessage("**[" + pushEvent.getRepository().getFullName() + "]** **" + commit.getCommitter().getRealName()+ "** pushed commit [**" + commit.getId().substring(0, 8) + "**](" + commit.getUrl() + ") to **" + pushEvent.getRef().replace("refs/heads/", "") + "**");
             Store.INSTANCE.getChatBot().postMessage("> " + commit.getMessage());
         });
     }

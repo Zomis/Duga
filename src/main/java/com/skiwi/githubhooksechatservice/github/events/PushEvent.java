@@ -45,7 +45,7 @@ public class PushEvent {
     private Repository repository;
     
     @JsonProperty
-    private SimpleUser pusher;
+    private Account pusher;
 
     public String getRef() {
         return ref;
@@ -87,9 +87,7 @@ public class PushEvent {
         return repository;
     }
 
-    public SimpleUser getPusher() {
+    public Account getPusher() {
         return pusher;
     }
-    
-    
 }
