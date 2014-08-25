@@ -28,6 +28,9 @@ public class PushEvent {
     
     @JsonProperty
     private boolean forced;
+	
+	@JsonProperty(value = "base_ref", required = false)
+	private String baseRef;
     
     @JsonProperty
     private String compare;
