@@ -141,13 +141,13 @@ public class Repository {
     private String releasesUrl;
     
     @JsonProperty("created_at")
-    private long createdAt;
+    private String createdAt;
     
     @JsonProperty("updated_at")
     private String updatedAt;
     
     @JsonProperty("pushed_at")
-    private long pushedAt;
+    private String pushedAt;
     
     @JsonProperty("git_url")
     private String gitUrl;
@@ -388,7 +388,7 @@ public class Repository {
         return releasesUrl;
     }
 
-    public long getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
@@ -396,7 +396,7 @@ public class Repository {
         return updatedAt;
     }
 
-    public long getPushedAt() {
+    public String getPushedAt() {
         return pushedAt;
     }
 
