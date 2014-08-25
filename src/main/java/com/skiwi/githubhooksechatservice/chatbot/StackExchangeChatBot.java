@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpRequest;
@@ -30,6 +31,8 @@ import org.apache.http.protocol.HttpContext;
 public class StackExchangeChatBot implements ChatBot {
     private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
     
+    private final ExecutorService executorService;
+    
     private final MechanizeAgent agent;
     
     private final Configuration configuration;
@@ -37,6 +40,8 @@ public class StackExchangeChatBot implements ChatBot {
     private String chatFKey;
     
     public StackExchangeChatBot(final Configuration configuration) {
+        this.executorService = new ThrottlingThreadExecutor(
+            configuration.getChatThrottle(), configuration.getChatMaxBurst(), configuration.getChatMinimumDelay());
         this.configuration = configuration;
         
         this.agent = new MechanizeAgent();
@@ -125,26 +130,32 @@ public class StackExchangeChatBot implements ChatBot {
     @Override
     public void postMessage(final String text) {
         Objects.requireNonNull(text, "text");
+        String textCopy = text;
+        while (textCopy.length() > 500) {
+            queueMessage(textCopy.substring(0, 497) + "...");
+            textCopy = textCopy.substring(497);
+        }
+        queueMessage(textCopy);
+    }
+    
+    private void queueMessage(final String text) {
+        Objects.requireNonNull(text, "text");
+        executorService.submit(() -> attemptPostMessageToChat(text));
+    }
+    
+    private void attemptPostMessageToChat(final String text) {
+        Objects.requireNonNull(text, "text");
         try {
-            internalPostMessage(text);
+            postMessageToChat(text);
         } catch (ClassCastException ex) {
             LOGGER.log(Level.INFO, "Error during posting", ex);
             LOGGER.info("Retrying to post message.");
             start();
-            internalPostMessage(text);
+            postMessageToChat(text);
         }
     }
     
-    private void internalPostMessage(final String text) {
-        String textCopy = text;
-        while (textCopy.length() > 500) {
-            internalInternalPostMessage(textCopy.substring(0, 497) + "...");
-            textCopy = textCopy.substring(497);
-        }
-        internalInternalPostMessage(textCopy);
-    }
-    
-    private void internalInternalPostMessage(final String text) {
+    private void postMessageToChat(final String text) {
         Objects.requireNonNull(text, "text");
         Map<String, String> parameters = new HashMap<>();
         parameters.put("text", text);
