@@ -32,4 +32,10 @@ public class GithubHookController {
             Store.INSTANCE.getChatBot().postMessage("> " + commit.getMessage());
         });
     }
+    
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=create")
+    @ResponseBody
+    public void create(final @RequestBody CreateEvent createEvent) {
+        Store.INSTANCE.getChatBot().postMessage("**[" + createEvent.getRepository().getFullName() + "]** **" + createEvent.getSender().getRealName()+ "** created " + createEvent.getRefType() + " **" + createEvent.getRef() + "**");
+    }
 }
