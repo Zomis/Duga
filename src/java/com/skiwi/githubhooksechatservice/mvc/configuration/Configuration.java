@@ -13,7 +13,10 @@ public class Configuration {
     private String botPassword;
     
     private String roomId;
+    
     private int chatThrottle;
+    private int chatMaxBurst;
+    private int chatMinimumDelay;
 
     public String getRootUrl() {
         return rootUrl;
@@ -61,5 +64,21 @@ public class Configuration {
 
     public void setChatThrottle(final int chatThrottle) {
         this.chatThrottle = chatThrottle;
+    }
+
+    public int getChatMaxBurst() {
+        return chatMaxBurst;
+    }
+
+    public void setChatMaxBurst(final int chatMaxBurst) {
+        this.chatMaxBurst = chatMaxBurst;
+    }
+
+    public int getChatMinimumDelay() {
+        return chatMinimumDelay;
+    }
+
+    public void setChatMinimumDelay(final int chatMinimumDelay) {
+        this.chatMinimumDelay = chatMinimumDelay;
     }
 }

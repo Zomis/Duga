@@ -40,7 +40,8 @@ public class StackExchangeChatBot implements ChatBot {
     private String chatFKey;
     
     public StackExchangeChatBot(final Configuration configuration) {
-        this.executorService = new ThrottlingThreadExecutor(configuration.getChatThrottle());
+        this.executorService = new ThrottlingThreadExecutor(
+            configuration.getChatThrottle(), configuration.getChatMaxBurst(), configuration.getChatMinimumDelay());
         this.configuration = configuration;
         
         this.agent = new MechanizeAgent();
