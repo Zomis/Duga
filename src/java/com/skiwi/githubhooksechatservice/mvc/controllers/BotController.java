@@ -18,14 +18,12 @@ public class BotController {
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
     public void test() {
-        System.out.println("test");
         Store.INSTANCE.getChatBot().postMessage("test");
     }
 
     @RequestMapping(value = "/say/{text}", method = RequestMethod.GET)
     @ResponseBody
     public void say(final @PathVariable("text") String text) {
-        System.out.println("say: " + text);
         Store.INSTANCE.getChatBot().postMessage(text);
     }
 }
