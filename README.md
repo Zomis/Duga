@@ -13,6 +13,7 @@ Configuration
  - env.botEmail = your@email.com
  - env.botPassword = yourpassword
  - env.roomId = 16134
+ - env.chatThrottle = 5000 (the minimum time in milliseconds between each message)
 3. Add a post web hook to your Github project, and point it to http://yourdomain.com/GithubHookSEChatService/hooks/github
 
 Commands

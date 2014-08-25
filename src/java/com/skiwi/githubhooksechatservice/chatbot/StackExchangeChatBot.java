@@ -31,7 +31,7 @@ import org.apache.http.protocol.HttpContext;
 public class StackExchangeChatBot implements ChatBot {
     private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
     
-    private final ExecutorService executorService = new ThrottlingThreadExecutor(10_000);
+    private final ExecutorService executorService;
     
     private final MechanizeAgent agent;
     
@@ -40,6 +40,7 @@ public class StackExchangeChatBot implements ChatBot {
     private String chatFKey;
     
     public StackExchangeChatBot(final Configuration configuration) {
+        this.executorService = new ThrottlingThreadExecutor(configuration.getChatThrottle());
         this.configuration = configuration;
         
         this.agent = new MechanizeAgent();

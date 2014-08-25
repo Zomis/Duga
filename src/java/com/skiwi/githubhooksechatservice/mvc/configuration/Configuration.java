@@ -13,6 +13,7 @@ public class Configuration {
     private String botPassword;
     
     private String roomId;
+    private int chatThrottle;
 
     public String getRootUrl() {
         return rootUrl;
@@ -52,5 +53,13 @@ public class Configuration {
 
     public void setRoomId(final String roomId) {
         this.roomId = roomId;
+    }
+
+    public int getChatThrottle() {
+        return chatThrottle;
+    }
+
+    public void setChatThrottle(final int chatThrottle) {
+        this.chatThrottle = chatThrottle;
     }
 }

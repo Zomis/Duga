@@ -45,6 +45,7 @@
         <property name="botEmail" value="${env.botEmail}"/>
         <property name="botPassword" value="${env.botPassword}"/>
         <property name="roomId" value="${env.roomId}"/>
+        <property name="chatThrottle" value="${env.chatThrottle}"/>
     </bean>
 
     <!-- startup bean -->
