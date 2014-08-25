@@ -3,7 +3,8 @@ package com.skiwi.githubhooksechatservice.github.events;
 
 import java.util.Arrays;
 import java.util.List;
-import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
