@@ -15,6 +15,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/bot")
 public class BotController {
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    @ResponseBody
+    public String hello() {
+        System.out.println("test");
+        return "Hello World!";
+    }
+
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
     public void test() {
