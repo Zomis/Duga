@@ -8,13 +8,27 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd" xmlns:context="http://www.springframework.org/schema/context">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd" xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc">
 
+    <!-- enable annotations -->
+    <mvc:annotation-driven />
+    
     <!-- auto scan -->
     <context:component-scan base-package="com.skiwi.githubhooksechatservice" />
     
-    <!-- fix nested request mapping subpaths -->
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+    <!-- enable json -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+       <property name="messageConverters">
+           <list>
+               <ref bean="jsonConverter" />
+           </list>
+       </property>
+    </bean>
+    
+    <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+       <property name="supportedMediaTypes" value="application/json" />
+    </bean>
 
     <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 
@@ -31,6 +45,9 @@
         <property name="botEmail" value="${env.botEmail}"/>
         <property name="botPassword" value="${env.botPassword}"/>
         <property name="roomId" value="${env.roomId}"/>
+        <property name="chatThrottle" value="${env.chatThrottle}"/>
+        <property name="chatMaxBurst" value="${env.chatMaxBurst}"/>
+        <property name="chatMinimumDelay" value="${env.chatMinimumDelay}"/>
     </bean>
 
     <!-- startup bean -->
