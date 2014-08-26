@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public class Repository {
+public class LegacyRepository {
     @JsonProperty
     private long id;
     
@@ -18,7 +18,7 @@ public class Repository {
     private String fullName;
     
     @JsonProperty
-    private User owner;
+    private LegacySimpleUser owner;
     
     @JsonProperty("private")
     private boolean isPrivate;
@@ -141,13 +141,13 @@ public class Repository {
     private String releasesUrl;
     
     @JsonProperty("created_at")
-    private String createdAt;
+    private long createdAt;
     
     @JsonProperty("updated_at")
     private String updatedAt;
     
     @JsonProperty("pushed_at")
-    private String pushedAt;
+    private long pushedAt;
     
     @JsonProperty("git_url")
     private String gitUrl;
@@ -205,6 +205,12 @@ public class Repository {
     
     @JsonProperty("default_branch")
     private String defaultBranch;
+    
+    @JsonProperty
+    private long stargazers;
+    
+    @JsonProperty("master_branch")
+    private String masterBranch;
 	
 	@JsonProperty(required = false)
 	private String organization;
@@ -221,7 +227,7 @@ public class Repository {
         return fullName;
     }
 
-    public User getOwner() {
+    public LegacySimpleUser getOwner() {
         return owner;
     }
 
@@ -385,7 +391,7 @@ public class Repository {
         return releasesUrl;
     }
 
-    public String getCreatedAt() {
+    public long getCreatedAt() {
         return createdAt;
     }
 
@@ -393,7 +399,7 @@ public class Repository {
         return updatedAt;
     }
 
-    public String getPushedAt() {
+    public long getPushedAt() {
         return pushedAt;
     }
 
@@ -471,6 +477,14 @@ public class Repository {
 
     public String getDefaultBranch() {
         return defaultBranch;
+    }
+
+    public long getStargazers() {
+        return stargazers;
+    }
+
+    public String getMasterBranch() {
+        return masterBranch;
     }
 	
 	public String getOrganization() {

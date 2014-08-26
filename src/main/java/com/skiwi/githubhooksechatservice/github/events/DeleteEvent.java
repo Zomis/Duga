@@ -21,7 +21,7 @@ public class DeleteEvent {
     private Repository repository;
     
     @JsonProperty
-    private Account sender;
+    private User sender;
 
     public String getRef() {
         return ref;
@@ -39,7 +39,7 @@ public class DeleteEvent {
         return repository;
     }
 
-    public Account getSender() {
+    public User getSender() {
         return sender;
     }
 }

@@ -7,78 +7,57 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public class Account {
-    @JsonProperty(required = false)
-    private String name;
-    
-    @JsonProperty(required = false)
-    private String email;
-    
-    @JsonProperty(required = false)
-    private String username;
-	
-	@JsonProperty(required = false)
+public class User {
+	@JsonProperty
 	private String login;
 	
-    @JsonProperty(required = false)
+    @JsonProperty
     private long id;
     
-    @JsonProperty(value = "avatar_url", required = false)
+    @JsonProperty(value = "avatar_url")
     private String avatarUrl;
     
-    @JsonProperty(value = "gravatar_id", required = false)
+    @JsonProperty(value = "gravatar_id")
     private String gravatarId;
     
-    @JsonProperty(required = false)
+    @JsonProperty
     private String url;
     
-    @JsonProperty(value = "html_url", required = false)
+    @JsonProperty(value = "html_url")
     private String htmlUrl;
     
-    @JsonProperty(value = "followers_url", required = false)
+    @JsonProperty(value = "followers_url")
     private String followersUrl;
     
-    @JsonProperty(value = "following_url", required = false)
+    @JsonProperty(value = "following_url")
     private String followingUrl;
     
-    @JsonProperty(value = "gists_url", required = false)
+    @JsonProperty(value = "gists_url")
     private String gistsUrl;
     
-    @JsonProperty(value = "starred_url", required = false)
+    @JsonProperty(value = "starred_url")
     private String starredUrl;
     
-    @JsonProperty(value = "subscriptions_url", required = false)
+    @JsonProperty(value = "subscriptions_url")
     private String subscriptionsUrl;
     
-    @JsonProperty(value = "organizations_url", required = false)
+    @JsonProperty(value = "organizations_url")
     private String organizationsUrl;
     
-    @JsonProperty(value = "repos_url", required = false)
+    @JsonProperty(value = "repos_url")
     private String reposUrl;
     
-    @JsonProperty(value = "events_url", required = false)
+    @JsonProperty(value = "events_url")
     private String eventsUrl;
     
-    @JsonProperty(value = "received_events_url", required = false)
+    @JsonProperty(value = "received_events_url")
     private String receivedEventsUrl;
     
-    @JsonProperty(required = false)
+    @JsonProperty
     private String type;
     
-    @JsonProperty(value = "site_admin", required = false)
+    @JsonProperty(value = "site_admin")
     private boolean siteAdmin;
-
-	public String getName() {
-		return name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getUsername() {
-		return username;
-	}
 
 	public String getLogin() {
 		return login;
@@ -146,15 +125,5 @@ public class Account {
 
 	public boolean isSiteAdmin() {
 		return siteAdmin;
-	}
-	
-	public String getAccountName() {
-		if (username != null) {
-			return username;
-		}
-		else if (login != null) {
-			return login;
-		}
-		return name;
 	}
 }

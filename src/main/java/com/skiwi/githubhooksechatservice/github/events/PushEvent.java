@@ -36,16 +36,16 @@ public class PushEvent {
     private String compare;
     
     @JsonProperty
-    private Commit[] commits;
+    private LegacyCommit[] commits;
     
     @JsonProperty("head_commit")
-    private Commit headCommit;
+    private LegacyCommit headCommit;
     
     @JsonProperty
-    private Repository repository;
+    private LegacyRepository repository;
     
     @JsonProperty
-    private Account pusher;
+    private LegacySimpleUser pusher;
 
     public String getRef() {
         return ref;
@@ -71,23 +71,27 @@ public class PushEvent {
         return forced;
     }
 
+	public String getBaseRef() {
+		return baseRef;
+	}
+
     public String getCompare() {
         return compare;
     }
 
-    public List<Commit> getCommits() {
+    public List<LegacyCommit> getCommits() {
         return Arrays.asList(commits);
     }
 
-    public Commit getHeadCommit() {
+    public LegacyCommit getHeadCommit() {
         return headCommit;
     }
 
-    public Repository getRepository() {
+    public LegacyRepository getRepository() {
         return repository;
     }
 
-    public Account getPusher() {
+    public LegacySimpleUser getPusher() {
         return pusher;
     }
 }

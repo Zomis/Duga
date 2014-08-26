@@ -1,12 +1,6 @@
 
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
-import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
-import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
-import com.skiwi.githubhooksechatservice.github.events.PingEvent;
-import com.skiwi.githubhooksechatservice.github.events.PushEvent;
-import com.skiwi.githubhooksechatservice.store.Store;
-
 import java.text.MessageFormat;
 
 import org.springframework.stereotype.Controller;
@@ -14,6 +8,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
+import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
+import com.skiwi.githubhooksechatservice.github.events.PingEvent;
+import com.skiwi.githubhooksechatservice.github.events.PushEvent;
+import com.skiwi.githubhooksechatservice.store.Store;
 
 /**
  *
@@ -33,7 +33,7 @@ public class GithubHookController {
     public void push(final @RequestBody PushEvent pushEvent) {
         pushEvent.getCommits().forEach(commit -> {
 			String branch = pushEvent.getRef().replace("refs/heads/", "");
-			String committer = commit.getCommitter().getAccountName();
+			String committer = commit.getCommitter().getUsername();
 			Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
 				pushEvent.getRepository().getFullName(), 
 				pushEvent.getRepository().getHtmlUrl(),
@@ -62,7 +62,7 @@ public class GithubHookController {
 		Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created {4} [**{5}**]({6})",
 			createEvent.getRepository().getFullName(),
 			createEvent.getRepository().getHtmlUrl(),
-			createEvent.getSender().getAccountName(),
+			createEvent.getSender().getLogin(),
 			createEvent.getSender().getHtmlUrl(),
 			createEvent.getRefType(),
 			createEvent.getRef(),
@@ -75,7 +75,7 @@ public class GithubHookController {
 		Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) deleted {4} **{5}**",
 			deleteEvent.getRepository().getFullName(),
 			deleteEvent.getRepository().getHtmlUrl(),
-			deleteEvent.getSender().getAccountName(),
+			deleteEvent.getSender().getLogin(),
 			deleteEvent.getSender().getHtmlUrl(),
 			deleteEvent.getRefType(),
 			deleteEvent.getRef()));

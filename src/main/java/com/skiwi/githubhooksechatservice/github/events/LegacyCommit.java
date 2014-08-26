@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public class Commit {
+public class LegacyCommit {
     @JsonProperty
     private String id;
     
@@ -27,10 +27,10 @@ public class Commit {
     private String url;
     
     @JsonProperty
-    private Account author;
+    private LegacyUser author;
     
     @JsonProperty
-    private Account committer;
+    private LegacyUser committer;
     
     @JsonProperty
     private String[] added;
@@ -61,11 +61,11 @@ public class Commit {
         return url;
     }
 
-    public Account getAuthor() {
+    public LegacyUser getAuthor() {
         return author;
     }
 
-    public Account getCommitter() {
+    public LegacyUser getCommitter() {
         return committer;
     }
 

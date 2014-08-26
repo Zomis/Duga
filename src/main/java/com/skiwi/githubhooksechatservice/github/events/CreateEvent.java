@@ -27,7 +27,7 @@ public class CreateEvent {
     private Repository repository;
     
     @JsonProperty
-    private Account sender;
+    private User sender;
 
     public String getRef() {
         return ref;
@@ -53,7 +53,7 @@ public class CreateEvent {
         return repository;
     }
 
-    public Account getSender() {
+    public User getSender() {
         return sender;
     }
 }
