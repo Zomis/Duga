@@ -211,6 +211,9 @@ public class Repository {
     
     @JsonProperty("master_branch")
     private String masterBranch;
+	
+	@JsonProperty(required = false)
+	private String organization;
 
     public long getId() {
         return id;
@@ -483,4 +486,8 @@ public class Repository {
     public String getMasterBranch() {
         return masterBranch;
     }
+	
+	public String getOrganization() {
+		return organization;
+	}
 }
