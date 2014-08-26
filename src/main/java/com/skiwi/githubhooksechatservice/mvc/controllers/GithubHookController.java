@@ -6,6 +6,9 @@ import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.store.Store;
+
+import java.text.MessageFormat;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,20 +32,52 @@ public class GithubHookController {
     @ResponseBody
     public void push(final @RequestBody PushEvent pushEvent) {
         pushEvent.getCommits().forEach(commit -> {
-            Store.INSTANCE.getChatBot().postMessage("**[" + pushEvent.getRepository().getFullName() + "]** **" + commit.getCommitter().getRealName()+ "** pushed commit [**" + commit.getId().substring(0, 8) + "**](" + commit.getUrl() + ") to **" + pushEvent.getRef().replace("refs/heads/", "") + "**");
-            Store.INSTANCE.getChatBot().postMessage("> " + commit.getMessage());
-        });
+			String branch = pushEvent.getRef().replace("refs/heads/", "");
+			String committer = commit.getCommitter().getAccountName();
+			Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
+				pushEvent.getRepository().getFullName(), 
+				pushEvent.getRepository().getHtmlUrl(),
+				committer, 
+				"https://github.com/" + committer,
+				commit.getId().substring(0, 8), 
+				commit.getUrl(),
+				branch,
+				pushEvent.getRepository().getUrl() + "/tree/" + branch));
+			Store.INSTANCE.getChatBot().postMessage("> " + commit.getMessage());
+		});
     }
     
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=create")
     @ResponseBody
     public void create(final @RequestBody CreateEvent createEvent) {
-        Store.INSTANCE.getChatBot().postMessage("**[" + createEvent.getRepository().getFullName() + "]** **" + createEvent.getSender().getRealName()+ "** created " + createEvent.getRefType() + " **" + createEvent.getRef() + "**");
+		String refUrl = null;
+		switch (createEvent.getRefType()) {
+			case "branch":
+				refUrl = createEvent.getRepository().getHtmlUrl() + "/tree/" + createEvent.getRef();
+				break;
+			case "tag":
+				refUrl = createEvent.getRepository().getHtmlUrl() + "/releases/tag/" + createEvent.getRef();
+				break;
+		}
+		Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created {4} [**{5}**]({6})",
+			createEvent.getRepository().getFullName(),
+			createEvent.getRepository().getHtmlUrl(),
+			createEvent.getSender().getAccountName(),
+			createEvent.getSender().getHtmlUrl(),
+			createEvent.getRefType(),
+			createEvent.getRef(),
+			refUrl));
     }
     
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=delete")
     @ResponseBody
     public void delete(final @RequestBody DeleteEvent deleteEvent) {
-        Store.INSTANCE.getChatBot().postMessage("**[" + deleteEvent.getRepository().getFullName() + "]** **" + deleteEvent.getSender().getRealName()+ "** deleted " + deleteEvent.getRefType() + " **" + deleteEvent.getRef() + "**");
+		Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) deleted {4} **{5}**",
+			deleteEvent.getRepository().getFullName(),
+			deleteEvent.getRepository().getHtmlUrl(),
+			deleteEvent.getSender().getAccountName(),
+			deleteEvent.getSender().getHtmlUrl(),
+			deleteEvent.getRefType(),
+			deleteEvent.getRef()));
     }
 }

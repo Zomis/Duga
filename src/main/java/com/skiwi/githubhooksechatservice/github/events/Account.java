@@ -148,7 +148,7 @@ public class Account {
 		return siteAdmin;
 	}
 	
-	public String getRealName() {
+	public String getAccountName() {
 		if (username != null) {
 			return username;
 		}
