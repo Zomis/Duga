@@ -1,12 +1,16 @@
 
 package com.skiwi.githubhooksechatservice.chatbot;
 
+import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.html.HtmlDocument;
+import com.gistlabs.mechanize.document.html.HtmlElement;
+import com.gistlabs.mechanize.document.html.HtmlNode;
 import com.gistlabs.mechanize.document.html.form.Form;
 import com.gistlabs.mechanize.document.html.form.SubmitButton;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
 import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
+
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -14,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
@@ -144,25 +150,63 @@ public class StackExchangeChatBot implements ChatBot {
     }
     
     private void attemptPostMessageToChat(final String text) {
-        Objects.requireNonNull(text, "text");
-        try {
-            postMessageToChat(text);
-        } catch (ClassCastException ex) {
-            LOGGER.log(Level.INFO, "Error during posting", ex);
-            LOGGER.info("Retrying to post message.");
-            start();
-            postMessageToChat(text);
-        }
-    }
+		Objects.requireNonNull(text, "text");
+		try {
+			postMessageToChat(text);
+		} catch (ChatThrottleException ex) {
+			LOGGER.info("Sleeping for " + ex.getThrottleTiming() + " seconds, then reposting");
+			try {
+				TimeUnit.SECONDS.sleep(ex.getThrottleTiming());
+			} catch (InterruptedException ex1) {
+				Thread.currentThread().interrupt();
+			}
+			try {
+				postMessageToChat(text);
+			} catch (ChatThrottleException | ProbablyNotLoggedInException ex1) {
+				LOGGER.log(Level.INFO, "Failed to post message on retry", ex1);
+			}
+		} catch (ProbablyNotLoggedInException ex) {
+			LOGGER.info("Not logged in, logging in and then reposting");
+			start();
+			try {
+				postMessageToChat(text);
+			} catch (ChatThrottleException | ProbablyNotLoggedInException ex1) {
+				LOGGER.log(Level.INFO, "Failed to post message on retry", ex1);
+			}
+		}
+	}
     
-    private void postMessageToChat(final String text) {
+    private void postMessageToChat(final String text) throws ChatThrottleException, ProbablyNotLoggedInException {
         Objects.requireNonNull(text, "text");
         Map<String, String> parameters = new HashMap<>();
         parameters.put("text", text);
         parameters.put("fkey", this.chatFKey);
         try {
-            JsonDocument response = agent.post("http://chat.stackexchange.com/chats/" + configuration.getRoomId() + "/messages/new", parameters);
+			Resource response = agent.post("http://chat.stackexchange.com/chats/" + configuration.getRoomId() + "/messages/new", parameters);
             LOGGER.info(response.getTitle());
+			if (response instanceof JsonDocument) {
+				//success
+			}
+			else if (response instanceof HtmlDocument) {
+				//failure
+				HtmlDocument htmlDocument = (HtmlDocument)response;
+				HtmlElement body = htmlDocument.find("body");
+				if (body.getInnerHtml().contains("You can perform this action again in")) {
+					int timing = Integer.parseInt(body.getInnerHtml()
+						.replaceAll("You can perform this action again in", "")
+						.replaceAll("seconds", "")
+						.trim());
+					throw new ChatThrottleException(timing);
+				}
+				else {
+					System.out.println(body.getInnerHtml());
+					throw new ProbablyNotLoggedInException();
+				}
+			}
+			else {
+				//even harder failure
+				throw new IllegalStateException("unexpected response, response.getClass() = " + response.getClass());
+			}
         } catch (UnsupportedEncodingException ex) {
             throw new UncheckedIOException(ex);
         }
