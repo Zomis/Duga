@@ -36,6 +36,8 @@ import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 public class StackExchangeChatBot implements ChatBot {
     private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
     
+    private static final int MAX_MESSAGE_LENGTH = 500;
+    
     private final ExecutorService executorService;
     
     private final MechanizeAgent agent;
@@ -139,9 +141,11 @@ public class StackExchangeChatBot implements ChatBot {
     public void postMessage(final String text) {
         Objects.requireNonNull(text, "text");
         String textCopy = text;
-        while (textCopy.length() > 500) {
-            queueMessage(textCopy.substring(0, 497) + "...");
-            textCopy = textCopy.substring(497);
+        final String continuation = "...";
+        while (textCopy.length() > MAX_MESSAGE_LENGTH) {
+        	final int firstPart = MAX_MESSAGE_LENGTH - continuation.length();
+            queueMessage(textCopy.substring(0, firstPart) + continuation);
+            textCopy = textCopy.substring(firstPart);
         }
         queueMessage(textCopy);
     }
