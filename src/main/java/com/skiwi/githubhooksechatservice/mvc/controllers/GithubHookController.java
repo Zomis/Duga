@@ -168,16 +168,20 @@ public class GithubHookController {
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=issue_comment")
     @ResponseBody
     public void issueComment(final @RequestBody IssueCommentEvent issueCommentEvent) {
-		chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on issue [**#{5}: {6}**]({7})",
-			issueCommentEvent.getRepository().getFullName(),
-			issueCommentEvent.getRepository().getHtmlUrl(),
-			issueCommentEvent.getSender().getLogin(),
-			issueCommentEvent.getSender().getHtmlUrl(),
-			issueCommentEvent.getComment().getHtmlUrl(),
-			issueCommentEvent.getIssue().getNumber(),
-			issueCommentEvent.getIssue().getTitle(),
-			issueCommentEvent.getIssue().getHtmlUrl()));
-		chatBot.postMessage("> " + issueCommentEvent.getComment().getBody());
+		switch (issueCommentEvent.getAction()) {
+			case "created":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on issue [**#{5}: {6}**]({7})",
+					issueCommentEvent.getRepository().getFullName(),
+					issueCommentEvent.getRepository().getHtmlUrl(),
+					issueCommentEvent.getSender().getLogin(),
+					issueCommentEvent.getSender().getHtmlUrl(),
+					issueCommentEvent.getComment().getHtmlUrl(),
+					issueCommentEvent.getIssue().getNumber(),
+					issueCommentEvent.getIssue().getTitle(),
+					issueCommentEvent.getIssue().getHtmlUrl()));
+				chatBot.postMessage("> " + issueCommentEvent.getComment().getBody());
+				break;
+		}
     }
 	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=push")
