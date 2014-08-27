@@ -1,12 +1,14 @@
 
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
-import com.skiwi.githubhooksechatservice.store.Store;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 
 /**
  *
@@ -15,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/bot")
 public class BotController {
+	@Autowired
+	private ChatBot chatBot;
+	
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     @ResponseBody
     public String hello() {
@@ -25,12 +30,12 @@ public class BotController {
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
     public void test() {
-        Store.INSTANCE.getChatBot().postMessage("test");
+        chatBot.postMessage("test");
     }
 
     @RequestMapping(value = "/say/{text}", method = RequestMethod.GET)
     @ResponseBody
     public void say(final @PathVariable("text") String text) {
-        Store.INSTANCE.getChatBot().postMessage(text);
+        chatBot.postMessage(text);
     }
 }

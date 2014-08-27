@@ -52,6 +52,10 @@
         <property name="deployGreetingText" value="${env.deployGreetingText}"/>
     </bean>
 
+	<bean id="chatBot" class="com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot">
+		<constructor-arg ref="configuration"/>
+	</bean>
+
     <!-- startup bean -->
     <bean name="startup" init-method="start" class="com.skiwi.githubhooksechatservice.mvc.beans.StartupBean" lazy-init="false" />
 </beans>

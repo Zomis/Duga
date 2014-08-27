@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
-import com.skiwi.githubhooksechatservice.store.Store;
 
 /**
  *
@@ -33,10 +34,13 @@ import com.skiwi.githubhooksechatservice.store.Store;
 public class GithubHookController {
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
 	
+	@Autowired
+	private ChatBot chatBot;
+	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=ping")
     @ResponseBody
     public void ping(final @RequestBody PingEvent pingEvent) {
-        Store.INSTANCE.getChatBot().postMessage("Ping: " + pingEvent.getZen());
+        chatBot.postMessage("Ping: " + pingEvent.getZen());
     }
     
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=create")
@@ -51,7 +55,7 @@ public class GithubHookController {
 				refUrl = createEvent.getRepository().getHtmlUrl() + "/releases/tag/" + createEvent.getRef();
 				break;
 		}
-		Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created {4} [**{5}**]({6})",
+		chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created {4} [**{5}**]({6})",
 			createEvent.getRepository().getFullName(),
 			createEvent.getRepository().getHtmlUrl(),
 			createEvent.getSender().getLogin(),
@@ -64,7 +68,7 @@ public class GithubHookController {
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=delete")
     @ResponseBody
     public void delete(final @RequestBody DeleteEvent deleteEvent) {
-		Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) deleted {4} **{5}**",
+		chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) deleted {4} **{5}**",
 			deleteEvent.getRepository().getFullName(),
 			deleteEvent.getRepository().getHtmlUrl(),
 			deleteEvent.getSender().getLogin(),
@@ -78,7 +82,7 @@ public class GithubHookController {
     public void issues(final @RequestBody IssuesEvent issuesEvent) {
 		switch (issuesEvent.getAction()) {
 			case "assigned":
-				Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) assigned [**{4}**]({5}) to issue [**#{6}: {7}**]({8})",
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) assigned [**{4}**]({5}) to issue [**#{6}: {7}**]({8})",
 					issuesEvent.getRepository().getFullName(),
 					issuesEvent.getRepository().getHtmlUrl(),
 					issuesEvent.getSender().getLogin(),
@@ -90,7 +94,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "unassigned":
-				Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) unassigned [**{4}**]({5}) from issue [**#{6}: {7}**]({8})",
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) unassigned [**{4}**]({5}) from issue [**#{6}: {7}**]({8})",
 					issuesEvent.getRepository().getFullName(),
 					issuesEvent.getRepository().getHtmlUrl(),
 					issuesEvent.getSender().getLogin(),
@@ -102,7 +106,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "labeled":
-				Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added label [**{4}**]({5}) to issue [**#{6}: {7}**]({8})",
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added label [**{4}**]({5}) to issue [**#{6}: {7}**]({8})",
 					issuesEvent.getRepository().getFullName(),
 					issuesEvent.getRepository().getHtmlUrl(),
 					issuesEvent.getSender().getLogin(),
@@ -114,7 +118,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "unlabeled":
-				Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) removed label [**{4}**]({5}) from issue [**#{6}: {7}**]({8})",
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) removed label [**{4}**]({5}) from issue [**#{6}: {7}**]({8})",
 					issuesEvent.getRepository().getFullName(),
 					issuesEvent.getRepository().getHtmlUrl(),
 					issuesEvent.getSender().getLogin(),
@@ -126,7 +130,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "opened":
-				Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
 					issuesEvent.getRepository().getFullName(),
 					issuesEvent.getRepository().getHtmlUrl(),
 					issuesEvent.getSender().getLogin(),
@@ -134,10 +138,10 @@ public class GithubHookController {
 					issuesEvent.getIssue().getNumber(),
 					issuesEvent.getIssue().getTitle(),
 					issuesEvent.getIssue().getHtmlUrl()));
-				Store.INSTANCE.getChatBot().postMessage("> " + issuesEvent.getIssue().getBody());
+				chatBot.postMessage("> " + issuesEvent.getIssue().getBody());
 				break;
 			case "closed":
-				Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) closed issue [**#{4}: {5}**]({6})",
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) closed issue [**#{4}: {5}**]({6})",
 					issuesEvent.getRepository().getFullName(),
 					issuesEvent.getRepository().getHtmlUrl(),
 					issuesEvent.getSender().getLogin(),
@@ -147,7 +151,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "reopened":
-				Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) reopened issue [**#{4}: {5}**]({6})",
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) reopened issue [**#{4}: {5}**]({6})",
 					issuesEvent.getRepository().getFullName(),
 					issuesEvent.getRepository().getHtmlUrl(),
 					issuesEvent.getSender().getLogin(),
@@ -165,7 +169,7 @@ public class GithubHookController {
         pushEvent.getCommits().forEach(commit -> {
 			String branch = pushEvent.getRef().replace("refs/heads/", "");
 			String committer = commit.getCommitter().getUsername();
-			Store.INSTANCE.getChatBot().postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
+			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
 				pushEvent.getRepository().getFullName(), 
 				pushEvent.getRepository().getHtmlUrl(),
 				committer, 
@@ -174,7 +178,7 @@ public class GithubHookController {
 				commit.getUrl(),
 				branch,
 				pushEvent.getRepository().getUrl() + "/tree/" + branch));
-			Store.INSTANCE.getChatBot().postMessage("> " + commit.getMessage());
+			chatBot.postMessage("> " + commit.getMessage());
 		});
     }
 	
