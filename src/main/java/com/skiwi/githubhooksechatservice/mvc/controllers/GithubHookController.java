@@ -113,7 +113,7 @@ public class GithubHookController {
 					issuesEvent.getSender().getLogin(),
 					issuesEvent.getSender().getHtmlUrl(),
 					issuesEvent.getLabel().getName(),
-					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "+"),
+					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "%20"),
 					issuesEvent.getIssue().getNumber(),
 					issuesEvent.getIssue().getTitle(),
 					issuesEvent.getIssue().getHtmlUrl()));
@@ -125,7 +125,7 @@ public class GithubHookController {
 					issuesEvent.getSender().getLogin(),
 					issuesEvent.getSender().getHtmlUrl(),
 					issuesEvent.getLabel().getName(),
-					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "+"),
+					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "%20"),
 					issuesEvent.getIssue().getNumber(),
 					issuesEvent.getIssue().getTitle(),
 					issuesEvent.getIssue().getHtmlUrl()));
