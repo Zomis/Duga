@@ -2,13 +2,21 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
 import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
@@ -22,6 +30,8 @@ import com.skiwi.githubhooksechatservice.store.Store;
 @Controller
 @RequestMapping("/hooks/github")
 public class GithubHookController {
+	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
+	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=ping")
     @ResponseBody
     public void ping(final @RequestBody PingEvent pingEvent) {
@@ -80,4 +90,10 @@ public class GithubHookController {
 			deleteEvent.getRefType(),
 			deleteEvent.getRef()));
     }
+	
+	@ExceptionHandler(Exception.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public void handleException(final Exception ex, final HttpServletRequest request) {
+		LOGGER.log(Level.SEVERE, "exception", ex);
+	}
 }
