@@ -24,6 +24,7 @@ import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
+import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
 
 /**
  *
@@ -180,6 +181,20 @@ public class GithubHookController {
 				pushEvent.getRepository().getUrl() + "/tree/" + branch));
 			chatBot.postMessage("> " + commit.getMessage());
 		});
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=watch")
+    @ResponseBody
+    public void watch(final @RequestBody WatchEvent watchEvent) {
+		switch (watchEvent.getAction()) {
+			case "started":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) starred us",
+					watchEvent.getRepository().getFullName(),
+					watchEvent.getRepository().getHtmlUrl(),
+					watchEvent.getSender().getLogin(),
+					watchEvent.getSender().getHtmlUrl()));
+				break;
+		}
     }
 	
 	@ExceptionHandler(Exception.class)
