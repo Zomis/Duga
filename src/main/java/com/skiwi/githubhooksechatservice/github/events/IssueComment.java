@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public class Comment {
+public class IssueComment {
 	@JsonProperty
 	private String url;
 	

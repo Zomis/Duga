@@ -15,7 +15,7 @@ public class IssueCommentEvent {
 	private Issue issue;
 	
 	@JsonProperty
-	private Comment comment;
+	private IssueComment comment;
 	
 	@JsonProperty
 	private Repository repository;
@@ -31,7 +31,7 @@ public class IssueCommentEvent {
 		return issue;
 	}
 
-	public Comment getComment() {
+	public IssueComment getComment() {
 		return comment;
 	}
 
