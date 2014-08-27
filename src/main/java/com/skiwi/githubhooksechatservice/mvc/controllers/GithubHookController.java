@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
+import com.skiwi.githubhooksechatservice.github.events.CommitCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssueCommentEvent;
@@ -43,6 +44,34 @@ public class GithubHookController {
     @ResponseBody
     public void ping(final @RequestBody PingEvent pingEvent) {
         chatBot.postMessage("Ping: " + pingEvent.getZen());
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=commit_comment")
+    @ResponseBody
+    public void commitComment(final @RequestBody CommitCommentEvent commitCommentEvent) {
+		if (commitCommentEvent.getComment().getPath() == null) {
+			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on commit [**{5}**]({6})",
+				commitCommentEvent.getRepository().getFullName(),
+				commitCommentEvent.getRepository().getHtmlUrl(),
+				commitCommentEvent.getSender().getLogin(),
+				commitCommentEvent.getSender().getHtmlUrl(),
+				commitCommentEvent.getComment().getHtmlUrl(),
+				commitCommentEvent.getComment().getCommitId().substring(0, 8),
+				commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()));
+			chatBot.postMessage("> " + commitCommentEvent.getComment().getBody());
+		}
+		else {
+			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of commit [**{6}**]({7})",
+				commitCommentEvent.getRepository().getFullName(),
+				commitCommentEvent.getRepository().getHtmlUrl(),
+				commitCommentEvent.getSender().getLogin(),
+				commitCommentEvent.getSender().getHtmlUrl(),
+				commitCommentEvent.getComment().getPath(),
+				commitCommentEvent.getComment().getHtmlUrl(),
+				commitCommentEvent.getComment().getCommitId().substring(0, 8),
+				commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()));
+			chatBot.postMessage("> " + commitCommentEvent.getComment().getBody());
+		}
     }
     
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=create")
