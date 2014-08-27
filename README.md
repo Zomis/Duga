@@ -16,6 +16,8 @@ Configuration
  - env.chatThrottle = 10000 (the minimum time in milliseconds between each message)
  - env.chatMaxBurst = 2 (the maximum amount of message without being throttled)
  - env.chatMinimumDelay = 500 (the minimum delay in milliseconds between messages) 
+ - env.deployGreetingOn = true (whether the bot will say something in the room when deployed)
+ - env.deployGreetingText = Hello world!
 3. Add a post web hook to your Github project, and point the Payload URL to http://yourdomain.com/GithubHookSEChatService/hooks/github/payload
 
 Bot account setup

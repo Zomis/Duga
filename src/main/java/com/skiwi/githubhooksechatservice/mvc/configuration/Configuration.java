@@ -17,6 +17,9 @@ public class Configuration {
     private int chatThrottle;
     private int chatMaxBurst;
     private int chatMinimumDelay;
+	
+	private boolean deployGreetingOn;
+	private String deployGreetingText;
 
     public String getRootUrl() {
         return rootUrl;
@@ -81,4 +84,20 @@ public class Configuration {
     public void setChatMinimumDelay(final int chatMinimumDelay) {
         this.chatMinimumDelay = chatMinimumDelay;
     }
+
+	public boolean getDeployGreetingOn() {
+		return deployGreetingOn;
+	}
+
+	public void setDeployGreetingOn(final boolean deployGreetingOn) {
+		this.deployGreetingOn = deployGreetingOn;
+	}
+
+	public String getDeployGreetingText() {
+		return deployGreetingText;
+	}
+
+	public void setDeployGreetingText(final String deployGreetingText) {
+		this.deployGreetingText = deployGreetingText;
+	}
 }

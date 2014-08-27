@@ -1,11 +1,12 @@
 
 package com.skiwi.githubhooksechatservice.mvc.beans;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
 import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 import com.skiwi.githubhooksechatservice.store.Store;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *

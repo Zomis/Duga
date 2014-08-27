@@ -48,6 +48,8 @@
         <property name="chatThrottle" value="${env.chatThrottle}"/>
         <property name="chatMaxBurst" value="${env.chatMaxBurst}"/>
         <property name="chatMinimumDelay" value="${env.chatMinimumDelay}"/>
+        <property name="deployGreetingOn" value="${env.deployGreetingOn}"/>
+        <property name="deployGreetingText" value="${env.deployGreetingText}"/>
     </bean>
 
     <!-- startup bean -->

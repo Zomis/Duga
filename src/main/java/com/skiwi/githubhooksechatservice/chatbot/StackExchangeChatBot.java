@@ -1,16 +1,6 @@
 
 package com.skiwi.githubhooksechatservice.chatbot;
 
-import com.gistlabs.mechanize.Resource;
-import com.gistlabs.mechanize.document.html.HtmlDocument;
-import com.gistlabs.mechanize.document.html.HtmlElement;
-import com.gistlabs.mechanize.document.html.HtmlNode;
-import com.gistlabs.mechanize.document.html.form.Form;
-import com.gistlabs.mechanize.document.html.form.SubmitButton;
-import com.gistlabs.mechanize.document.json.JsonDocument;
-import com.gistlabs.mechanize.impl.MechanizeAgent;
-import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
-
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -29,6 +19,15 @@ import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
+
+import com.gistlabs.mechanize.Resource;
+import com.gistlabs.mechanize.document.html.HtmlDocument;
+import com.gistlabs.mechanize.document.html.HtmlElement;
+import com.gistlabs.mechanize.document.html.form.Form;
+import com.gistlabs.mechanize.document.html.form.SubmitButton;
+import com.gistlabs.mechanize.document.json.JsonDocument;
+import com.gistlabs.mechanize.impl.MechanizeAgent;
+import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 
 /**
  *
@@ -51,7 +50,6 @@ public class StackExchangeChatBot implements ChatBot {
         this.configuration = configuration;
         
         this.agent = new MechanizeAgent();
-        //TODO $agent.agent.http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         
         this.agent.getClient().setRedirectStrategy(new RedirectStrategy() {
             @Override
@@ -95,6 +93,10 @@ public class StackExchangeChatBot implements ChatBot {
         String fkey = getFKey();
         this.chatFKey = fkey;
         LOGGER.info("Found fkey: " + fkey);
+		
+		if (configuration.getDeployGreetingOn()) {
+			postMessage(configuration.getDeployGreetingText());
+		}
     }
     
     private void loginOpenId() {
