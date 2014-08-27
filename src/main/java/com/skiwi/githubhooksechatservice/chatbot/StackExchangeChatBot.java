@@ -221,6 +221,9 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 
     @Override
     public void stop() {
+		if (configuration.getUndeployGoodbyeEnabled()) {
+			postMessage(configuration.getUndeployGoodbyeText());
+		}
 		this.executorService.shutdown();
     }
 

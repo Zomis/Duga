@@ -20,6 +20,9 @@ public class Configuration {
 	
 	private boolean deployGreetingEnabled;
 	private String deployGreetingText;
+	
+	private boolean undeployGoodbyeEnabled;
+	private String undeployGoodbyeText;
 
     public String getRootUrl() {
         return rootUrl;
@@ -99,5 +102,21 @@ public class Configuration {
 
 	public void setDeployGreetingText(final String deployGreetingText) {
 		this.deployGreetingText = deployGreetingText;
+	}
+
+	public boolean getUndeployGoodbyeEnabled() {
+		return undeployGoodbyeEnabled;
+	}
+
+	public void setUndeployGoodbyeEnabled(final boolean undeployGoodbyeEnabled) {
+		this.undeployGoodbyeEnabled = undeployGoodbyeEnabled;
+	}
+
+	public String getUndeployGoodbyeText() {
+		return undeployGoodbyeText;
+	}
+
+	public void setUndeployGoodbyeText(final String undeployGoodbyeText) {
+		this.undeployGoodbyeText = undeployGoodbyeText;
 	}
 }

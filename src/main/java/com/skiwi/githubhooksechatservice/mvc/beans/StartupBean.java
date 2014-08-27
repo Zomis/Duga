@@ -5,16 +5,12 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
-import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 
 /**
  *
  * @author Frank van Heeswijk
  */
 public class StartupBean implements DisposableBean {
-    @Autowired
-    private Configuration configuration;
-    
     @Autowired
     private ChatBot chatBot;
 
@@ -27,6 +23,7 @@ public class StartupBean implements DisposableBean {
 
 	@Override
 	public void destroy() throws Exception {
+		chatBot.stop();
 		if (thread != null && thread.isAlive()) {
 			thread.interrupt();
 		}

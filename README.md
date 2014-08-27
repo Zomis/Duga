@@ -18,6 +18,8 @@ Configuration
  - env.chatMinimumDelay = 500 (the minimum delay in milliseconds between messages) 
  - env.deployGreetingEnabled = true (whether the bot will say something in the room when deployed)
  - env.deployGreetingText = Hello world!
+ - env.undeployGoodbyeEnabled = true (whether the bot will say something in the room when undeployed)
+ - env.undeployGoodbyeText = Bye world!
 3. Add a post web hook to your Github project, and point the Payload URL to http://yourdomain.com/GithubHookSEChatService/hooks/github/payload
 
 Bot account setup
