@@ -19,6 +19,7 @@ import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
+import org.springframework.beans.factory.DisposableBean;
 
 import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.html.HtmlDocument;
@@ -33,7 +34,7 @@ import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
  *
  * @author Frank van Heeswijk
  */
-public class StackExchangeChatBot implements ChatBot {
+public class StackExchangeChatBot implements ChatBot, DisposableBean {
     private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
     
     private static final int MAX_MESSAGE_LENGTH = 500;
@@ -220,6 +221,11 @@ public class StackExchangeChatBot implements ChatBot {
 
     @Override
     public void stop() {
-        
+		this.executorService.shutdown();
     }
+
+	@Override
+	public void destroy() throws Exception {
+		this.stop();
+	}
 }
