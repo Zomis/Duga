@@ -21,6 +21,7 @@ import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
+import com.skiwi.githubhooksechatservice.github.events.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
@@ -162,6 +163,21 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 		}
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=issue_comment")
+    @ResponseBody
+    public void issueComment(final @RequestBody IssueCommentEvent issueCommentEvent) {
+		chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on issue [**#{5}: {6}**]({7})",
+			issueCommentEvent.getRepository().getFullName(),
+			issueCommentEvent.getRepository().getHtmlUrl(),
+			issueCommentEvent.getSender().getLogin(),
+			issueCommentEvent.getSender().getHtmlUrl(),
+			issueCommentEvent.getComment().getHtmlUrl(),
+			issueCommentEvent.getIssue().getNumber(),
+			issueCommentEvent.getIssue().getTitle(),
+			issueCommentEvent.getIssue().getHtmlUrl()));
+		chatBot.postMessage("> " + issueCommentEvent.getComment().getBody());
     }
 	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=push")
