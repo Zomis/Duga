@@ -2,8 +2,13 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +29,7 @@ import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
+import com.skiwi.githubhooksechatservice.github.events.LegacyCommit;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
@@ -36,6 +42,8 @@ import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
 @RequestMapping("/hooks/github")
 public class GithubHookController {
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
+	
+	private final int MAX_NUMBER_NON_DISTINCT_COMMITS_PER_LINE = 2;
 	
 	@Autowired
 	private ChatBot chatBot;
@@ -220,7 +228,44 @@ public class GithubHookController {
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=push")
     @ResponseBody
     public void push(final @RequestBody PushEvent pushEvent) {
-        pushEvent.getCommits().forEach(commit -> {
+		Map<Boolean, List<LegacyCommit>> partitionedCommits = pushEvent.getCommits().stream()
+			.collect(Collectors.partitioningBy(LegacyCommit::isDistinct));
+
+		List<LegacyCommit> distinctCommits = partitionedCommits.get(true);
+		List<LegacyCommit> nonDistinctCommits = partitionedCommits.get(false);
+		
+		nonDistinctCommits.stream()
+			.collect(Collectors.groupingBy(LegacyCommit::getCommitter))
+			.forEach((committer, allCommits) -> {
+				split(MAX_NUMBER_NON_DISTINCT_COMMITS_PER_LINE, allCommits).forEach(commits -> {
+					String commitIds;
+					String commitText;
+					if (commits.size() == 1) {
+						commitIds = MessageFormat.format("[**{0}**]({1})", commits.get(0).getId().substring(0, 8), commits.get(0).getUrl());
+						commitText = "commit";
+					}
+					else {
+						commitIds = commits.subList(0, commits.size() - 1).stream()
+							.map(commit -> MessageFormat.format("[**{0}**]({1})", commit.getId().substring(0, 8), commit.getUrl()))
+							.collect(Collectors.joining(", "));
+						commitIds += " and " + MessageFormat.format("[**{0}**]({1})", commits.get(commits.size() - 1).getId().substring(0, 8), commits.get(commits.size() - 1).getUrl());
+						commitText = "commits";
+					}
+
+					String branch = pushEvent.getRef().replace("refs/heads/", "");
+					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed {4} {5} to [**{6}**]({7})",
+						pushEvent.getRepository().getFullName(), 
+						pushEvent.getRepository().getHtmlUrl(),
+						committer.getUsername(), 
+						"https://github.com/" + committer.getUsername(),
+						commitText,
+						commitIds,
+						branch,
+						pushEvent.getRepository().getUrl() + "/tree/" + branch));
+				});
+			});
+		
+        distinctCommits.forEach(commit -> {
 			String branch = pushEvent.getRef().replace("refs/heads/", "");
 			String committer = commit.getCommitter().getUsername();
 			chatBot.postMessages(
@@ -255,5 +300,19 @@ public class GithubHookController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public void handleException(final Exception ex, final HttpServletRequest request) {
 		LOGGER.log(Level.SEVERE, "exception", ex);
+	}
+	
+	private static <T> List<List<T>> split(int size, List<T> data) {
+		List<List<T>> returnList = new ArrayList<>((data.size() / size) + 1);
+		List<T> current = new ArrayList<>(size);
+		returnList.add(current);
+		for (T d : data) {
+			if (current.size() == size) {
+				current = new ArrayList<>(size);
+				returnList.add(current);
+			}
+			current.add(d);
+		}
+		return returnList;
 	}
 }
