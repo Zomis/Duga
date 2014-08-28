@@ -50,27 +50,29 @@ public class GithubHookController {
     @ResponseBody
     public void commitComment(final @RequestBody CommitCommentEvent commitCommentEvent) {
 		if (commitCommentEvent.getComment().getPath() == null) {
-			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on commit [**{5}**]({6})",
-				commitCommentEvent.getRepository().getFullName(),
-				commitCommentEvent.getRepository().getHtmlUrl(),
-				commitCommentEvent.getSender().getLogin(),
-				commitCommentEvent.getSender().getHtmlUrl(),
-				commitCommentEvent.getComment().getHtmlUrl(),
-				commitCommentEvent.getComment().getCommitId().substring(0, 8),
-				commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()));
-			chatBot.postMessage("> " + commitCommentEvent.getComment().getBody());
+			chatBot.postMessages(
+				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on commit [**{5}**]({6})",
+					commitCommentEvent.getRepository().getFullName(),
+					commitCommentEvent.getRepository().getHtmlUrl(),
+					commitCommentEvent.getSender().getLogin(),
+					commitCommentEvent.getSender().getHtmlUrl(),
+					commitCommentEvent.getComment().getHtmlUrl(),
+					commitCommentEvent.getComment().getCommitId().substring(0, 8),
+					commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()),
+				"> " + commitCommentEvent.getComment().getBody());
 		}
 		else {
-			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of commit [**{6}**]({7})",
-				commitCommentEvent.getRepository().getFullName(),
-				commitCommentEvent.getRepository().getHtmlUrl(),
-				commitCommentEvent.getSender().getLogin(),
-				commitCommentEvent.getSender().getHtmlUrl(),
-				commitCommentEvent.getComment().getPath(),
-				commitCommentEvent.getComment().getHtmlUrl(),
-				commitCommentEvent.getComment().getCommitId().substring(0, 8),
-				commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()));
-			chatBot.postMessage("> " + commitCommentEvent.getComment().getBody());
+			chatBot.postMessages(
+				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of commit [**{6}**]({7})",
+					commitCommentEvent.getRepository().getFullName(),
+					commitCommentEvent.getRepository().getHtmlUrl(),
+					commitCommentEvent.getSender().getLogin(),
+					commitCommentEvent.getSender().getHtmlUrl(),
+					commitCommentEvent.getComment().getPath(),
+					commitCommentEvent.getComment().getHtmlUrl(),
+					commitCommentEvent.getComment().getCommitId().substring(0, 8),
+					commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()),
+				"> " + commitCommentEvent.getComment().getBody());
 		}
     }
     
@@ -161,15 +163,16 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "opened":
-				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
-					issuesEvent.getRepository().getFullName(),
-					issuesEvent.getRepository().getHtmlUrl(),
-					issuesEvent.getSender().getLogin(),
-					issuesEvent.getSender().getHtmlUrl(),
-					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle(),
-					issuesEvent.getIssue().getHtmlUrl()));
-				chatBot.postMessage("> " + issuesEvent.getIssue().getBody());
+				chatBot.postMessages(
+					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
+						issuesEvent.getRepository().getFullName(),
+						issuesEvent.getRepository().getHtmlUrl(),
+						issuesEvent.getSender().getLogin(),
+						issuesEvent.getSender().getHtmlUrl(),
+						issuesEvent.getIssue().getNumber(),
+						issuesEvent.getIssue().getTitle(),
+						issuesEvent.getIssue().getHtmlUrl()),
+					"> " + issuesEvent.getIssue().getBody());
 				break;
 			case "closed":
 				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) closed issue [**#{4}: {5}**]({6})",
@@ -199,16 +202,17 @@ public class GithubHookController {
     public void issueComment(final @RequestBody IssueCommentEvent issueCommentEvent) {
 		switch (issueCommentEvent.getAction()) {
 			case "created":
-				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on issue [**#{5}: {6}**]({7})",
-					issueCommentEvent.getRepository().getFullName(),
-					issueCommentEvent.getRepository().getHtmlUrl(),
-					issueCommentEvent.getSender().getLogin(),
-					issueCommentEvent.getSender().getHtmlUrl(),
-					issueCommentEvent.getComment().getHtmlUrl(),
-					issueCommentEvent.getIssue().getNumber(),
-					issueCommentEvent.getIssue().getTitle(),
-					issueCommentEvent.getIssue().getHtmlUrl()));
-				chatBot.postMessage("> " + issueCommentEvent.getComment().getBody());
+				chatBot.postMessages(
+					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on issue [**#{5}: {6}**]({7})",
+						issueCommentEvent.getRepository().getFullName(),
+						issueCommentEvent.getRepository().getHtmlUrl(),
+						issueCommentEvent.getSender().getLogin(),
+						issueCommentEvent.getSender().getHtmlUrl(),
+						issueCommentEvent.getComment().getHtmlUrl(),
+						issueCommentEvent.getIssue().getNumber(),
+						issueCommentEvent.getIssue().getTitle(),
+						issueCommentEvent.getIssue().getHtmlUrl()),
+					"> " + issueCommentEvent.getComment().getBody());
 				break;
 		}
     }
@@ -219,16 +223,17 @@ public class GithubHookController {
         pushEvent.getCommits().forEach(commit -> {
 			String branch = pushEvent.getRef().replace("refs/heads/", "");
 			String committer = commit.getCommitter().getUsername();
-			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
-				pushEvent.getRepository().getFullName(), 
-				pushEvent.getRepository().getHtmlUrl(),
-				committer, 
-				"https://github.com/" + committer,
-				commit.getId().substring(0, 8), 
-				commit.getUrl(),
-				branch,
-				pushEvent.getRepository().getUrl() + "/tree/" + branch));
-			chatBot.postMessage("> " + commit.getMessage());
+			chatBot.postMessages(
+				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
+					pushEvent.getRepository().getFullName(), 
+					pushEvent.getRepository().getHtmlUrl(),
+					committer, 
+					"https://github.com/" + committer,
+					commit.getId().substring(0, 8), 
+					commit.getUrl(),
+					branch,
+					pushEvent.getRepository().getUrl() + "/tree/" + branch),
+				"> " + commit.getMessage());
 		});
     }
 	

@@ -3,11 +3,15 @@ package com.skiwi.githubhooksechatservice.chatbot;
 
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +43,8 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     
     private static final int MAX_MESSAGE_LENGTH = 500;
     
-    private final ExecutorService executorService;
+	private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private final BlockingQueue<List<String>> messagesQueue = new LinkedBlockingQueue<>();
     
     private final MechanizeAgent agent;
     
@@ -48,9 +53,8 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     private String chatFKey;
     
     public StackExchangeChatBot(final Configuration configuration) {
-        this.executorService = new ThrottlingThreadExecutor(
-            configuration.getChatThrottle(), configuration.getChatMaxBurst(), configuration.getChatMinimumDelay());
         this.configuration = configuration;
+		this.executorService.submit(this::drainMessagesQueue);
         
         this.agent = new MechanizeAgent();
         
@@ -88,9 +92,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     @Override
     public void start() {        
         loginOpenId();
-        
         loginRoot();
-        
         loginChat();
         
         String fkey = getFKey();
@@ -137,29 +139,28 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
         Form joinForm = joinFavoritesPage.forms().getAll().get(joinFavoritesPage.forms().getAll().size() - 1);
         return joinForm.get("fkey").getValue();
     }
-    
-    @Override
-    public void postMessage(final String text) {
-        Objects.requireNonNull(text, "text");
-        String textCopy = text;
-        final String continuation = "...";
-        while (textCopy.length() > MAX_MESSAGE_LENGTH) {
-        	final int firstPart = MAX_MESSAGE_LENGTH - continuation.length();
-            queueMessage(textCopy.substring(0, firstPart) + continuation);
-            textCopy = textCopy.substring(firstPart);
-        }
-        queueMessage(textCopy);
-    }
-    
-    private void queueMessage(final String text) {
-        Objects.requireNonNull(text, "text");
-        executorService.submit(() -> attemptPostMessageToChat(text));
-    }
-    
-    private void attemptPostMessageToChat(final String text) {
-		Objects.requireNonNull(text, "text");
+	
+	@Override
+	public void postMessages(final List<String> messages) {
+		Objects.requireNonNull(messages, "messages");
+		List<String> shortenedMessages = new ArrayList<>();
+		for (String message : messages) {
+			String messageCopy = message;
+			final String continuation = "...";
+			while (messageCopy.length() > MAX_MESSAGE_LENGTH) {
+				final int firstPart = MAX_MESSAGE_LENGTH - continuation.length();
+				shortenedMessages.add(messageCopy.substring(0, firstPart) + continuation);
+				messageCopy = messageCopy.substring(firstPart);
+			}
+			shortenedMessages.add(messageCopy);
+		}
+		messagesQueue.add(shortenedMessages);
+	} 
+	
+    private void attemptPostMessageToChat(final String message) {
+		Objects.requireNonNull(message, "message");
 		try {
-			postMessageToChat(text);
+			postMessageToChat(message);
 		} catch (ChatThrottleException ex) {
 			LOGGER.info("Sleeping for " + ex.getThrottleTiming() + " seconds, then reposting");
 			try {
@@ -168,7 +169,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 				Thread.currentThread().interrupt();
 			}
 			try {
-				postMessageToChat(text);
+				postMessageToChat(message);
 			} catch (ChatThrottleException | ProbablyNotLoggedInException ex1) {
 				LOGGER.log(Level.INFO, "Failed to post message on retry", ex1);
 			}
@@ -176,17 +177,17 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 			LOGGER.info("Not logged in, logging in and then reposting");
 			start();
 			try {
-				postMessageToChat(text);
+				postMessageToChat(message);
 			} catch (ChatThrottleException | ProbablyNotLoggedInException ex1) {
 				LOGGER.log(Level.INFO, "Failed to post message on retry", ex1);
 			}
 		}
 	}
     
-    private void postMessageToChat(final String text) throws ChatThrottleException, ProbablyNotLoggedInException {
-        Objects.requireNonNull(text, "text");
+    private void postMessageToChat(final String message) throws ChatThrottleException, ProbablyNotLoggedInException {
+        Objects.requireNonNull(message, "message");
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("text", text);
+        parameters.put("text", message);
         parameters.put("fkey", this.chatFKey);
         try {
 			Resource response = agent.post("http://chat.stackexchange.com/chats/" + configuration.getRoomId() + "/messages/new", parameters);
@@ -230,5 +231,48 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 	@Override
 	public void destroy() throws Exception {
 		this.stop();
+	}
+	
+	private void drainMessagesQueue() {
+		while (true) {
+			try {
+				postDrainedMessages(messagesQueue.take());
+			} catch (InterruptedException ex) {
+				List<List<String>> drainedMessages = new ArrayList<>();
+				messagesQueue.drainTo(drainedMessages);
+				drainedMessages.forEach(this::postDrainedMessages);
+				break;
+			}
+		}
+	}
+	
+	private long lastPostedTime = 0L;
+	private int currentBurst = 0;
+	
+	private void postDrainedMessages(final List<String> messages) {
+		Objects.requireNonNull(messages, "messages");
+		LOGGER.fine("Attempting to post " + messages);
+		if (currentBurst + messages.size() >= configuration.getChatMaxBurst() || System.currentTimeMillis() < lastPostedTime + configuration.getChatThrottle()) {
+			long sleepTime = lastPostedTime + configuration.getChatThrottle() - System.currentTimeMillis();
+			LOGGER.info("Sleeping for " + sleepTime + " milliseconds");
+			try {
+				TimeUnit.MILLISECONDS.sleep(sleepTime);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			currentBurst = 0;
+		}
+		else {
+			currentBurst += messages.size();
+		}
+		messages.forEach(message -> {
+			try {
+				TimeUnit.MILLISECONDS.sleep(configuration.getChatMinimumDelay());
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			attemptPostMessageToChat(message);
+		});
+		lastPostedTime = System.currentTimeMillis();
 	}
 }
