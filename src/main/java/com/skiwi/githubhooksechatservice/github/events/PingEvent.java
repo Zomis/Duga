@@ -1,13 +1,15 @@
 
 package com.skiwi.githubhooksechatservice.github.events;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public class PingEvent {
+public final class PingEvent {
     @JsonProperty
     private String zen;
     
@@ -28,4 +30,34 @@ public class PingEvent {
     public long getHookId() {
         return hookId;
     }
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 59 * hash + Objects.hashCode(this.zen);
+		hash = 59 * hash + Objects.hashCode(this.hook);
+		hash = 59 * hash + (int)(this.hookId ^ (this.hookId >>> 32));
+		return hash;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final PingEvent other = (PingEvent)obj;
+		if (!Objects.equals(this.zen, other.zen)) {
+			return false;
+		}
+		if (!Objects.equals(this.hook, other.hook)) {
+			return false;
+		}
+		if (this.hookId != other.hookId) {
+			return false;
+		}
+		return true;
+	}
 }

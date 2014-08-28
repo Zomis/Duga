@@ -1,13 +1,15 @@
 
 package com.skiwi.githubhooksechatservice.github.events;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public class LegacyRepository {
+public final class LegacyRepository {
     @JsonProperty
     private long id;
     
@@ -489,5 +491,299 @@ public class LegacyRepository {
 	
 	public String getOrganization() {
 		return organization;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 29 * hash + (int)(this.id ^ (this.id >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.name);
+		hash = 29 * hash + Objects.hashCode(this.fullName);
+		hash = 29 * hash + Objects.hashCode(this.owner);
+		hash = 29 * hash + (this.isPrivate ? 1 : 0);
+		hash = 29 * hash + Objects.hashCode(this.htmlUrl);
+		hash = 29 * hash + Objects.hashCode(this.description);
+		hash = 29 * hash + (this.fork ? 1 : 0);
+		hash = 29 * hash + Objects.hashCode(this.url);
+		hash = 29 * hash + Objects.hashCode(this.forksUrl);
+		hash = 29 * hash + Objects.hashCode(this.keysUrl);
+		hash = 29 * hash + Objects.hashCode(this.collaboratorsUrl);
+		hash = 29 * hash + Objects.hashCode(this.teamsUrl);
+		hash = 29 * hash + Objects.hashCode(this.hooksUrl);
+		hash = 29 * hash + Objects.hashCode(this.issueEventsUrl);
+		hash = 29 * hash + Objects.hashCode(this.eventsUrl);
+		hash = 29 * hash + Objects.hashCode(this.assigneesUrl);
+		hash = 29 * hash + Objects.hashCode(this.branchesUrl);
+		hash = 29 * hash + Objects.hashCode(this.tagsUrl);
+		hash = 29 * hash + Objects.hashCode(this.blobsUrl);
+		hash = 29 * hash + Objects.hashCode(this.gitTagsUrl);
+		hash = 29 * hash + Objects.hashCode(this.gitRefsUrl);
+		hash = 29 * hash + Objects.hashCode(this.treesUrl);
+		hash = 29 * hash + Objects.hashCode(this.statusesUrl);
+		hash = 29 * hash + Objects.hashCode(this.languagesUrl);
+		hash = 29 * hash + Objects.hashCode(this.stargazersUrl);
+		hash = 29 * hash + Objects.hashCode(this.contributorsUrl);
+		hash = 29 * hash + Objects.hashCode(this.subscribersUrl);
+		hash = 29 * hash + Objects.hashCode(this.subscriptionUrl);
+		hash = 29 * hash + Objects.hashCode(this.commitsUrl);
+		hash = 29 * hash + Objects.hashCode(this.gitCommitsUrl);
+		hash = 29 * hash + Objects.hashCode(this.commentsUrl);
+		hash = 29 * hash + Objects.hashCode(this.issueCommentUrl);
+		hash = 29 * hash + Objects.hashCode(this.contentsUrl);
+		hash = 29 * hash + Objects.hashCode(this.compareUrl);
+		hash = 29 * hash + Objects.hashCode(this.mergesUrl);
+		hash = 29 * hash + Objects.hashCode(this.archiveUrl);
+		hash = 29 * hash + Objects.hashCode(this.downloadsUrl);
+		hash = 29 * hash + Objects.hashCode(this.issuesUrl);
+		hash = 29 * hash + Objects.hashCode(this.pullsUrl);
+		hash = 29 * hash + Objects.hashCode(this.milestonesUrl);
+		hash = 29 * hash + Objects.hashCode(this.notificationsUrl);
+		hash = 29 * hash + Objects.hashCode(this.labelsUrl);
+		hash = 29 * hash + Objects.hashCode(this.releasesUrl);
+		hash = 29 * hash + (int)(this.createdAt ^ (this.createdAt >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.updatedAt);
+		hash = 29 * hash + (int)(this.pushedAt ^ (this.pushedAt >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.gitUrl);
+		hash = 29 * hash + Objects.hashCode(this.sshUrl);
+		hash = 29 * hash + Objects.hashCode(this.cloneUrl);
+		hash = 29 * hash + Objects.hashCode(this.svnUrl);
+		hash = 29 * hash + Objects.hashCode(this.homepage);
+		hash = 29 * hash + (int)(this.size ^ (this.size >>> 32));
+		hash = 29 * hash + (int)(this.stargazersCount ^ (this.stargazersCount >>> 32));
+		hash = 29 * hash + (int)(this.watchersCount ^ (this.watchersCount >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.language);
+		hash = 29 * hash + (this.hasIssues ? 1 : 0);
+		hash = 29 * hash + (this.hasDownloads ? 1 : 0);
+		hash = 29 * hash + (this.hasWiki ? 1 : 0);
+		hash = 29 * hash + (int)(this.forksCount ^ (this.forksCount >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.mirrorUrl);
+		hash = 29 * hash + (int)(this.openIssuesCount ^ (this.openIssuesCount >>> 32));
+		hash = 29 * hash + (int)(this.forks ^ (this.forks >>> 32));
+		hash = 29 * hash + (int)(this.openIssues ^ (this.openIssues >>> 32));
+		hash = 29 * hash + (int)(this.watchers ^ (this.watchers >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.defaultBranch);
+		hash = 29 * hash + (int)(this.stargazers ^ (this.stargazers >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.masterBranch);
+		hash = 29 * hash + Objects.hashCode(this.organization);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final LegacyRepository other = (LegacyRepository)obj;
+		if (this.id != other.id) {
+			return false;
+		}
+		if (!Objects.equals(this.name, other.name)) {
+			return false;
+		}
+		if (!Objects.equals(this.fullName, other.fullName)) {
+			return false;
+		}
+		if (!Objects.equals(this.owner, other.owner)) {
+			return false;
+		}
+		if (this.isPrivate != other.isPrivate) {
+			return false;
+		}
+		if (!Objects.equals(this.htmlUrl, other.htmlUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.description, other.description)) {
+			return false;
+		}
+		if (this.fork != other.fork) {
+			return false;
+		}
+		if (!Objects.equals(this.url, other.url)) {
+			return false;
+		}
+		if (!Objects.equals(this.forksUrl, other.forksUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.keysUrl, other.keysUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.collaboratorsUrl, other.collaboratorsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.teamsUrl, other.teamsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.hooksUrl, other.hooksUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.issueEventsUrl, other.issueEventsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.eventsUrl, other.eventsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.assigneesUrl, other.assigneesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.branchesUrl, other.branchesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.tagsUrl, other.tagsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.blobsUrl, other.blobsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.gitTagsUrl, other.gitTagsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.gitRefsUrl, other.gitRefsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.treesUrl, other.treesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.statusesUrl, other.statusesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.languagesUrl, other.languagesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.stargazersUrl, other.stargazersUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.contributorsUrl, other.contributorsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.subscribersUrl, other.subscribersUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.subscriptionUrl, other.subscriptionUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.commitsUrl, other.commitsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.gitCommitsUrl, other.gitCommitsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.commentsUrl, other.commentsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.issueCommentUrl, other.issueCommentUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.contentsUrl, other.contentsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.compareUrl, other.compareUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.mergesUrl, other.mergesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.archiveUrl, other.archiveUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.downloadsUrl, other.downloadsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.issuesUrl, other.issuesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.pullsUrl, other.pullsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.milestonesUrl, other.milestonesUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.notificationsUrl, other.notificationsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.labelsUrl, other.labelsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.releasesUrl, other.releasesUrl)) {
+			return false;
+		}
+		if (this.createdAt != other.createdAt) {
+			return false;
+		}
+		if (!Objects.equals(this.updatedAt, other.updatedAt)) {
+			return false;
+		}
+		if (this.pushedAt != other.pushedAt) {
+			return false;
+		}
+		if (!Objects.equals(this.gitUrl, other.gitUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.sshUrl, other.sshUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.cloneUrl, other.cloneUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.svnUrl, other.svnUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.homepage, other.homepage)) {
+			return false;
+		}
+		if (this.size != other.size) {
+			return false;
+		}
+		if (this.stargazersCount != other.stargazersCount) {
+			return false;
+		}
+		if (this.watchersCount != other.watchersCount) {
+			return false;
+		}
+		if (!Objects.equals(this.language, other.language)) {
+			return false;
+		}
+		if (this.hasIssues != other.hasIssues) {
+			return false;
+		}
+		if (this.hasDownloads != other.hasDownloads) {
+			return false;
+		}
+		if (this.hasWiki != other.hasWiki) {
+			return false;
+		}
+		if (this.forksCount != other.forksCount) {
+			return false;
+		}
+		if (!Objects.equals(this.mirrorUrl, other.mirrorUrl)) {
+			return false;
+		}
+		if (this.openIssuesCount != other.openIssuesCount) {
+			return false;
+		}
+		if (this.forks != other.forks) {
+			return false;
+		}
+		if (this.openIssues != other.openIssues) {
+			return false;
+		}
+		if (this.watchers != other.watchers) {
+			return false;
+		}
+		if (!Objects.equals(this.defaultBranch, other.defaultBranch)) {
+			return false;
+		}
+		if (this.stargazers != other.stargazers) {
+			return false;
+		}
+		if (!Objects.equals(this.masterBranch, other.masterBranch)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
+			return false;
+		}
+		return true;
 	}
 }

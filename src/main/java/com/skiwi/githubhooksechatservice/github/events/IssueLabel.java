@@ -1,13 +1,15 @@
 
 package com.skiwi.githubhooksechatservice.github.events;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public class IssueLabel {
+public final class IssueLabel {
 	@JsonProperty
 	private String url;
 	
@@ -27,5 +29,35 @@ public class IssueLabel {
 
 	public String getColor() {
 		return color;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 37 * hash + Objects.hashCode(this.url);
+		hash = 37 * hash + Objects.hashCode(this.name);
+		hash = 37 * hash + Objects.hashCode(this.color);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final IssueLabel other = (IssueLabel)obj;
+		if (!Objects.equals(this.url, other.url)) {
+			return false;
+		}
+		if (!Objects.equals(this.name, other.name)) {
+			return false;
+		}
+		if (!Objects.equals(this.color, other.color)) {
+			return false;
+		}
+		return true;
 	}
 }

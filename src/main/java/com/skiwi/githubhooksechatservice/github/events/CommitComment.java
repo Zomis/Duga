@@ -1,13 +1,15 @@
 
 package com.skiwi.githubhooksechatservice.github.events;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public class CommitComment {
+public final class CommitComment {
 	@JsonProperty
 	private String url;
 	
@@ -84,4 +86,68 @@ public class CommitComment {
 	public String getBody() {
 		return body;
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 59 * hash + Objects.hashCode(this.url);
+		hash = 59 * hash + Objects.hashCode(this.htmlUrl);
+		hash = 59 * hash + (int)(this.id ^ (this.id >>> 32));
+		hash = 59 * hash + Objects.hashCode(this.user);
+		hash = 59 * hash + Objects.hashCode(this.position);
+		hash = 59 * hash + Objects.hashCode(this.line);
+		hash = 59 * hash + Objects.hashCode(this.path);
+		hash = 59 * hash + Objects.hashCode(this.commitId);
+		hash = 59 * hash + Objects.hashCode(this.createdAt);
+		hash = 59 * hash + Objects.hashCode(this.updatedAt);
+		hash = 59 * hash + Objects.hashCode(this.body);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final CommitComment other = (CommitComment)obj;
+		if (!Objects.equals(this.url, other.url)) {
+			return false;
+		}
+		if (!Objects.equals(this.htmlUrl, other.htmlUrl)) {
+			return false;
+		}
+		if (this.id != other.id) {
+			return false;
+		}
+		if (!Objects.equals(this.user, other.user)) {
+			return false;
+		}
+		if (!Objects.equals(this.position, other.position)) {
+			return false;
+		}
+		if (!Objects.equals(this.line, other.line)) {
+			return false;
+		}
+		if (!Objects.equals(this.path, other.path)) {
+			return false;
+		}
+		if (!Objects.equals(this.commitId, other.commitId)) {
+			return false;
+		}
+		if (!Objects.equals(this.createdAt, other.createdAt)) {
+			return false;
+		}
+		if (!Objects.equals(this.updatedAt, other.updatedAt)) {
+			return false;
+		}
+		if (!Objects.equals(this.body, other.body)) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 }

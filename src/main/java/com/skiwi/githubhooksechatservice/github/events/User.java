@@ -1,13 +1,15 @@
 
 package com.skiwi.githubhooksechatservice.github.events;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public class User {
+public final class User {
 	@JsonProperty
 	private String login;
 	
@@ -125,5 +127,91 @@ public class User {
 
 	public boolean isSiteAdmin() {
 		return siteAdmin;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 29 * hash + Objects.hashCode(this.login);
+		hash = 29 * hash + (int)(this.id ^ (this.id >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.avatarUrl);
+		hash = 29 * hash + Objects.hashCode(this.gravatarId);
+		hash = 29 * hash + Objects.hashCode(this.url);
+		hash = 29 * hash + Objects.hashCode(this.htmlUrl);
+		hash = 29 * hash + Objects.hashCode(this.followersUrl);
+		hash = 29 * hash + Objects.hashCode(this.followingUrl);
+		hash = 29 * hash + Objects.hashCode(this.gistsUrl);
+		hash = 29 * hash + Objects.hashCode(this.starredUrl);
+		hash = 29 * hash + Objects.hashCode(this.subscriptionsUrl);
+		hash = 29 * hash + Objects.hashCode(this.organizationsUrl);
+		hash = 29 * hash + Objects.hashCode(this.reposUrl);
+		hash = 29 * hash + Objects.hashCode(this.eventsUrl);
+		hash = 29 * hash + Objects.hashCode(this.receivedEventsUrl);
+		hash = 29 * hash + Objects.hashCode(this.type);
+		hash = 29 * hash + (this.siteAdmin ? 1 : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final User other = (User)obj;
+		if (!Objects.equals(this.login, other.login)) {
+			return false;
+		}
+		if (this.id != other.id) {
+			return false;
+		}
+		if (!Objects.equals(this.avatarUrl, other.avatarUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.gravatarId, other.gravatarId)) {
+			return false;
+		}
+		if (!Objects.equals(this.url, other.url)) {
+			return false;
+		}
+		if (!Objects.equals(this.htmlUrl, other.htmlUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.followersUrl, other.followersUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.followingUrl, other.followingUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.gistsUrl, other.gistsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.starredUrl, other.starredUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.subscriptionsUrl, other.subscriptionsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.organizationsUrl, other.organizationsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.reposUrl, other.reposUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.eventsUrl, other.eventsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.receivedEventsUrl, other.receivedEventsUrl)) {
+			return false;
+		}
+		if (!Objects.equals(this.type, other.type)) {
+			return false;
+		}
+		if (this.siteAdmin != other.siteAdmin) {
+			return false;
+		}
+		return true;
 	}
 }
