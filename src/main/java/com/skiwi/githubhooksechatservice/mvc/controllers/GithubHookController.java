@@ -172,16 +172,28 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "opened":
-				chatBot.postMessages(
-					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
-						issuesEvent.getRepository().getFullName(),
-						issuesEvent.getRepository().getHtmlUrl(),
-						issuesEvent.getSender().getLogin(),
-						issuesEvent.getSender().getHtmlUrl(),
-						issuesEvent.getIssue().getNumber(),
-						issuesEvent.getIssue().getTitle(),
-						issuesEvent.getIssue().getHtmlUrl()),
-					"> " + issuesEvent.getIssue().getBody());
+				if (issuesEvent.getIssue().getBody().isEmpty()) {
+					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
+							issuesEvent.getRepository().getFullName(),
+							issuesEvent.getRepository().getHtmlUrl(),
+							issuesEvent.getSender().getLogin(),
+							issuesEvent.getSender().getHtmlUrl(),
+							issuesEvent.getIssue().getNumber(),
+							issuesEvent.getIssue().getTitle(),
+							issuesEvent.getIssue().getHtmlUrl()));
+				}
+				else{
+					chatBot.postMessages(
+						MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
+							issuesEvent.getRepository().getFullName(),
+							issuesEvent.getRepository().getHtmlUrl(),
+							issuesEvent.getSender().getLogin(),
+							issuesEvent.getSender().getHtmlUrl(),
+							issuesEvent.getIssue().getNumber(),
+							issuesEvent.getIssue().getTitle(),
+							issuesEvent.getIssue().getHtmlUrl()),
+						"> " + issuesEvent.getIssue().getBody());
+				}
 				break;
 			case "closed":
 				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) closed issue [**#{4}: {5}**]({6})",
