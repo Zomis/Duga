@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
+import com.skiwi.githubhooksechatservice.github.events.Commit;
 import com.skiwi.githubhooksechatservice.github.events.CommitCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
@@ -31,6 +31,7 @@ import com.skiwi.githubhooksechatservice.github.events.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.LegacyCommit;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
+import com.skiwi.githubhooksechatservice.github.events.PullRequestEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
 
@@ -221,6 +222,151 @@ public class GithubHookController {
 						issueCommentEvent.getIssue().getTitle(),
 						issueCommentEvent.getIssue().getHtmlUrl()),
 					"> " + issueCommentEvent.getComment().getBody());
+				break;
+		}
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request")
+    @ResponseBody
+    public void pullRequest(final @RequestBody PullRequestEvent pullRequestEvent) {
+		Commit head = pullRequestEvent.getPullRequest().getHead();
+		Commit base = pullRequestEvent.getPullRequest().getBase();
+		String headText;
+		String baseText;
+		if (head.getRepo().equals(base.getRepo())) {
+			headText = head.getRef();
+			baseText = base.getRef();
+		}
+		else {
+			headText = head.getRepo().getFullName() + "/" + head.getRef();
+			baseText = base.getRepo().getFullName() + "/" + base.getRef();
+		}
+		switch (pullRequestEvent.getAction()) {
+			case "assigned":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) assigned [**{4}**]({5}) to pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getAssignee().getLogin(),
+					pullRequestEvent.getAssignee().getHtmlUrl(),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getHtmlUrl()));
+				break;
+			case "unassigned":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) unassigned [**{4}**]({5}) from pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getAssignee().getLogin(),
+					pullRequestEvent.getAssignee().getHtmlUrl(),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getHtmlUrl()));
+				break;
+			case "labeled":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added label [**{4}**]({5}) to pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getLabel().getName(),
+					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getHtmlUrl()));
+				break;
+			case "unlabeled":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) removed label [**{4}**]({5}) from pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getLabel().getName(),
+					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getHtmlUrl()));
+				break;
+			case "opened":
+				if (pullRequestEvent.getPullRequest().getBody().isEmpty()) {
+					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created pull request [**#{4}: {5}**]({6}) to merge [**{7}**]({8}) into [**{9}**]({10})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getHtmlUrl(),
+							headText,
+							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
+							baseText,
+							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef()));
+				}
+				else {
+					chatBot.postMessages(
+						MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created pull request [**#{4}: {5}**]({6}) to merge [**{7}**]({8}) into [**{9}**]({10})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getHtmlUrl(),
+							headText,
+							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
+							baseText,
+							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef()),
+						"> " + pullRequestEvent.getPullRequest().getBody());
+				}
+				break;
+			case "closed":
+				if (pullRequestEvent.getPullRequest().isMerged()) {
+					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) merged pull request [**#{4}: {5}**]({6}) from [**{7}**]({8}) into [**{9}**]({10})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getHtmlUrl(),
+							headText,
+							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
+							baseText,
+							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef()));
+				}
+				else {
+					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) rejected pull request [**#{4}: {5}**]({6})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getHtmlUrl()));
+				}
+				break;
+			case "reopened":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) reopened pull request [**#{4}: {5}**]({6})",
+						pullRequestEvent.getRepository().getFullName(),
+						pullRequestEvent.getRepository().getHtmlUrl(),
+						pullRequestEvent.getSender().getLogin(),
+						pullRequestEvent.getSender().getHtmlUrl(),
+						pullRequestEvent.getPullRequest().getNumber(),
+						pullRequestEvent.getPullRequest().getTitle(),
+						pullRequestEvent.getPullRequest().getHtmlUrl()));
+				break;
+			case "synchronized":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) synchronized pull request [**#{4}: {5}**]({6})",
+						pullRequestEvent.getRepository().getFullName(),
+						pullRequestEvent.getRepository().getHtmlUrl(),
+						pullRequestEvent.getSender().getLogin(),
+						pullRequestEvent.getSender().getHtmlUrl(),
+						pullRequestEvent.getPullRequest().getNumber(),
+						pullRequestEvent.getPullRequest().getTitle(),
+						pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 		}
     }

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public final class IssueLabel {
+public final class Label {
 	@JsonProperty
 	private String url;
 	
@@ -48,7 +48,7 @@ public final class IssueLabel {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final IssueLabel other = (IssueLabel)obj;
+		final Label other = (Label)obj;
 		if (!Objects.equals(this.url, other.url)) {
 			return false;
 		}

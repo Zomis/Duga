@@ -40,7 +40,7 @@ public final class Issue {
 	private User user;
 	
 	@JsonProperty
-	private IssueLabel[] labels;
+	private Label[] labels;
 	
 	@JsonProperty
 	private String state;
@@ -105,7 +105,7 @@ public final class Issue {
 		return user;
 	}
 
-	public List<IssueLabel> getLabels() {
+	public List<Label> getLabels() {
 		return Arrays.asList(labels);
 	}
 

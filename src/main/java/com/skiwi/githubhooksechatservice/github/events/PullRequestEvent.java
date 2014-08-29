@@ -9,12 +9,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public final class IssuesEvent {
+public final class PullRequestEvent {
 	@JsonProperty
 	private String action;
 	
 	@JsonProperty
-	private Issue issue;
+	private long number;
+	
+	@JsonProperty("pull_request")
+	private PullRequest pullRequest;
 	
 	@JsonProperty(required = false)
 	private User assignee;
@@ -32,8 +35,12 @@ public final class IssuesEvent {
 		return action;
 	}
 
-	public Issue getIssue() {
-		return issue;
+	public long getNumber() {
+		return number;
+	}
+
+	public PullRequest getPullRequest() {
+		return pullRequest;
 	}
 	
 	public User getAssignee() {
@@ -54,13 +61,14 @@ public final class IssuesEvent {
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 71 * hash + Objects.hashCode(this.action);
-		hash = 71 * hash + Objects.hashCode(this.issue);
-		hash = 71 * hash + Objects.hashCode(this.assignee);
-		hash = 71 * hash + Objects.hashCode(this.label);
-		hash = 71 * hash + Objects.hashCode(this.repository);
-		hash = 71 * hash + Objects.hashCode(this.sender);
+		int hash = 3;
+		hash = 37 * hash + Objects.hashCode(this.action);
+		hash = 37 * hash + (int)(this.number ^ (this.number >>> 32));
+		hash = 37 * hash + Objects.hashCode(this.pullRequest);
+		hash = 37 * hash + Objects.hashCode(this.assignee);
+		hash = 37 * hash + Objects.hashCode(this.label);
+		hash = 37 * hash + Objects.hashCode(this.repository);
+		hash = 37 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
 
@@ -72,11 +80,14 @@ public final class IssuesEvent {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final IssuesEvent other = (IssuesEvent)obj;
+		final PullRequestEvent other = (PullRequestEvent)obj;
 		if (!Objects.equals(this.action, other.action)) {
 			return false;
 		}
-		if (!Objects.equals(this.issue, other.issue)) {
+		if (this.number != other.number) {
+			return false;
+		}
+		if (!Objects.equals(this.pullRequest, other.pullRequest)) {
 			return false;
 		}
 		if (!Objects.equals(this.assignee, other.assignee)) {
