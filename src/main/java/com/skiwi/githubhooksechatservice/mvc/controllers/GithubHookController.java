@@ -370,7 +370,7 @@ public class GithubHookController {
 						pullRequestEvent.getPullRequest().getTitle(),
 						pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
-			case "synchronized":
+			case "synchronize":
 				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) synchronized pull request [**#{4}: {5}**]({6})",
 						pullRequestEvent.getRepository().getFullName(),
 						pullRequestEvent.getRepository().getHtmlUrl(),
