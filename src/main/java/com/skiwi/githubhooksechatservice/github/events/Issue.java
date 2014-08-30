@@ -66,6 +66,9 @@ public final class Issue {
 	@JsonProperty("closed_at")
 	private String closedAt;
 	
+	@JsonProperty("pull_request")
+	private SimplePullRequest pullRequest;
+	
 	@JsonProperty
 	private String body;
 
@@ -140,6 +143,10 @@ public final class Issue {
 	public String getClosedAt() {
 		return closedAt;
 	}
+	
+	public SimplePullRequest getPullRequest() {
+		return pullRequest;
+	}
 
 	public String getBody() {
 		return body;
@@ -166,6 +173,7 @@ public final class Issue {
 		hash = 29 * hash + Objects.hashCode(this.createdAt);
 		hash = 29 * hash + Objects.hashCode(this.updatedAt);
 		hash = 29 * hash + Objects.hashCode(this.closedAt);
+		hash = 29 * hash + Objects.hashCode(this.pullRequest);
 		hash = 29 * hash + Objects.hashCode(this.body);
 		return hash;
 	}
@@ -231,6 +239,9 @@ public final class Issue {
 			return false;
 		}
 		if (!Objects.equals(this.closedAt, other.closedAt)) {
+			return false;
+		}
+		if (!Objects.equals(this.pullRequest, other.pullRequest)) {
 			return false;
 		}
 		if (!Objects.equals(this.body, other.body)) {

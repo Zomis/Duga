@@ -32,6 +32,7 @@ import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.LegacyCommit;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PullRequestEvent;
+import com.skiwi.githubhooksechatservice.github.events.PullRequestReviewCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
 
@@ -223,13 +224,15 @@ public class GithubHookController {
     public void issueComment(final @RequestBody IssueCommentEvent issueCommentEvent) {
 		switch (issueCommentEvent.getAction()) {
 			case "created":
+				String commentTarget = (issueCommentEvent.getIssue().getPullRequest() == null) ? "issue" : "pull request";
 				chatBot.postMessages(
-					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on issue [**#{5}: {6}**]({7})",
+					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on {5} [**#{6}: {7}**]({8})",
 						issueCommentEvent.getRepository().getFullName(),
 						issueCommentEvent.getRepository().getHtmlUrl(),
 						issueCommentEvent.getSender().getLogin(),
 						issueCommentEvent.getSender().getHtmlUrl(),
 						issueCommentEvent.getComment().getHtmlUrl(),
+						commentTarget,
 						issueCommentEvent.getIssue().getNumber(),
 						issueCommentEvent.getIssue().getTitle(),
 						issueCommentEvent.getIssue().getHtmlUrl()),
@@ -380,6 +383,25 @@ public class GithubHookController {
 						pullRequestEvent.getPullRequest().getTitle(),
 						pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
+		}
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request_review_comment")
+    @ResponseBody
+    public void pullRequestReviewComment(final @RequestBody PullRequestReviewCommentEvent pullRequestReviewCommentEvent) {
+		if (pullRequestReviewCommentEvent.getAction().equals("created")) {
+			chatBot.postMessages(
+				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of pull request [**#{6}: {7}**]({8})",
+					pullRequestReviewCommentEvent.getRepository().getFullName(),
+					pullRequestReviewCommentEvent.getRepository().getHtmlUrl(),
+					pullRequestReviewCommentEvent.getSender().getLogin(),
+					pullRequestReviewCommentEvent.getSender().getHtmlUrl(),
+					pullRequestReviewCommentEvent.getComment().getPath(),
+					pullRequestReviewCommentEvent.getComment().getHtmlUrl(),
+					pullRequestReviewCommentEvent.getPullRequest().getNumber(),
+					pullRequestReviewCommentEvent.getPullRequest().getTitle(),
+					pullRequestReviewCommentEvent.getPullRequest().getHtmlUrl()),
+				"> " + pullRequestReviewCommentEvent.getComment().getBody());
 		}
     }
 	
