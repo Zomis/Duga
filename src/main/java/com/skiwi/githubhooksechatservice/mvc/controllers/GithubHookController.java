@@ -27,6 +27,7 @@ import com.skiwi.githubhooksechatservice.github.events.Commit;
 import com.skiwi.githubhooksechatservice.github.events.CommitCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
+import com.skiwi.githubhooksechatservice.github.events.ForkEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.LegacyCommit;
@@ -118,6 +119,18 @@ public class GithubHookController {
 			deleteEvent.getSender().getHtmlUrl(),
 			deleteEvent.getRefType(),
 			deleteEvent.getRef()));
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=fork")
+    @ResponseBody
+    public void fork(final @RequestBody ForkEvent forkEvent) {
+		chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) forked us into [**{4}**]({5})",
+			forkEvent.getRepository().getFullName(),
+			forkEvent.getRepository().getHtmlUrl(),
+			forkEvent.getSender().getLogin(),
+			forkEvent.getSender().getHtmlUrl(),
+			forkEvent.getForkee().getFullName(),
+			forkEvent.getForkee().getHtmlUrl()));
     }
 	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=issues")

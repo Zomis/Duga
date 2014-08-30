@@ -208,6 +208,9 @@ public final class Repository {
     @JsonProperty("default_branch")
     private String defaultBranch;
 	
+	@JsonProperty(value = "public", required = false)
+	private Boolean isPublic;
+	
 	@JsonProperty(required = false)
 	private String organization;
 
@@ -475,6 +478,10 @@ public final class Repository {
         return defaultBranch;
     }
 	
+	public Boolean isPublic() {
+		return isPublic;
+	}
+	
 	public String getOrganization() {
 		return organization;
 	}
@@ -548,6 +555,7 @@ public final class Repository {
 		hash = 53 * hash + (int)(this.openIssues ^ (this.openIssues >>> 32));
 		hash = 53 * hash + (int)(this.watchers ^ (this.watchers >>> 32));
 		hash = 53 * hash + Objects.hashCode(this.defaultBranch);
+		hash = 53 * hash + Objects.hashCode(this.isPublic);
 		hash = 53 * hash + Objects.hashCode(this.organization);
 		return hash;
 	}
@@ -759,11 +767,12 @@ public final class Repository {
 		if (!Objects.equals(this.defaultBranch, other.defaultBranch)) {
 			return false;
 		}
+		if (!Objects.equals(this.isPublic, other.isPublic)) {
+			return false;
+		}
 		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		return true;
 	}
-	
-	
 }
