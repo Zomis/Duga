@@ -28,6 +28,7 @@ import com.skiwi.githubhooksechatservice.github.events.CommitCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.CreateEvent;
 import com.skiwi.githubhooksechatservice.github.events.DeleteEvent;
 import com.skiwi.githubhooksechatservice.github.events.ForkEvent;
+import com.skiwi.githubhooksechatservice.github.events.GollumEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.LegacyCommit;
@@ -36,6 +37,7 @@ import com.skiwi.githubhooksechatservice.github.events.PullRequestEvent;
 import com.skiwi.githubhooksechatservice.github.events.PullRequestReviewCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
+import com.skiwi.githubhooksechatservice.github.events.WikiPage;
 
 /**
  *
@@ -131,6 +133,21 @@ public class GithubHookController {
 			forkEvent.getSender().getHtmlUrl(),
 			forkEvent.getForkee().getFullName(),
 			forkEvent.getForkee().getHtmlUrl()));
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=gollum")
+    @ResponseBody
+    public void gollum(final @RequestBody GollumEvent gollumEvent) {
+		gollumEvent.getPages().forEach(wikiPage -> {
+			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) {4} wiki page [**{5}**]({6})",
+				gollumEvent.getRepository().getFullName(),
+				gollumEvent.getRepository().getHtmlUrl(),
+				gollumEvent.getSender().getLogin(),
+				gollumEvent.getSender().getHtmlUrl(),
+				wikiPage.getAction(),
+				wikiPage.getTitle(),
+				wikiPage.getHtmlUrl()));
+		});
     }
 	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=issues")
