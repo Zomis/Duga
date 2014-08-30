@@ -32,6 +32,7 @@ import com.skiwi.githubhooksechatservice.github.events.GollumEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.IssuesEvent;
 import com.skiwi.githubhooksechatservice.github.events.LegacyCommit;
+import com.skiwi.githubhooksechatservice.github.events.MemberEvent;
 import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PullRequestEvent;
 import com.skiwi.githubhooksechatservice.github.events.PullRequestReviewCommentEvent;
@@ -269,6 +270,19 @@ public class GithubHookController {
 					"> " + issueCommentEvent.getComment().getBody());
 				break;
 		}
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=member")
+    @ResponseBody
+    public void member(final @RequestBody MemberEvent memberEvent) {
+		chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) {4} [**{5}**]({6})",
+			memberEvent.getRepository().getFullName(),
+			memberEvent.getRepository().getHtmlUrl(),
+			memberEvent.getSender().getLogin(),
+			memberEvent.getSender().getHtmlUrl(),
+			memberEvent.getAction(),
+			memberEvent.getMember().getLogin(),
+			memberEvent.getSender().getHtmlUrl()));
     }
 	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request")
