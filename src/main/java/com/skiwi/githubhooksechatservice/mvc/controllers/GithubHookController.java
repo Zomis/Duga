@@ -448,32 +448,56 @@ public class GithubHookController {
 					}
 
 					String branch = pushEvent.getRef().replace("refs/heads/", "");
-					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed {4} {5} to [**{6}**]({7})",
-						pushEvent.getRepository().getFullName(), 
-						pushEvent.getRepository().getHtmlUrl(),
-						committer.getUsername(), 
-						"https://github.com/" + committer.getUsername(),
-						commitText,
-						commitIds,
-						branch,
-						pushEvent.getRepository().getUrl() + "/tree/" + branch));
+					if (committer.getUsername() == null) {
+						chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] *Unrecognized author* pushed {2} {3} to [**{4}**]({5})",
+							pushEvent.getRepository().getFullName(), 
+							pushEvent.getRepository().getHtmlUrl(),
+							commitText,
+							commitIds,
+							branch,
+							pushEvent.getRepository().getUrl() + "/tree/" + branch));
+					}
+					else {
+						chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed {4} {5} to [**{6}**]({7})",
+							pushEvent.getRepository().getFullName(), 
+							pushEvent.getRepository().getHtmlUrl(),
+							committer.getUsername(), 
+							"https://github.com/" + committer.getUsername(),
+							commitText,
+							commitIds,
+							branch,
+							pushEvent.getRepository().getUrl() + "/tree/" + branch));
+					}
 				});
 			});
 		
         distinctCommits.forEach(commit -> {
 			String branch = pushEvent.getRef().replace("refs/heads/", "");
 			String committer = commit.getCommitter().getUsername();
-			chatBot.postMessages(
-				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
-					pushEvent.getRepository().getFullName(), 
-					pushEvent.getRepository().getHtmlUrl(),
-					committer, 
-					"https://github.com/" + committer,
-					commit.getId().substring(0, 8), 
-					commit.getUrl(),
-					branch,
-					pushEvent.getRepository().getUrl() + "/tree/" + branch),
-				"> " + commit.getMessage());
+			if (committer == null) {
+				chatBot.postMessages(
+					MessageFormat.format("\\[[**{0}**]({1})\\] *Unrecognized author* pushed commit [**{2}**]({3}) to [**{4}**]({5})",
+						pushEvent.getRepository().getFullName(), 
+						pushEvent.getRepository().getHtmlUrl(),
+						commit.getId().substring(0, 8), 
+						commit.getUrl(),
+						branch,
+						pushEvent.getRepository().getUrl() + "/tree/" + branch),
+					"> " + commit.getMessage());
+			}
+			else {
+				chatBot.postMessages(
+					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
+						pushEvent.getRepository().getFullName(), 
+						pushEvent.getRepository().getHtmlUrl(),
+						committer, 
+						"https://github.com/" + committer,
+						commit.getId().substring(0, 8), 
+						commit.getUrl(),
+						branch,
+						pushEvent.getRepository().getUrl() + "/tree/" + branch),
+					"> " + commit.getMessage());
+			}
 		});
     }
 	
