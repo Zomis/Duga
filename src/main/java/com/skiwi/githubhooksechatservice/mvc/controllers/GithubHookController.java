@@ -402,19 +402,21 @@ public class GithubHookController {
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request_review_comment")
     @ResponseBody
     public void pullRequestReviewComment(final @RequestBody PullRequestReviewCommentEvent pullRequestReviewCommentEvent) {
-		if (pullRequestReviewCommentEvent.getAction().equals("created")) {
-			chatBot.postMessages(
-				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of pull request [**#{6}: {7}**]({8})",
-					pullRequestReviewCommentEvent.getRepository().getFullName(),
-					pullRequestReviewCommentEvent.getRepository().getHtmlUrl(),
-					pullRequestReviewCommentEvent.getSender().getLogin(),
-					pullRequestReviewCommentEvent.getSender().getHtmlUrl(),
-					pullRequestReviewCommentEvent.getComment().getPath(),
-					pullRequestReviewCommentEvent.getComment().getHtmlUrl(),
-					pullRequestReviewCommentEvent.getPullRequest().getNumber(),
-					pullRequestReviewCommentEvent.getPullRequest().getTitle(),
-					pullRequestReviewCommentEvent.getPullRequest().getHtmlUrl()),
-				"> " + pullRequestReviewCommentEvent.getComment().getBody());
+		switch (pullRequestReviewCommentEvent.getAction()) {
+			case "created":
+				chatBot.postMessages(
+					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of pull request [**#{6}: {7}**]({8})",
+						pullRequestReviewCommentEvent.getRepository().getFullName(),
+						pullRequestReviewCommentEvent.getRepository().getHtmlUrl(),
+						pullRequestReviewCommentEvent.getSender().getLogin(),
+						pullRequestReviewCommentEvent.getSender().getHtmlUrl(),
+						pullRequestReviewCommentEvent.getComment().getPath(),
+						pullRequestReviewCommentEvent.getComment().getHtmlUrl(),
+						pullRequestReviewCommentEvent.getPullRequest().getNumber(),
+						pullRequestReviewCommentEvent.getPullRequest().getTitle(),
+						pullRequestReviewCommentEvent.getPullRequest().getHtmlUrl()),
+					"> " + pullRequestReviewCommentEvent.getComment().getBody());
+					break;
 		}
     }
 	
