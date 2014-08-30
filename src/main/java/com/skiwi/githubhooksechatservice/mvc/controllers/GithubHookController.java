@@ -37,6 +37,7 @@ import com.skiwi.githubhooksechatservice.github.events.PingEvent;
 import com.skiwi.githubhooksechatservice.github.events.PullRequestEvent;
 import com.skiwi.githubhooksechatservice.github.events.PullRequestReviewCommentEvent;
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
+import com.skiwi.githubhooksechatservice.github.events.TeamAddEvent;
 import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
 import com.skiwi.githubhooksechatservice.github.events.WikiPage;
 
@@ -543,6 +544,31 @@ public class GithubHookController {
 					watchEvent.getSender().getLogin(),
 					watchEvent.getSender().getHtmlUrl()));
 				break;
+		}
+    }
+	
+    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=team_add")
+    @ResponseBody
+    public void teamAdd(final @RequestBody TeamAddEvent teamAddEvent) {
+		if (teamAddEvent.getUser() == null) {
+			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added us to team [**{4}**]({5})",
+				teamAddEvent.getRepository().getFullName(),
+				teamAddEvent.getRepository().getHtmlUrl(),
+				teamAddEvent.getSender().getLogin(),
+				teamAddEvent.getSender().getHtmlUrl(),
+				teamAddEvent.getTeam().getName(),
+				teamAddEvent.getSender().getHtmlUrl() + "/" + teamAddEvent.getTeam().getName()));
+		}
+		else {
+			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added [**{4}**]({5}) to team [**{6}**]({7})",
+				teamAddEvent.getRepository().getFullName(),
+				teamAddEvent.getRepository().getHtmlUrl(),
+				teamAddEvent.getSender().getLogin(),
+				teamAddEvent.getSender().getHtmlUrl(),
+				teamAddEvent.getUser().getLogin(),
+				teamAddEvent.getUser().getHtmlUrl(),
+				teamAddEvent.getTeam().getName(),
+				teamAddEvent.getSender().getHtmlUrl() + "/" + teamAddEvent.getTeam().getName()));
 		}
     }
 	
