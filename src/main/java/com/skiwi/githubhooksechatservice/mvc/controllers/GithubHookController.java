@@ -283,7 +283,7 @@ public class GithubHookController {
 			memberEvent.getSender().getHtmlUrl(),
 			memberEvent.getAction(),
 			memberEvent.getMember().getLogin(),
-			memberEvent.getSender().getHtmlUrl()));
+			memberEvent.getMember().getHtmlUrl()));
     }
 	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request")
