@@ -21,6 +21,8 @@ Configuration
  - env.undeployGoodbyeEnabled = true (whether the bot will say something in the room when undeployed)
  - env.undeployGoodbyeText = Bye world!
 3. Add a post web hook to your Github project, and point the Payload URL to http://yourdomain.com/GithubHookSEChatService/hooks/github/payload
+4. Add a post web hook to your Travis CI project, you can read about it on http://docs.travis-ci.com/user/notifications/#Webhook-notification, and point it to http://yourdomain.com/GithubHookSEChatService/hooks/travis/payload
+ - As the .travis.yml file is public, it would be best if you encrypt the url, this can be done by replacing the ```- yoururl``` with ```- secure: encryptedstring``` obtained via ```travis encrypt yoururl -r youruser/yourrepo``` with the Travis gem.
 
 Bot account setup
 -----------------
