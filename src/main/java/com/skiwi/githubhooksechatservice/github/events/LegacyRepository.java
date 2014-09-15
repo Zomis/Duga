@@ -186,6 +186,9 @@ public final class LegacyRepository {
     
     @JsonProperty("has_wiki")
     private boolean hasWiki;
+	
+	@JsonProperty("has_pages")
+	private boolean hasPages;
     
     @JsonProperty("forks_count")
     private long forksCount;
@@ -452,6 +455,10 @@ public final class LegacyRepository {
     public boolean hasWiki() {
         return hasWiki;
     }
+	
+	public boolean hasPages() {
+		return hasPages;
+	}
 
     public long getForksCount() {
         return forksCount;
@@ -555,6 +562,7 @@ public final class LegacyRepository {
 		hash = 29 * hash + (this.hasIssues ? 1 : 0);
 		hash = 29 * hash + (this.hasDownloads ? 1 : 0);
 		hash = 29 * hash + (this.hasWiki ? 1 : 0);
+		hash = 29 * hash + (this.hasPages ? 1 : 0);
 		hash = 29 * hash + (int)(this.forksCount ^ (this.forksCount >>> 32));
 		hash = 29 * hash + Objects.hashCode(this.mirrorUrl);
 		hash = 29 * hash + (int)(this.openIssuesCount ^ (this.openIssuesCount >>> 32));
@@ -752,6 +760,9 @@ public final class LegacyRepository {
 			return false;
 		}
 		if (this.hasWiki != other.hasWiki) {
+			return false;
+		}
+		if (this.hasPages != other.hasPages) {
 			return false;
 		}
 		if (this.forksCount != other.forksCount) {
