@@ -39,7 +39,6 @@ import com.skiwi.githubhooksechatservice.github.events.PullRequestReviewCommentE
 import com.skiwi.githubhooksechatservice.github.events.PushEvent;
 import com.skiwi.githubhooksechatservice.github.events.TeamAddEvent;
 import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
-import com.skiwi.githubhooksechatservice.github.events.WikiPage;
 
 /**
  *
@@ -147,7 +146,7 @@ public class GithubHookController {
 				gollumEvent.getSender().getLogin(),
 				gollumEvent.getSender().getHtmlUrl(),
 				wikiPage.getAction(),
-				wikiPage.getTitle(),
+				wikiPage.getTitle().trim(),
 				wikiPage.getHtmlUrl()));
 		});
     }
@@ -165,7 +164,7 @@ public class GithubHookController {
 					issuesEvent.getAssignee().getLogin(),
 					issuesEvent.getAssignee().getHtmlUrl(),
 					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle(),
+					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "unassigned":
@@ -177,7 +176,7 @@ public class GithubHookController {
 					issuesEvent.getAssignee().getLogin(),
 					issuesEvent.getAssignee().getHtmlUrl(),
 					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle(),
+					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "labeled":
@@ -189,7 +188,7 @@ public class GithubHookController {
 					issuesEvent.getLabel().getName(),
 					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "%20"),
 					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle(),
+					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "unlabeled":
@@ -201,7 +200,7 @@ public class GithubHookController {
 					issuesEvent.getLabel().getName(),
 					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "%20"),
 					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle(),
+					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "opened":
@@ -212,7 +211,7 @@ public class GithubHookController {
 							issuesEvent.getSender().getLogin(),
 							issuesEvent.getSender().getHtmlUrl(),
 							issuesEvent.getIssue().getNumber(),
-							issuesEvent.getIssue().getTitle(),
+							issuesEvent.getIssue().getTitle().trim(),
 							issuesEvent.getIssue().getHtmlUrl()));
 				}
 				else{
@@ -223,7 +222,7 @@ public class GithubHookController {
 							issuesEvent.getSender().getLogin(),
 							issuesEvent.getSender().getHtmlUrl(),
 							issuesEvent.getIssue().getNumber(),
-							issuesEvent.getIssue().getTitle(),
+							issuesEvent.getIssue().getTitle().trim(),
 							issuesEvent.getIssue().getHtmlUrl()),
 						"> " + issuesEvent.getIssue().getBody());
 				}
@@ -235,7 +234,7 @@ public class GithubHookController {
 					issuesEvent.getSender().getLogin(),
 					issuesEvent.getSender().getHtmlUrl(),
 					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle(),
+					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "reopened":
@@ -245,7 +244,7 @@ public class GithubHookController {
 					issuesEvent.getSender().getLogin(),
 					issuesEvent.getSender().getHtmlUrl(),
 					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle(),
+					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 		}
@@ -266,7 +265,7 @@ public class GithubHookController {
 						issueCommentEvent.getComment().getHtmlUrl(),
 						commentTarget,
 						issueCommentEvent.getIssue().getNumber(),
-						issueCommentEvent.getIssue().getTitle(),
+						issueCommentEvent.getIssue().getTitle().trim(),
 						issueCommentEvent.getIssue().getHtmlUrl()),
 					"> " + issueCommentEvent.getComment().getBody());
 				break;
@@ -311,7 +310,7 @@ public class GithubHookController {
 					pullRequestEvent.getAssignee().getLogin(),
 					pullRequestEvent.getAssignee().getHtmlUrl(),
 					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
 					pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 			case "unassigned":
@@ -323,7 +322,7 @@ public class GithubHookController {
 					pullRequestEvent.getAssignee().getLogin(),
 					pullRequestEvent.getAssignee().getHtmlUrl(),
 					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
 					pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 			case "labeled":
@@ -335,7 +334,7 @@ public class GithubHookController {
 					pullRequestEvent.getLabel().getName(),
 					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
 					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
 					pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 			case "unlabeled":
@@ -347,7 +346,7 @@ public class GithubHookController {
 					pullRequestEvent.getLabel().getName(),
 					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
 					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
 					pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 			case "opened":
@@ -358,7 +357,7 @@ public class GithubHookController {
 							pullRequestEvent.getSender().getLogin(),
 							pullRequestEvent.getSender().getHtmlUrl(),
 							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
 							pullRequestEvent.getPullRequest().getHtmlUrl(),
 							headText,
 							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
@@ -373,7 +372,7 @@ public class GithubHookController {
 							pullRequestEvent.getSender().getLogin(),
 							pullRequestEvent.getSender().getHtmlUrl(),
 							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
 							pullRequestEvent.getPullRequest().getHtmlUrl(),
 							headText,
 							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
@@ -390,7 +389,7 @@ public class GithubHookController {
 							pullRequestEvent.getSender().getLogin(),
 							pullRequestEvent.getSender().getHtmlUrl(),
 							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
 							pullRequestEvent.getPullRequest().getHtmlUrl(),
 							headText,
 							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
@@ -404,7 +403,7 @@ public class GithubHookController {
 							pullRequestEvent.getSender().getLogin(),
 							pullRequestEvent.getSender().getHtmlUrl(),
 							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
 							pullRequestEvent.getPullRequest().getHtmlUrl()));
 				}
 				break;
@@ -415,7 +414,7 @@ public class GithubHookController {
 						pullRequestEvent.getSender().getLogin(),
 						pullRequestEvent.getSender().getHtmlUrl(),
 						pullRequestEvent.getPullRequest().getNumber(),
-						pullRequestEvent.getPullRequest().getTitle(),
+						pullRequestEvent.getPullRequest().getTitle().trim(),
 						pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 			case "synchronize":
@@ -425,7 +424,7 @@ public class GithubHookController {
 						pullRequestEvent.getSender().getLogin(),
 						pullRequestEvent.getSender().getHtmlUrl(),
 						pullRequestEvent.getPullRequest().getNumber(),
-						pullRequestEvent.getPullRequest().getTitle(),
+						pullRequestEvent.getPullRequest().getTitle().trim(),
 						pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 		}
@@ -445,7 +444,7 @@ public class GithubHookController {
 						pullRequestReviewCommentEvent.getComment().getPath(),
 						pullRequestReviewCommentEvent.getComment().getHtmlUrl(),
 						pullRequestReviewCommentEvent.getPullRequest().getNumber(),
-						pullRequestReviewCommentEvent.getPullRequest().getTitle(),
+						pullRequestReviewCommentEvent.getPullRequest().getTitle().trim(),
 						pullRequestReviewCommentEvent.getPullRequest().getHtmlUrl()),
 					"> " + pullRequestReviewCommentEvent.getComment().getBody());
 					break;
