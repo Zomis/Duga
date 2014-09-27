@@ -44,6 +44,9 @@ public final class PushEvent {
     
     @JsonProperty
     private LegacyRepository repository;
+	
+	@JsonProperty(required = false)
+	private Organization organization;
     
     @JsonProperty
     private LegacySimpleUser pusher;
@@ -92,6 +95,10 @@ public final class PushEvent {
         return repository;
     }
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
     public LegacySimpleUser getPusher() {
         return pusher;
     }
@@ -110,6 +117,7 @@ public final class PushEvent {
 		hash = 23 * hash + Arrays.deepHashCode(this.commits);
 		hash = 23 * hash + Objects.hashCode(this.headCommit);
 		hash = 23 * hash + Objects.hashCode(this.repository);
+		hash = 23 * hash + Objects.hashCode(this.organization);
 		hash = 23 * hash + Objects.hashCode(this.pusher);
 		return hash;
 	}
@@ -154,6 +162,9 @@ public final class PushEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.pusher, other.pusher)) {

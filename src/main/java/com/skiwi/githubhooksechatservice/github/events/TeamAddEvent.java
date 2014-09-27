@@ -19,6 +19,9 @@ public final class TeamAddEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -34,6 +37,10 @@ public final class TeamAddEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -44,6 +51,7 @@ public final class TeamAddEvent {
 		hash = 17 * hash + Objects.hashCode(this.team);
 		hash = 17 * hash + Objects.hashCode(this.user);
 		hash = 17 * hash + Objects.hashCode(this.repository);
+		hash = 17 * hash + Objects.hashCode(this.organization);
 		hash = 17 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -64,6 +72,9 @@ public final class TeamAddEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

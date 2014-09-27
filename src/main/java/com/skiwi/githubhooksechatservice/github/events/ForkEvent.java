@@ -16,6 +16,9 @@ public final class ForkEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -27,6 +30,10 @@ public final class ForkEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -36,6 +43,7 @@ public final class ForkEvent {
 		int hash = 5;
 		hash = 11 * hash + Objects.hashCode(this.forkee);
 		hash = 11 * hash + Objects.hashCode(this.repository);
+		hash = 11 * hash + Objects.hashCode(this.organization);
 		hash = 11 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -53,6 +61,9 @@ public final class ForkEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

@@ -16,6 +16,9 @@ public final class WatchEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -27,6 +30,10 @@ public final class WatchEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -36,6 +43,7 @@ public final class WatchEvent {
 		int hash = 7;
 		hash = 37 * hash + Objects.hashCode(this.action);
 		hash = 37 * hash + Objects.hashCode(this.repository);
+		hash = 37 * hash + Objects.hashCode(this.organization);
 		hash = 37 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -53,6 +61,9 @@ public final class WatchEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

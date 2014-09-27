@@ -25,6 +25,9 @@ public final class IssuesEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -48,6 +51,10 @@ public final class IssuesEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -60,6 +67,7 @@ public final class IssuesEvent {
 		hash = 71 * hash + Objects.hashCode(this.assignee);
 		hash = 71 * hash + Objects.hashCode(this.label);
 		hash = 71 * hash + Objects.hashCode(this.repository);
+		hash = 71 * hash + Objects.hashCode(this.organization);
 		hash = 71 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -86,6 +94,9 @@ public final class IssuesEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

@@ -28,6 +28,9 @@ public final class PullRequestEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -55,6 +58,10 @@ public final class PullRequestEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -68,6 +75,7 @@ public final class PullRequestEvent {
 		hash = 37 * hash + Objects.hashCode(this.assignee);
 		hash = 37 * hash + Objects.hashCode(this.label);
 		hash = 37 * hash + Objects.hashCode(this.repository);
+		hash = 37 * hash + Objects.hashCode(this.organization);
 		hash = 37 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -97,6 +105,9 @@ public final class PullRequestEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

@@ -22,6 +22,9 @@ public final class PullRequestReviewCommentEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -41,6 +44,10 @@ public final class PullRequestReviewCommentEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -52,6 +59,7 @@ public final class PullRequestReviewCommentEvent {
 		hash = 59 * hash + Objects.hashCode(this.comment);
 		hash = 59 * hash + Objects.hashCode(this.pullRequest);
 		hash = 59 * hash + Objects.hashCode(this.repository);
+		hash = 59 * hash + Objects.hashCode(this.organization);
 		hash = 59 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -75,6 +83,9 @@ public final class PullRequestReviewCommentEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

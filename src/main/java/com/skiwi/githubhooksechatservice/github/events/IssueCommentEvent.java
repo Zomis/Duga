@@ -22,6 +22,9 @@ public final class IssueCommentEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -41,6 +44,10 @@ public final class IssueCommentEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -52,6 +59,7 @@ public final class IssueCommentEvent {
 		hash = 97 * hash + Objects.hashCode(this.issue);
 		hash = 97 * hash + Objects.hashCode(this.comment);
 		hash = 97 * hash + Objects.hashCode(this.repository);
+		hash = 97 * hash + Objects.hashCode(this.organization);
 		hash = 97 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -75,6 +83,9 @@ public final class IssueCommentEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

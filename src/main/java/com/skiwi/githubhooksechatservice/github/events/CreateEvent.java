@@ -27,6 +27,9 @@ public final class CreateEvent {
     
     @JsonProperty
     private Repository repository;
+	
+	@JsonProperty(required = false)
+	private Organization organization;
     
     @JsonProperty
     private User sender;
@@ -55,6 +58,10 @@ public final class CreateEvent {
         return repository;
     }
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
     public User getSender() {
         return sender;
     }
@@ -68,6 +75,7 @@ public final class CreateEvent {
 		hash = 23 * hash + Objects.hashCode(this.description);
 		hash = 23 * hash + Objects.hashCode(this.pusherType);
 		hash = 23 * hash + Objects.hashCode(this.repository);
+		hash = 23 * hash + Objects.hashCode(this.organization);
 		hash = 23 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -97,6 +105,9 @@ public final class CreateEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

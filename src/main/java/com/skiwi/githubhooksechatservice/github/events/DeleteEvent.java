@@ -21,6 +21,9 @@ public final class DeleteEvent {
     
     @JsonProperty
     private Repository repository;
+	
+	@JsonProperty(required = false)
+	private Organization organization;
     
     @JsonProperty
     private User sender;
@@ -41,6 +44,10 @@ public final class DeleteEvent {
         return repository;
     }
 
+	public Organization getOrganization() {
+		return organization;
+	}
+	
     public User getSender() {
         return sender;
     }
@@ -52,6 +59,7 @@ public final class DeleteEvent {
 		hash = 37 * hash + Objects.hashCode(this.refType);
 		hash = 37 * hash + Objects.hashCode(this.pusherType);
 		hash = 37 * hash + Objects.hashCode(this.repository);
+		hash = 37 * hash + Objects.hashCode(this.organization);
 		hash = 37 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -75,6 +83,9 @@ public final class DeleteEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {

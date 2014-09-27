@@ -18,6 +18,9 @@ public final class GollumEvent {
 	@JsonProperty
 	private Repository repository;
 	
+	@JsonProperty(required = false)
+	private Organization organization;
+	
 	@JsonProperty
 	private User sender;
 
@@ -29,6 +32,10 @@ public final class GollumEvent {
 		return repository;
 	}
 
+	public Organization getOrganization() {
+		return organization;
+	}
+
 	public User getSender() {
 		return sender;
 	}
@@ -38,6 +45,7 @@ public final class GollumEvent {
 		int hash = 3;
 		hash = 59 * hash + Arrays.deepHashCode(this.pages);
 		hash = 59 * hash + Objects.hashCode(this.repository);
+		hash = 59 * hash + Objects.hashCode(this.organization);
 		hash = 59 * hash + Objects.hashCode(this.sender);
 		return hash;
 	}
@@ -55,6 +63,9 @@ public final class GollumEvent {
 			return false;
 		}
 		if (!Objects.equals(this.repository, other.repository)) {
+			return false;
+		}
+		if (!Objects.equals(this.organization, other.organization)) {
 			return false;
 		}
 		if (!Objects.equals(this.sender, other.sender)) {
