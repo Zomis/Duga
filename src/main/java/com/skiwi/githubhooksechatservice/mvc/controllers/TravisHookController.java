@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
-import com.skiwi.githubhooksechatservice.travis.events.BuildEvent;
+import com.skiwi.githubhooksechatservice.events.travis.BuildEvent;
 
 /**
  *
