@@ -1,6 +1,8 @@
 
 package com.skiwi.githubhooksechatservice.github.events;
 
+import com.skiwi.githubhooksechatservice.events.BaseEvent;
+
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public final class MemberEvent {
+public final class MemberEvent extends BaseEvent {
 	@JsonProperty
 	private User member;
 	

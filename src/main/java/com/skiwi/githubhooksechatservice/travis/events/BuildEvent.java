@@ -5,12 +5,13 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.skiwi.githubhooksechatservice.events.BaseEvent;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class BuildEvent {
+public final class BuildEvent extends BaseEvent {
 	@JsonProperty
 	private long id;
 	
