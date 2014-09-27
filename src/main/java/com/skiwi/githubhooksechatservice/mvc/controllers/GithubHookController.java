@@ -49,7 +49,7 @@ import com.skiwi.githubhooksechatservice.github.events.WatchEvent;
 public class GithubHookController {
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
 	
-	private final int MAX_NUMBER_NON_DISTINCT_COMMITS_PER_LINE = 2;
+	private final static int MAX_NUMBER_NON_DISTINCT_COMMITS_PER_LINE = 2;
 	
 	@Autowired
 	private ChatBot chatBot;
@@ -460,47 +460,19 @@ public class GithubHookController {
 		List<LegacyCommit> distinctCommits = partitionedCommits.get(true);
 		List<LegacyCommit> nonDistinctCommits = partitionedCommits.get(false);
 		
-		nonDistinctCommits.stream()
-			.collect(Collectors.groupingBy(LegacyCommit::getCommitter))
-			.forEach((committer, allCommits) -> {
-				split(MAX_NUMBER_NON_DISTINCT_COMMITS_PER_LINE, allCommits).forEach(commits -> {
-					String commitIds;
-					String commitText;
-					if (commits.size() == 1) {
-						commitIds = MessageFormat.format("[**{0}**]({1})", commits.get(0).getId().substring(0, 8), commits.get(0).getUrl());
-						commitText = "commit";
-					}
-					else {
-						commitIds = commits.subList(0, commits.size() - 1).stream()
-							.map(commit -> MessageFormat.format("[**{0}**]({1})", commit.getId().substring(0, 8), commit.getUrl()))
-							.collect(Collectors.joining(", "));
-						commitIds += " and " + MessageFormat.format("[**{0}**]({1})", commits.get(commits.size() - 1).getId().substring(0, 8), commits.get(commits.size() - 1).getUrl());
-						commitText = "commits";
-					}
-
-					String branch = pushEvent.getRef().replace("refs/heads/", "");
-					if (committer.getUsername() == null) {
-						chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] *Unrecognized author* pushed {2} {3} to [**{4}**]({5})",
-							pushEvent.getRepository().getFullName(), 
-							pushEvent.getRepository().getHtmlUrl(),
-							commitText,
-							commitIds,
-							branch,
-							pushEvent.getRepository().getUrl() + "/tree/" + branch));
-					}
-					else {
-						chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed {4} {5} to [**{6}**]({7})",
-							pushEvent.getRepository().getFullName(), 
-							pushEvent.getRepository().getHtmlUrl(),
-							committer.getUsername(), 
-							"https://github.com/" + committer.getUsername(),
-							commitText,
-							commitIds,
-							branch,
-							pushEvent.getRepository().getUrl() + "/tree/" + branch));
-					}
-				});
-			});
+		if (!nonDistinctCommits.isEmpty()) {
+			String commitText = (nonDistinctCommits.size() == 1) ? "commit" : "commits";
+			String branch = pushEvent.getRef().replace("refs/heads/", "");
+			chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed {4} {5} to [**{6}**]({7})",
+				pushEvent.getRepository().getFullName(), 
+				pushEvent.getRepository().getHtmlUrl(),
+				pushEvent.getPusher().getName(),
+				"https://github.com/" + pushEvent.getPusher().getName(), 
+				nonDistinctCommits.size(),
+				commitText,
+				branch,
+				pushEvent.getRepository().getUrl() + "/tree/" + branch));
+		}
 		
         distinctCommits.forEach(commit -> {
 			String branch = pushEvent.getRef().replace("refs/heads/", "");
