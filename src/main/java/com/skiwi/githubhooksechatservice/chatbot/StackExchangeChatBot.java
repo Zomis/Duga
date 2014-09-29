@@ -234,15 +234,15 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 	}
 	
 	private void drainMessagesQueue() {
-		while (true) {
-			try {
+		try {
+			while (true) {
 				postDrainedMessages(messagesQueue.take());
-			} catch (InterruptedException ex) {
-				List<List<String>> drainedMessages = new ArrayList<>();
-				messagesQueue.drainTo(drainedMessages);
-				drainedMessages.forEach(this::postDrainedMessages);
-				break;
 			}
+		} catch (InterruptedException ex) {
+			List<List<String>> drainedMessages = new ArrayList<>();
+			messagesQueue.drainTo(drainedMessages);
+			drainedMessages.forEach(this::postDrainedMessages);
+			Thread.currentThread().interrupt();
 		}
 	}
 	
