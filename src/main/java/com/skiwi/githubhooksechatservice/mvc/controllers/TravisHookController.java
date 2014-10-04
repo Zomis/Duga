@@ -40,16 +40,36 @@ public class TravisHookController {
 	public void build(final @RequestParam("payload") String buildEventJson) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		BuildEvent buildEvent = objectMapper.readValue(buildEventJson, BuildEvent.class);
-		chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**build #{2}**]({3}) for commit [**{4}**]({5}) on branch [**{6}**]({7}) {8}",
-			buildEvent.getRepository().getOwnerName() + "/" + buildEvent.getRepository().getName(),
-			buildEvent.getRepository().getUrl(),
-			buildEvent.getNumber(),
-			buildEvent.getBuildUrl(),
-			buildEvent.getCommit().substring(0, 8),
-			buildEvent.getRepository().getUrl() + "/commit/" + buildEvent.getCommit(),
-			buildEvent.getBranch(),
-			buildEvent.getRepository().getUrl() + "/tree/" + buildEvent.getBranch(),
-			buildEvent.getStatusMessage().toLowerCase(Locale.ENGLISH)));
+		switch (buildEvent.getType()) {
+			case "push":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**build #{2}**]({3}) for commit [**{4}**]({5}) on branch [**{6}**]({7}) {8}",
+					buildEvent.getRepository().getOwnerName() + "/" + buildEvent.getRepository().getName(),
+					buildEvent.getRepository().getUrl(),
+					buildEvent.getNumber(),
+					buildEvent.getBuildUrl(),
+					buildEvent.getCommit().substring(0, 8),
+					buildEvent.getRepository().getUrl() + "/commit/" + buildEvent.getCommit(),
+					buildEvent.getBranch(),
+					buildEvent.getRepository().getUrl() + "/tree/" + buildEvent.getBranch(),
+					buildEvent.getStatusMessage().toLowerCase(Locale.ENGLISH)));
+				break;
+			case "pull_request":
+				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**build #{2}**]({3}) for commit [**{4}**]({5}) from pull request [**#{6}**]({7}) to branch [**{8}**]({9}) {10}",
+					buildEvent.getRepository().getOwnerName() + "/" + buildEvent.getRepository().getName(),
+					buildEvent.getRepository().getUrl(),
+					buildEvent.getNumber(),
+					buildEvent.getBuildUrl(),
+					buildEvent.getCommit().substring(0, 8),
+					buildEvent.getRepository().getUrl() + "/commit/" + buildEvent.getCommit(),
+					buildEvent.getPullRequestNumber(),
+					buildEvent.getRepository().getUrl() + "/pull/" + buildEvent.getPullRequestNumber(),
+					buildEvent.getBranch(),
+					buildEvent.getRepository().getUrl() + "/tree/" + buildEvent.getBranch(),
+					buildEvent.getStatusMessage().toLowerCase(Locale.ENGLISH)));
+				break;
+			default:
+				break;
+		}
 	}
 	
 	@ExceptionHandler(Exception.class)
