@@ -1,6 +1,11 @@
 
 package com.skiwi.githubhooksechatservice.mvc.configuration;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  *
  * @author Frank van Heeswijk
@@ -23,6 +28,9 @@ public class Configuration {
 	
 	private boolean undeployGoodbyeEnabled;
 	private String undeployGoodbyeText;
+	
+	private String userMappings;
+	private Map<String, String> userMappingsMap = new HashMap<>();
 
     public String getRootUrl() {
         return rootUrl;
@@ -118,5 +126,21 @@ public class Configuration {
 
 	public void setUndeployGoodbyeText(final String undeployGoodbyeText) {
 		this.undeployGoodbyeText = undeployGoodbyeText;
+	}
+
+	public String getUserMappings() {
+		return userMappings;
+	}
+
+	public void setUserMappings(final String userMappings) {
+		this.userMappings = userMappings;
+		this.userMappingsMap = Arrays.stream(userMappings.split(","))
+			.filter(mapping -> mapping.contains("->"))
+			.map(mapping -> Arrays.asList(mapping.split("->")))
+			.collect(Collectors.toMap(list -> list.get(0).trim(), list -> list.get(1).trim()));
+	}
+
+	public Map<String, String> getUserMappingsMap() {
+		return userMappingsMap;
 	}
 }

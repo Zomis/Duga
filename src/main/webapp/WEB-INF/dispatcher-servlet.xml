@@ -52,6 +52,7 @@
         <property name="deployGreetingText" value="${env.deployGreetingText}"/>
         <property name="undeployGoodbyeEnabled" value="${env.undeployGoodbyeEnabled}"/>
         <property name="undeployGoodbyeText" value="${env.undeployGoodbyeText}"/>
+        <property name="userMappings" value="${env.userMappings}"/>
     </bean>
 
 	<bean id="chatBot" class="com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot">
