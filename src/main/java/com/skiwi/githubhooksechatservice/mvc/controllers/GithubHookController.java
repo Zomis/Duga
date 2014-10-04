@@ -204,7 +204,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getHtmlUrl()));
 				break;
 			case "opened":
-				if (issuesEvent.getIssue().getBody().isEmpty()) {
+				if (issuesEvent.getIssue().getBody() == null || issuesEvent.getIssue().getBody().isEmpty()) {
 					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
 							issuesEvent.getRepository().getFullName(),
 							issuesEvent.getRepository().getHtmlUrl(),
@@ -214,7 +214,7 @@ public class GithubHookController {
 							issuesEvent.getIssue().getTitle().trim(),
 							issuesEvent.getIssue().getHtmlUrl()));
 				}
-				else{
+				else {
 					chatBot.postMessages(
 						MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
 							issuesEvent.getRepository().getFullName(),
@@ -350,7 +350,7 @@ public class GithubHookController {
 					pullRequestEvent.getPullRequest().getHtmlUrl()));
 				break;
 			case "opened":
-				if (pullRequestEvent.getPullRequest().getBody().isEmpty()) {
+				if (pullRequestEvent.getPullRequest().getBody() == null || pullRequestEvent.getPullRequest().getBody().isEmpty()) {
 					chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created pull request [**#{4}: {5}**]({6}) to merge [**{7}**]({8}) into [**{9}**]({10})",
 							pullRequestEvent.getRepository().getFullName(),
 							pullRequestEvent.getRepository().getHtmlUrl(),
