@@ -69,6 +69,9 @@ public final class BuildEvent extends BaseEvent {
 	@JsonProperty
 	private String type;
 	
+	@JsonProperty(value = "pull_request_number", required = false)
+	private long pullRequestNumber;
+	
 	@JsonProperty("build_url")
 	private String buildUrl;
 	
@@ -157,6 +160,10 @@ public final class BuildEvent extends BaseEvent {
 		return type;
 	}
 
+	public long getPullRequestNumber() {
+		return pullRequestNumber;
+	}
+
 	public String getBuildUrl() {
 		return buildUrl;
 	}
@@ -195,6 +202,7 @@ public final class BuildEvent extends BaseEvent {
 		hash = 17 * hash + Objects.hashCode(this.authorName);
 		hash = 17 * hash + Objects.hashCode(this.authorEmail);
 		hash = 17 * hash + Objects.hashCode(this.type);
+		hash = 17 * hash + (int)(this.pullRequestNumber ^ (this.pullRequestNumber >>> 32));
 		hash = 17 * hash + Objects.hashCode(this.buildUrl);
 		hash = 17 * hash + Objects.hashCode(this.repository);
 		hash = 17 * hash + Objects.hashCode(this.config);
@@ -266,6 +274,9 @@ public final class BuildEvent extends BaseEvent {
 			return false;
 		}
 		if (!Objects.equals(this.type, other.type)) {
+			return false;
+		}
+		if (this.pullRequestNumber != other.pullRequestNumber) {
 			return false;
 		}
 		if (!Objects.equals(this.buildUrl, other.buildUrl)) {
