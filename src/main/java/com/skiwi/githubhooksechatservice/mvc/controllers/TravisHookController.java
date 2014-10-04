@@ -2,10 +2,15 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
 import java.io.IOException;
+import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,8 +25,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skiwi.githubhooksechatservice.apis.commit.CommitResponse;
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.events.travis.BuildEvent;
+import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 
 /**
  *
@@ -35,14 +42,19 @@ public class TravisHookController {
 	@Autowired
 	private ChatBot chatBot;
 	
+	@Autowired
+	private Configuration configuration;
+	
 	@RequestMapping(value = "/payload", method = RequestMethod.POST)
 	@ResponseBody
 	public void build(final @RequestParam("payload") String buildEventJson) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		BuildEvent buildEvent = objectMapper.readValue(buildEventJson, BuildEvent.class);
+		List<String> messages = new ArrayList<>();
+		
 		switch (buildEvent.getType()) {
 			case "push":
-				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**build #{2}**]({3}) for commit [**{4}**]({5}) on branch [**{6}**]({7}) {8}",
+				messages.add(MessageFormat.format("\\[[**{0}**]({1})\\] [**build #{2}**]({3}) for commit [**{4}**]({5}) on branch [**{6}**]({7}) {8}",
 					buildEvent.getRepository().getOwnerName() + "/" + buildEvent.getRepository().getName(),
 					buildEvent.getRepository().getUrl(),
 					buildEvent.getNumber(),
@@ -54,7 +66,7 @@ public class TravisHookController {
 					buildEvent.getStatusMessage().toLowerCase(Locale.ENGLISH)));
 				break;
 			case "pull_request":
-				chatBot.postMessage(MessageFormat.format("\\[[**{0}**]({1})\\] [**build #{2}**]({3}) for commit [**{4}**]({5}) from pull request [**#{6}**]({7}) to branch [**{8}**]({9}) {10}",
+				messages.add(MessageFormat.format("\\[[**{0}**]({1})\\] [**build #{2}**]({3}) for commit [**{4}**]({5}) from pull request [**#{6}**]({7}) to branch [**{8}**]({9}) {10}",
 					buildEvent.getRepository().getOwnerName() + "/" + buildEvent.getRepository().getName(),
 					buildEvent.getRepository().getUrl(),
 					buildEvent.getNumber(),
@@ -70,6 +82,29 @@ public class TravisHookController {
 			default:
 				break;
 		}
+		
+		switch (buildEvent.getStatusMessage().toLowerCase(Locale.ENGLISH)) {
+			case "broken":
+			case "still failing":
+			case "errored":
+				String commitApiUrl = "https://api.github.com/repos/" + buildEvent.getRepository().getOwnerName() + "/" + buildEvent.getRepository().getName() + "/commits/" + buildEvent.getCommit();
+				CommitResponse commitResponse = objectMapper.readValue(new URL(commitApiUrl), CommitResponse.class);
+				
+				String githubCommitter = commitResponse.getCommitter().getLogin();
+				String githubAuthor = commitResponse.getAuthor().getLogin();
+				String sechatCommitter = configuration.getUserMappingsMap().getOrDefault(githubCommitter, githubCommitter);
+				String sechatAuthor = configuration.getUserMappingsMap().getOrDefault(githubAuthor, githubAuthor);
+				
+				String mentionedUsers = Stream.of(sechatCommitter, sechatAuthor).distinct().map(user -> "@" + user).collect(Collectors.joining(", "));
+				messages.add(MessageFormat.format("**{0}, your build reported bad status: {1}!**", 
+					mentionedUsers, 
+					buildEvent.getStatusMessage()));
+				break;
+			default:
+				break;
+		}
+		
+		chatBot.postMessages(messages);
 	}
 	
 	@ExceptionHandler(Exception.class)
