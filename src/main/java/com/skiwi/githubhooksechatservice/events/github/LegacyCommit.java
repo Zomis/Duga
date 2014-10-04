@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class LegacyCommit {
+public final class LegacyCommit extends AnySetterJSONObject {
     @JsonProperty
     private String id;
     

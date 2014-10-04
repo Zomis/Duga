@@ -1,7 +1,7 @@
 
 package com.skiwi.githubhooksechatservice.events.github;
 
-import com.skiwi.githubhooksechatservice.events.BaseEvent;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 
 import java.util.Objects;
 
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Frank van Heeswijk
  */
-public final class WatchEvent extends BaseEvent {
+public final class WatchEvent extends AnySetterJSONObject {
 	@JsonProperty
 	private String action;
 	

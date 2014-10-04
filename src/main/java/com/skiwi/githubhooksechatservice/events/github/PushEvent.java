@@ -1,19 +1,18 @@
 
 package com.skiwi.githubhooksechatservice.events.github;
 
-import com.skiwi.githubhooksechatservice.events.BaseEvent;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class PushEvent extends BaseEvent {
+public final class PushEvent extends AnySetterJSONObject {
     @JsonProperty
     private String ref;
     

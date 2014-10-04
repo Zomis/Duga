@@ -1,17 +1,16 @@
 
 package com.skiwi.githubhooksechatservice.events.github;
 
-import com.skiwi.githubhooksechatservice.events.BaseEvent;
-
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class SimplePullRequest extends BaseEvent {
+public final class SimplePullRequest extends AnySetterJSONObject {
 	@JsonProperty
 	private String url;
 	

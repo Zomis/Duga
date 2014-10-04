@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 import com.skiwi.githubhooksechatservice.events.github.User;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class CommitResponse {
+public final class CommitResponse extends AnySetterJSONObject {
 	@JsonProperty
 	private String sha;
 	

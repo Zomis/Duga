@@ -4,12 +4,13 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class HookConfig {
+public final class HookConfig extends AnySetterJSONObject {
     @JsonProperty
     private String secret;
     

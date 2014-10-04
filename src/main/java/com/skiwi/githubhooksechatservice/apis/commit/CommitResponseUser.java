@@ -4,12 +4,13 @@ package com.skiwi.githubhooksechatservice.apis.commit;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class CommitResponseUser {
+public final class CommitResponseUser extends AnySetterJSONObject {
 	@JsonProperty
 	private String name;
 	

@@ -1,19 +1,18 @@
 
 package com.skiwi.githubhooksechatservice.events.github;
 
-import com.skiwi.githubhooksechatservice.events.BaseEvent;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class GollumEvent extends BaseEvent {
+public final class GollumEvent extends AnySetterJSONObject {
 	@JsonProperty
 	private WikiPage[] pages;
 	
