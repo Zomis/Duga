@@ -29,13 +29,13 @@ public class BotController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
-    public void test() {
-        chatBot.postMessage("test");
+    public void test(WebhookParameters params) {
+        chatBot.postMessage(params, "test");
     }
 
     @RequestMapping(value = "/say/{text}", method = RequestMethod.GET)
     @ResponseBody
-    public void say(final @PathVariable("text") String text) {
-        chatBot.postMessage(text);
+    public void say(WebhookParameters params, final @PathVariable("text") String text) {
+        chatBot.postMessage(params, text);
     }
 }

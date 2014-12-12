@@ -47,7 +47,7 @@ public class TravisHookController {
 	
 	@RequestMapping(value = "/payload", method = RequestMethod.POST)
 	@ResponseBody
-	public void build(final @RequestParam("payload") String buildEventJson) throws IOException {
+	public void build(final WebhookParameters params, final @RequestParam("payload") String buildEventJson) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		BuildEvent buildEvent = objectMapper.readValue(buildEventJson, BuildEvent.class);
 		List<String> messages = new ArrayList<>();
@@ -104,7 +104,7 @@ public class TravisHookController {
 				break;
 		}
 		
-		chatBot.postMessages(messages);
+		chatBot.postMessages(params, messages);
 	}
 	
 	@ExceptionHandler(Exception.class)
