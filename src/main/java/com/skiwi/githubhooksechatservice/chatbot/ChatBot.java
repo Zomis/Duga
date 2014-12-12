@@ -15,10 +15,12 @@ public interface ChatBot {
     
     void stop();
 
+    @Deprecated
 	default void postMessage(final String text) {
 		postMessages(text);
 	}
 	
+    @Deprecated
 	default void postMessages(final String... messages) {
 		postMessages(Arrays.asList(messages));
 	}
@@ -31,6 +33,7 @@ public interface ChatBot {
 		postMessages(params, Arrays.asList(messages));
 	}
 	
+	@Deprecated
 	default void postMessages(final List<String> messages) {
 		postMessages(null, messages);
 	}
