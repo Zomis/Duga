@@ -33,6 +33,7 @@ import com.gistlabs.mechanize.document.html.form.SubmitButton;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
 import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
+import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 
 /**
  *
@@ -44,7 +45,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     private static final int MAX_MESSAGE_LENGTH = 500;
     
 	private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-	private final BlockingQueue<List<String>> messagesQueue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<List<ChatMessage>> messagesQueue = new LinkedBlockingQueue<>();
     
     private final MechanizeAgent agent;
     
@@ -140,24 +141,28 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
         return joinForm.get("fkey").getValue();
     }
 	
-	@Override
-	public void postMessages(final List<String> messages) {
+    @Override
+    public void postMessages(WebhookParameters params, final List<String> messages) {
+    	if (params == null) {
+    		params = new WebhookParameters();
+    	}
+		params.init(configuration);
 		Objects.requireNonNull(messages, "messages");
-		List<String> shortenedMessages = new ArrayList<>();
+		List<ChatMessage> shortenedMessages = new ArrayList<>();
 		for (String message : messages) {
 			String messageCopy = message;
 			final String continuation = "...";
 			while (messageCopy.length() > MAX_MESSAGE_LENGTH) {
 				final int firstPart = MAX_MESSAGE_LENGTH - continuation.length();
-				shortenedMessages.add(messageCopy.substring(0, firstPart) + continuation);
+				shortenedMessages.add(new ChatMessage(params, messageCopy.substring(0, firstPart) + continuation));
 				messageCopy = messageCopy.substring(firstPart);
 			}
-			shortenedMessages.add(messageCopy);
+			shortenedMessages.add(new ChatMessage(params, messageCopy));
 		}
 		messagesQueue.add(shortenedMessages);
 	} 
 	
-    private void attemptPostMessageToChat(final String message) {
+    private void attemptPostMessageToChat(final ChatMessage message) {
 		Objects.requireNonNull(message, "message");
 		try {
 			postMessageToChat(message);
@@ -184,13 +189,13 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 		}
 	}
     
-    private void postMessageToChat(final String message) throws ChatThrottleException, ProbablyNotLoggedInException {
+    private void postMessageToChat(final ChatMessage message) throws ChatThrottleException, ProbablyNotLoggedInException {
         Objects.requireNonNull(message, "message");
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("text", message);
+        parameters.put("text", message.getMessage());
         parameters.put("fkey", this.chatFKey);
         try {
-			Resource response = agent.post("http://chat.stackexchange.com/chats/" + configuration.getRoomId() + "/messages/new", parameters);
+			Resource response = agent.post("http://chat.stackexchange.com/chats/" + message.getRoom() + "/messages/new", parameters);
             LOGGER.info(response.getTitle());
 			if (response instanceof JsonDocument) {
 				//success
@@ -239,7 +244,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 				postDrainedMessages(messagesQueue.take());
 			}
 		} catch (InterruptedException ex) {
-			List<List<String>> drainedMessages = new ArrayList<>();
+			List<List<ChatMessage>> drainedMessages = new ArrayList<>();
 			messagesQueue.drainTo(drainedMessages);
 			drainedMessages.forEach(this::postDrainedMessages);
 			Thread.currentThread().interrupt();
@@ -249,7 +254,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 	private long lastPostedTime = 0L;
 	private int currentBurst = 0;
 	
-	private void postDrainedMessages(final List<String> messages) {
+	private void postDrainedMessages(final List<ChatMessage> messages) {
 		Objects.requireNonNull(messages, "messages");
 		LOGGER.fine("Attempting to post " + messages);
 		if (currentBurst + messages.size() >= configuration.getChatMaxBurst() || System.currentTimeMillis() < lastPostedTime + configuration.getChatThrottle()) {
