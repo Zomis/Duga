@@ -59,6 +59,8 @@
 		<constructor-arg ref="configuration"/>
 	</bean>
 
+    <bean name="statistics" class="com.skiwi.githubhooksechatservice.mvc.beans.Statistics" />
+    
     <!-- startup bean -->
     <bean name="startup" init-method="start" class="com.skiwi.githubhooksechatservice.mvc.beans.StartupBean" lazy-init="false" />
 </beans>

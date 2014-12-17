@@ -39,6 +39,7 @@ import com.skiwi.githubhooksechatservice.events.github.PullRequestReviewCommentE
 import com.skiwi.githubhooksechatservice.events.github.PushEvent;
 import com.skiwi.githubhooksechatservice.events.github.TeamAddEvent;
 import com.skiwi.githubhooksechatservice.events.github.WatchEvent;
+import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 
 /**
  *
@@ -53,6 +54,9 @@ public class GithubHookController {
 	
 	@Autowired
 	private ChatBot chatBot;
+	
+	@Autowired
+	private Statistics statistics;
 	
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=ping")
     @ResponseBody
@@ -226,6 +230,7 @@ public class GithubHookController {
 							issuesEvent.getIssue().getHtmlUrl()),
 						"> " + issuesEvent.getIssue().getBody());
 				}
+				statistics.add(issuesEvent, true);
 				break;
 			case "closed":
 				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) closed issue [**#{4}: {5}**]({6})",
@@ -236,6 +241,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getNumber(),
 					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
+				statistics.add(issuesEvent, false);
 				break;
 			case "reopened":
 				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) reopened issue [**#{4}: {5}**]({6})",
@@ -246,6 +252,7 @@ public class GithubHookController {
 					issuesEvent.getIssue().getNumber(),
 					issuesEvent.getIssue().getTitle().trim(),
 					issuesEvent.getIssue().getHtmlUrl()));
+				statistics.add(issuesEvent, true);
 				break;
 		}
     }
@@ -501,6 +508,7 @@ public class GithubHookController {
 						pushEvent.getRepository().getUrl() + "/tree/" + branch),
 					"> " + commit.getMessage());
 			}
+			statistics.add(pushEvent.getRepository(), commit);
 		});
     }
 	
