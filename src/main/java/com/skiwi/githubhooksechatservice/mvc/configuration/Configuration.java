@@ -29,6 +29,8 @@ public class Configuration {
 	private boolean undeployGoodbyeEnabled;
 	private String undeployGoodbyeText;
 	
+	private String dailyRooms;
+	
 	private String userMappings;
 	private Map<String, String> userMappingsMap = new HashMap<>();
 
@@ -142,5 +144,13 @@ public class Configuration {
 
 	public Map<String, String> getUserMappingsMap() {
 		return userMappingsMap;
+	}
+	
+	public String getDailyRooms() {
+		return dailyRooms;
+	}
+	
+	public void setDailyRooms(String dailyRooms) {
+		this.dailyRooms = dailyRooms;
 	}
 }
