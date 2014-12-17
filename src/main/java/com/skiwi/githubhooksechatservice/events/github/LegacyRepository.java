@@ -10,7 +10,7 @@ import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
  *
  * @author Frank van Heeswijk
  */
-public final class LegacyRepository extends AnySetterJSONObject {
+public final class LegacyRepository extends AnySetterJSONObject implements GithubRepository {
     @JsonProperty
     private long id;
     
@@ -225,10 +225,12 @@ public final class LegacyRepository extends AnySetterJSONObject {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getFullName() {
         return fullName;
     }
@@ -241,6 +243,7 @@ public final class LegacyRepository extends AnySetterJSONObject {
         return isPrivate;
     }
 
+    @Override
     public String getHtmlUrl() {
         return htmlUrl;
     }
@@ -253,6 +256,7 @@ public final class LegacyRepository extends AnySetterJSONObject {
         return fork;
     }
 
+    @Override
     public String getUrl() {
         return url;
     }
