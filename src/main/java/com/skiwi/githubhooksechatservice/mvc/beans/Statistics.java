@@ -8,6 +8,7 @@ import com.skiwi.githubhooksechatservice.events.github.GithubRepository;
 import com.skiwi.githubhooksechatservice.events.github.IssuesEvent;
 import com.skiwi.githubhooksechatservice.events.github.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.LegacyRepository;
+import com.skiwi.githubhooksechatservice.events.travis.Repository;
 
 public class Statistics {
 
@@ -34,6 +35,14 @@ public class Statistics {
 		return repoStats.get(repository.getHtmlUrl());
 	}
 
+	public synchronized void fixRepositoryURL(Repository repository) {
+		for (RepositoryStats githubRepo : repoStats.values()) {
+			if (repository.getFullNameGithubStyle().equals(githubRepo.getName())) {
+				repository.setUrl(githubRepo.getUrl());
+			}
+		}
+	}
+	
 	public synchronized void add(LegacyRepository repository, LegacyCommit commit) {
 		RepositoryStats stats = putIfAbsent(repository);
 		stats.addCommit();
