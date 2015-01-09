@@ -146,7 +146,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     	if (params == null) {
     		params = new WebhookParameters();
     	}
-		params.init(configuration);
+		params.useDefaultRoom(configuration.getRoomId());
 		Objects.requireNonNull(messages, "messages");
 		List<ChatMessage> shortenedMessages = new ArrayList<>();
 		for (String message : messages) {

@@ -1,6 +1,5 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
-import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 
 public class WebhookParameters {
 	
@@ -14,9 +13,9 @@ public class WebhookParameters {
 		this.roomId = roomId;
 	}
 
-	public void init(Configuration configuration) {
+	public void useDefaultRoom(String defaultRoomId) {
 		if (roomId == null) {
-			roomId = configuration.getRoomId();
+			roomId = defaultRoomId;
 		}
 	}
 	
