@@ -159,6 +159,13 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 			}
 			shortenedMessages.add(new ChatMessage(params, messageCopy));
 		}
+		if (!params.getPost()) {
+			for (ChatMessage message : shortenedMessages) {
+				LOGGER.info("Ignoring message for " + message.getRoom() + ": " + message.getMessage());
+			}
+			return;
+		}
+		
 		messagesQueue.add(shortenedMessages);
 	} 
 	
