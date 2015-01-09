@@ -8,7 +8,7 @@ public class ChatMessage {
 	private final String message;
 
 	public ChatMessage(WebhookParameters params, String message) {
-		this.room = params.getRoom();
+		this.room = params.getRoomId();
 		this.message = message;
 	}
 	

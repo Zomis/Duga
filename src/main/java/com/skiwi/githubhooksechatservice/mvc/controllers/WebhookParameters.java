@@ -4,19 +4,19 @@ import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 
 public class WebhookParameters {
 	
-	private String room;
+	private String roomId;
 	
-	public String getRoom() {
-		return room;
+	public String getRoomId() {
+		return roomId;
 	}
 	
-	public void setRoom(String room) {
-		this.room = room;
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 
 	public void init(Configuration configuration) {
-		if (room == null) {
-			room = configuration.getRoomId();
+		if (roomId == null) {
+			roomId = configuration.getRoomId();
 		}
 	}
 	
