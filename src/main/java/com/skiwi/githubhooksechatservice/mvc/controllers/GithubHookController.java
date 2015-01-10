@@ -295,6 +295,7 @@ public class GithubHookController {
     @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request")
     @ResponseBody
     public void pullRequest(final WebhookParameters params, final @RequestBody PullRequestEvent pullRequestEvent) {
+    	statistics.informAboutURL(pullRequestEvent.getRepository());
 		Commit head = pullRequestEvent.getPullRequest().getHead();
 		Commit base = pullRequestEvent.getPullRequest().getBase();
 		String headText;

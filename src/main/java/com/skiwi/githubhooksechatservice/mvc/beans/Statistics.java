@@ -55,5 +55,9 @@ public class Statistics {
 	public synchronized Map<String, RepositoryStats> getRepoStats() {
 		return new HashMap<>(repoStats);
 	}
+
+	public void informAboutURL(GithubRepository repository) {
+		putIfAbsent(repository);
+	}
 	
 }
