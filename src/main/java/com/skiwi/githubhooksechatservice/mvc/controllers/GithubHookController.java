@@ -46,7 +46,7 @@ import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
  * @author Frank van Heeswijk
  */
 @Controller
-@RequestMapping("/hooks/github")
+@RequestMapping({ "/hooks/github", "" })
 public class GithubHookController {
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
 	
@@ -58,13 +58,13 @@ public class GithubHookController {
 	@Autowired
 	private Statistics statistics;
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=ping")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=ping")
     @ResponseBody
     public void ping(final WebhookParameters params, final @RequestBody PingEvent pingEvent) {
         chatBot.postMessage(params, "Ping: " + pingEvent.getZen());
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=commit_comment")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=commit_comment")
     @ResponseBody
     public void commitComment(final WebhookParameters params, final @RequestBody CommitCommentEvent commitCommentEvent) {
 		if (commitCommentEvent.getComment().getPath() == null) {
@@ -94,7 +94,7 @@ public class GithubHookController {
 		}
     }
     
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=create")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=create")
     @ResponseBody
     public void create(final WebhookParameters params, final @RequestBody CreateEvent createEvent) {
 		String refUrl = null;
@@ -116,7 +116,7 @@ public class GithubHookController {
 			refUrl));
     }
     
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=delete")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=delete")
     @ResponseBody
     public void delete(final WebhookParameters params, final @RequestBody DeleteEvent deleteEvent) {
 		chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) deleted {4} **{5}**",
@@ -128,7 +128,7 @@ public class GithubHookController {
 			deleteEvent.getRef()));
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=fork")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=fork")
     @ResponseBody
     public void fork(final WebhookParameters params, final @RequestBody ForkEvent forkEvent) {
 		chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) forked us into [**{4}**]({5})",
@@ -140,7 +140,7 @@ public class GithubHookController {
 			forkEvent.getForkee().getHtmlUrl()));
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=gollum")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=gollum")
     @ResponseBody
     public void gollum(final WebhookParameters params, final @RequestBody GollumEvent gollumEvent) {
 		gollumEvent.getPages().forEach(wikiPage -> {
@@ -155,7 +155,7 @@ public class GithubHookController {
 		});
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=issues")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=issues")
     @ResponseBody
     public void issues(final WebhookParameters params, final @RequestBody IssuesEvent issuesEvent) {
 		switch (issuesEvent.getAction()) {
@@ -257,7 +257,7 @@ public class GithubHookController {
 		}
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=issue_comment")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=issue_comment")
     @ResponseBody
     public void issueComment(final WebhookParameters params, final @RequestBody IssueCommentEvent issueCommentEvent) {
 		switch (issueCommentEvent.getAction()) {
@@ -279,7 +279,7 @@ public class GithubHookController {
 		}
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=member")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=member")
     @ResponseBody
     public void member(final WebhookParameters params, final @RequestBody MemberEvent memberEvent) {
 		chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) {4} [**{5}**]({6})",
@@ -292,7 +292,7 @@ public class GithubHookController {
 			memberEvent.getMember().getHtmlUrl()));
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=pull_request")
     @ResponseBody
     public void pullRequest(final WebhookParameters params, final @RequestBody PullRequestEvent pullRequestEvent) {
     	statistics.informAboutURL(pullRequestEvent.getRepository());
@@ -438,7 +438,7 @@ public class GithubHookController {
 		}
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=pull_request_review_comment")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=pull_request_review_comment")
     @ResponseBody
     public void pullRequestReviewComment(final WebhookParameters params, final @RequestBody PullRequestReviewCommentEvent pullRequestReviewCommentEvent) {
 		switch (pullRequestReviewCommentEvent.getAction()) {
@@ -459,7 +459,7 @@ public class GithubHookController {
 		}
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=push")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=push")
     @ResponseBody
     public void push(final WebhookParameters params, final @RequestBody PushEvent pushEvent) {
 		Map<Boolean, List<LegacyCommit>> partitionedCommits = pushEvent.getCommits().stream()
@@ -513,7 +513,7 @@ public class GithubHookController {
 		});
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=watch")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=watch")
     @ResponseBody
     public void watch(final WebhookParameters params, final @RequestBody WatchEvent watchEvent) {
 		switch (watchEvent.getAction()) {
@@ -527,7 +527,7 @@ public class GithubHookController {
 		}
     }
 	
-    @RequestMapping(value = "/payload", method = RequestMethod.POST, headers = "X-Github-Event=team_add")
+    @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=team_add")
     @ResponseBody
     public void teamAdd(final WebhookParameters params, final @RequestBody TeamAddEvent teamAddEvent) {
 		if (teamAddEvent.getUser() == null) {
