@@ -1,5 +1,6 @@
 package com.skiwi.githubhooksechatservice.events.github;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -11,4 +12,11 @@ import com.skiwi.githubhooksechatservice.jackson.MessageTypeIdResolver;
 @JsonTypeIdResolver(MessageTypeIdResolver.class)
 public class AbstractEvent extends AnySetterJSONObject {
 
+	@JsonProperty
+	protected long id;
+	
+	public final long getId() {
+		return id;
+	}
+	
 }
