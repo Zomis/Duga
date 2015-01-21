@@ -12,8 +12,6 @@ import com.skiwi.githubhooksechatservice.jackson.MessageTypeIdResolver;
  *
  * @author Frank van Heeswijk
  */
-@JsonTypeInfo(use = Id.CUSTOM, property = "type", include = As.PROPERTY)
-@JsonTypeIdResolver(MessageTypeIdResolver.class)
 public abstract class AnySetterJSONObject {
 	@JsonAnySetter
 	protected void anySetter(final String name, final Object value) {

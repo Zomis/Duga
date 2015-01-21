@@ -1,11 +1,10 @@
 package com.skiwi.githubhooksechatservice.events.github;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
 import com.skiwi.githubhooksechatservice.events.github.classes.Organization;
 import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
 
-public abstract class GithubEvent extends AnySetterJSONObject {
+public abstract class GithubEvent extends AbstractEvent {
 	
 	@JsonProperty
 	protected Repository repository;
@@ -20,6 +19,9 @@ public abstract class GithubEvent extends AnySetterJSONObject {
 	public final Organization getOrganization() {
 		return organization;
 	}
-
+	
+	public void setRepo(Repository repository) {
+		this.repository = repository;
+	}
 
 }
