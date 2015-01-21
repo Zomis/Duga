@@ -4,9 +4,6 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
-import com.skiwi.githubhooksechatservice.events.github.classes.Organization;
-import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
 import com.skiwi.githubhooksechatservice.events.github.classes.Team;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
@@ -14,18 +11,12 @@ import com.skiwi.githubhooksechatservice.events.github.classes.User;
  *
  * @author Frank van Heeswijk
  */
-public final class TeamAddEvent extends AnySetterJSONObject {
+public final class TeamAddEvent extends GithubEvent {
 	@JsonProperty
 	private Team team;
 	
 	@JsonProperty(required = false)
 	private User user;
-	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
 	
 	@JsonProperty
 	private User sender;
@@ -36,14 +27,6 @@ public final class TeamAddEvent extends AnySetterJSONObject {
 
 	public User getUser() {
 		return user;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
 	}
 
 	public User getSender() {

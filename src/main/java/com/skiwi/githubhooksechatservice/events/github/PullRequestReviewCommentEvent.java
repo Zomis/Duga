@@ -4,18 +4,15 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
-import com.skiwi.githubhooksechatservice.events.github.classes.Organization;
 import com.skiwi.githubhooksechatservice.events.github.classes.PullRequest;
 import com.skiwi.githubhooksechatservice.events.github.classes.PullRequestReviewComment;
-import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class PullRequestReviewCommentEvent extends AnySetterJSONObject {
+public final class PullRequestReviewCommentEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
 	
@@ -24,12 +21,6 @@ public final class PullRequestReviewCommentEvent extends AnySetterJSONObject {
 	
 	@JsonProperty("pull_request")
 	private PullRequest pullRequest;
-	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
 	
 	@JsonProperty
 	private User sender;
@@ -44,14 +35,6 @@ public final class PullRequestReviewCommentEvent extends AnySetterJSONObject {
 
 	public PullRequest getPullRequest() {
 		return pullRequest;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
 	}
 
 	public User getSender() {
