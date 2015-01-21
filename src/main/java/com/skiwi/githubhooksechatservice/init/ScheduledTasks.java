@@ -1,4 +1,4 @@
-package com.skiwi.githubhooksechatservice.chatbot.duga;
+package com.skiwi.githubhooksechatservice.init;
 
 import java.text.MessageFormat;
 import java.util.Map;
@@ -6,22 +6,25 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.mvc.beans.RepositoryStats;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
-import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 
-public class ScheduledBean {
-    private static final Logger logger = Logger.getLogger(ScheduledBean.class.getSimpleName());
+@Configuration
+@EnableScheduling
+public class ScheduledTasks {
+    private static final Logger logger = Logger.getLogger(ScheduledTasks.class.getSimpleName());
 	
     @Autowired
     private ChatBot chatBot;
     
     @Autowired
-    private Configuration config;
+    private com.skiwi.githubhooksechatservice.mvc.configuration.Configuration config;
     
     @Autowired
     private Statistics statistics;

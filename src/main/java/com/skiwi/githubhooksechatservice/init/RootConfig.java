@@ -13,6 +13,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -71,6 +73,14 @@ public class RootConfig {
 	}
 	
 	@Bean
+	public TaskScheduler executor() {
+		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+		scheduler.setPoolSize(3);
+		scheduler.setThreadNamePrefix("beanscheduler-");
+		return scheduler;
+	}
+	
+	@Bean
 	public MultipartResolver resolver() {
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 		resolver.setMaxUploadSize(-1);
@@ -81,11 +91,6 @@ public class RootConfig {
 	public Statistics stats() {
 		return new Statistics();
 	}
-	
-//	@Bean
-//	public StartupBean startUp() {
-//		return new StartupBean();
-//	}
 	
 	@Bean
 	public DataSource dataSource() {
