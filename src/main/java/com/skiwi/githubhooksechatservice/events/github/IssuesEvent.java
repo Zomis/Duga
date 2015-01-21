@@ -105,4 +105,12 @@ public final class IssuesEvent extends GithubEvent {
 		this.label = event.label;
 	}
 	
+	@Override
+	public String toString() {
+		return "IssuesEvent [action=" + action + ", issue=" + issue
+				+ ", assignee=" + assignee + ", label=" + label + ", sender="
+				+ sender + ", repository=" + repository + ", organization="
+				+ organization + "]";
+	}
+	
 }
