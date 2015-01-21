@@ -791,4 +791,10 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
 		}
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Repository [id=" + id + ", htmlUrl=" + htmlUrl + "]";
+	}
+	
 }
