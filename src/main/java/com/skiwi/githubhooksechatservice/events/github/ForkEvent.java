@@ -4,6 +4,8 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
@@ -11,6 +13,7 @@ import com.skiwi.githubhooksechatservice.events.github.classes.User;
  *
  * @author Frank van Heeswijk
  */
+@JsonTypeInfo(use = Id.NAME, defaultImpl = ForkEvent.class)
 public final class ForkEvent extends GithubEvent {
 	@JsonProperty
 	private Repository forkee;
@@ -59,4 +62,9 @@ public final class ForkEvent extends GithubEvent {
 		}
 		return true;
 	}
+	
+	public void setPayload(ForkEvent event) {
+		this.forkee = event.forkee;
+	}
+	
 }

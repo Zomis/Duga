@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
 import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
 
@@ -13,6 +15,7 @@ import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
  *
  * @author Frank van Heeswijk
  */
+@JsonTypeInfo(use = Id.NAME, defaultImpl = GollumEvent.class)
 public final class GollumEvent extends GithubEvent {
 	@JsonProperty
 	private WikiPage[] pages;
@@ -61,4 +64,9 @@ public final class GollumEvent extends GithubEvent {
 		}
 		return true;
 	}
+	
+	public void setPayload(GollumEvent event) {
+		this.pages = event.pages;
+	}
+	
 }
