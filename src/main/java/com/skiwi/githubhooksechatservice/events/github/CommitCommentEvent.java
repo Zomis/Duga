@@ -4,6 +4,8 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.CommitComment;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
@@ -11,6 +13,7 @@ import com.skiwi.githubhooksechatservice.events.github.classes.User;
  *
  * @author Frank van Heeswijk
  */
+@JsonTypeInfo(use = Id.NAME, defaultImpl = CommitCommentEvent.class)
 public final class CommitCommentEvent extends GithubEvent {
 	@JsonProperty
 	private CommitComment comment;
@@ -59,4 +62,9 @@ public final class CommitCommentEvent extends GithubEvent {
 		}
 		return true;
 	}
+	
+	public void setPayload(CommitCommentEvent event) {
+		this.comment = event.comment;
+	}
+	
 }
