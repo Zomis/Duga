@@ -38,6 +38,7 @@ public class FollowedRepoDAOImpl implements FollowedRepoDAO {
 			repo.setName(name);
 			repo.setLastChecked(lastChecked);
 			repo.setLastEventId(lastEventId);
+			repo.setRoomIds("");
 			openSession().persist(repo);
 		}
 		catch (Exception ex) {
