@@ -4,6 +4,8 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.PullRequest;
 import com.skiwi.githubhooksechatservice.events.github.classes.PullRequestReviewComment;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
@@ -12,6 +14,7 @@ import com.skiwi.githubhooksechatservice.events.github.classes.User;
  *
  * @author Frank van Heeswijk
  */
+@JsonTypeInfo(use = Id.NAME, defaultImpl = PullRequestReviewCommentEvent.class)
 public final class PullRequestReviewCommentEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
@@ -82,4 +85,11 @@ public final class PullRequestReviewCommentEvent extends GithubEvent {
 		}
 		return true;
 	}
+	
+	public void setPayload(PullRequestReviewCommentEvent event) {
+		this.action = event.action;
+		this.comment = event.comment;
+		this.pullRequest = event.pullRequest;
+	}
+	
 }

@@ -4,6 +4,8 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.Team;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
@@ -11,6 +13,7 @@ import com.skiwi.githubhooksechatservice.events.github.classes.User;
  *
  * @author Frank van Heeswijk
  */
+@JsonTypeInfo(use = Id.NAME, defaultImpl = TeamAddEvent.class)
 public final class TeamAddEvent extends GithubEvent {
 	@JsonProperty
 	private Team team;
@@ -70,4 +73,10 @@ public final class TeamAddEvent extends GithubEvent {
 		}
 		return true;
 	}
+	
+	public void setPayload(TeamAddEvent event) {
+		this.team = event.team;
+		this.user = event.user;
+	}
+	
 }

@@ -4,12 +4,15 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
  * @author Frank van Heeswijk
  */
+@JsonTypeInfo(use = Id.NAME, defaultImpl = WatchEvent.class)
 public final class WatchEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
@@ -58,4 +61,9 @@ public final class WatchEvent extends GithubEvent {
 		}
 		return true;
 	}
+	
+	public void setPayload(WatchEvent event) {
+		this.action = event.action;
+	}
+	
 }
