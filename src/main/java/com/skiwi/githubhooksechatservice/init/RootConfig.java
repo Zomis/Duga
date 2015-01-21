@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubUtils;
 import com.skiwi.githubhooksechatservice.mvc.beans.StartupBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 
@@ -50,6 +51,11 @@ public class RootConfig {
 	@Bean(initMethod = "start", destroyMethod = "destroy")
 	public StartupBean startup() {
 		return new StartupBean();
+	}
+	
+	@Bean
+	public GithubUtils githubUtils() {
+		return new GithubUtils();
 	}
 	
 	@Bean
