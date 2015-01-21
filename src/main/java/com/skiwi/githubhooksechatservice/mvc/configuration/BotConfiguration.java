@@ -150,6 +150,7 @@ public class BotConfiguration {
 		return userMappingsMap;
 	}
 	
+	@Deprecated
 	public String getDailyRooms() {
 		return dailyRooms;
 	}

@@ -15,6 +15,7 @@ import com.skiwi.githubhooksechatservice.mvc.beans.RepositoryStats;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
+import com.skiwi.githubhooksechatservice.service.ConfigService;
 
 @Configuration
 @EnableScheduling
@@ -29,13 +30,16 @@ public class ScheduledTasks {
     
     @Autowired
     private Statistics statistics;
+    
+    @Autowired
+    private ConfigService configService;
 
     @Scheduled(cron = "0 0 1 * * *") // second minute hour day day day
 	public void dailyMessage() {
 		logger.info("time!");
 		Map<String, RepositoryStats> stats = statistics.getRepoStats();
     	statistics.reset();
-    	String rooms = config.getDailyRooms();
+    	String rooms = configService.getConfig("dailyRooms", "");
     	
 		for (String room : rooms.split(",")) {
    			WebhookParameters params = new WebhookParameters();
