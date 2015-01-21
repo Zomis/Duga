@@ -39,6 +39,7 @@ import com.skiwi.githubhooksechatservice.events.github.WatchEvent;
 import com.skiwi.githubhooksechatservice.events.github.classes.Commit;
 import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.classes.PingEvent;
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 
 /**
@@ -58,6 +59,9 @@ public class GithubHookController {
 	@Autowired
 	private Statistics statistics;
 	
+	@Autowired
+	private GithubBean githubBean;
+	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=ping")
     @ResponseBody
     public void ping(final WebhookParameters params, final @RequestBody PingEvent pingEvent) {
@@ -67,194 +71,44 @@ public class GithubHookController {
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=commit_comment")
     @ResponseBody
     public void commitComment(final WebhookParameters params, final @RequestBody CommitCommentEvent commitCommentEvent) {
-		if (commitCommentEvent.getComment().getPath() == null) {
-			chatBot.postMessages(params, 
-				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on commit [**{5}**]({6})",
-					commitCommentEvent.getRepository().getFullName(),
-					commitCommentEvent.getRepository().getHtmlUrl(),
-					commitCommentEvent.getSender().getLogin(),
-					commitCommentEvent.getSender().getHtmlUrl(),
-					commitCommentEvent.getComment().getHtmlUrl(),
-					commitCommentEvent.getComment().getCommitId().substring(0, 8),
-					commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()),
+		chatBot.postMessages(params, githubBean.stringify(commitCommentEvent),
 				"> " + commitCommentEvent.getComment().getBody());
-		}
-		else {
-			chatBot.postMessages(params, 
-				MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of commit [**{6}**]({7})",
-					commitCommentEvent.getRepository().getFullName(),
-					commitCommentEvent.getRepository().getHtmlUrl(),
-					commitCommentEvent.getSender().getLogin(),
-					commitCommentEvent.getSender().getHtmlUrl(),
-					commitCommentEvent.getComment().getPath(),
-					commitCommentEvent.getComment().getHtmlUrl(),
-					commitCommentEvent.getComment().getCommitId().substring(0, 8),
-					commitCommentEvent.getRepository().getHtmlUrl() + "/commit/" + commitCommentEvent.getComment().getCommitId()),
-				"> " + commitCommentEvent.getComment().getBody());
-		}
     }
     
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=create")
     @ResponseBody
     public void create(final WebhookParameters params, final @RequestBody CreateEvent createEvent) {
-		String refUrl = null;
-		switch (createEvent.getRefType()) {
-			case "branch":
-				refUrl = createEvent.getRepository().getHtmlUrl() + "/tree/" + createEvent.getRef();
-				break;
-			case "tag":
-				refUrl = createEvent.getRepository().getHtmlUrl() + "/releases/tag/" + createEvent.getRef();
-				break;
-		}
-		chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created {4} [**{5}**]({6})",
-			createEvent.getRepository().getFullName(),
-			createEvent.getRepository().getHtmlUrl(),
-			createEvent.getSender().getLogin(),
-			createEvent.getSender().getHtmlUrl(),
-			createEvent.getRefType(),
-			createEvent.getRef(),
-			refUrl));
+		chatBot.postMessage(params, githubBean.stringify(createEvent));
     }
     
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=delete")
     @ResponseBody
     public void delete(final WebhookParameters params, final @RequestBody DeleteEvent deleteEvent) {
-		chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) deleted {4} **{5}**",
-			deleteEvent.getRepository().getFullName(),
-			deleteEvent.getRepository().getHtmlUrl(),
-			deleteEvent.getSender().getLogin(),
-			deleteEvent.getSender().getHtmlUrl(),
-			deleteEvent.getRefType(),
-			deleteEvent.getRef()));
+		chatBot.postMessage(params, githubBean.stringify(deleteEvent));
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=fork")
     @ResponseBody
     public void fork(final WebhookParameters params, final @RequestBody ForkEvent forkEvent) {
-		chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) forked us into [**{4}**]({5})",
-			forkEvent.getRepository().getFullName(),
-			forkEvent.getRepository().getHtmlUrl(),
-			forkEvent.getSender().getLogin(),
-			forkEvent.getSender().getHtmlUrl(),
-			forkEvent.getForkee().getFullName(),
-			forkEvent.getForkee().getHtmlUrl()));
+		chatBot.postMessage(params, githubBean.stringify(forkEvent));
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=gollum")
     @ResponseBody
     public void gollum(final WebhookParameters params, final @RequestBody GollumEvent gollumEvent) {
-		gollumEvent.getPages().forEach(wikiPage -> {
-			chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) {4} wiki page [**{5}**]({6})",
-				gollumEvent.getRepository().getFullName(),
-				gollumEvent.getRepository().getHtmlUrl(),
-				gollumEvent.getSender().getLogin(),
-				gollumEvent.getSender().getHtmlUrl(),
-				wikiPage.getAction(),
-				wikiPage.getTitle().trim(),
-				wikiPage.getHtmlUrl()));
-		});
+		gollumEvent.getPages().forEach(wikiPage -> chatBot.postMessage(params, githubBean.stringify(gollumEvent, wikiPage)));
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=issues")
     @ResponseBody
     public void issues(final WebhookParameters params, final @RequestBody IssuesEvent issuesEvent) {
-		switch (issuesEvent.getAction()) {
-			case "assigned":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) assigned [**{4}**]({5}) to issue [**#{6}: {7}**]({8})",
-					issuesEvent.getRepository().getFullName(),
-					issuesEvent.getRepository().getHtmlUrl(),
-					issuesEvent.getSender().getLogin(),
-					issuesEvent.getSender().getHtmlUrl(),
-					issuesEvent.getAssignee().getLogin(),
-					issuesEvent.getAssignee().getHtmlUrl(),
-					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle().trim(),
-					issuesEvent.getIssue().getHtmlUrl()));
-				break;
-			case "unassigned":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) unassigned [**{4}**]({5}) from issue [**#{6}: {7}**]({8})",
-					issuesEvent.getRepository().getFullName(),
-					issuesEvent.getRepository().getHtmlUrl(),
-					issuesEvent.getSender().getLogin(),
-					issuesEvent.getSender().getHtmlUrl(),
-					issuesEvent.getAssignee().getLogin(),
-					issuesEvent.getAssignee().getHtmlUrl(),
-					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle().trim(),
-					issuesEvent.getIssue().getHtmlUrl()));
-				break;
-			case "labeled":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added label [**{4}**]({5}) to issue [**#{6}: {7}**]({8})",
-					issuesEvent.getRepository().getFullName(),
-					issuesEvent.getRepository().getHtmlUrl(),
-					issuesEvent.getSender().getLogin(),
-					issuesEvent.getSender().getHtmlUrl(),
-					issuesEvent.getLabel().getName(),
-					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "%20"),
-					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle().trim(),
-					issuesEvent.getIssue().getHtmlUrl()));
-				break;
-			case "unlabeled":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) removed label [**{4}**]({5}) from issue [**#{6}: {7}**]({8})",
-					issuesEvent.getRepository().getFullName(),
-					issuesEvent.getRepository().getHtmlUrl(),
-					issuesEvent.getSender().getLogin(),
-					issuesEvent.getSender().getHtmlUrl(),
-					issuesEvent.getLabel().getName(),
-					issuesEvent.getRepository().getHtmlUrl() + "/labels/" + issuesEvent.getLabel().getName().replace(" ", "%20"),
-					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle().trim(),
-					issuesEvent.getIssue().getHtmlUrl()));
-				break;
-			case "opened":
-				if (issuesEvent.getIssue().getBody() == null || issuesEvent.getIssue().getBody().isEmpty()) {
-					chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
-							issuesEvent.getRepository().getFullName(),
-							issuesEvent.getRepository().getHtmlUrl(),
-							issuesEvent.getSender().getLogin(),
-							issuesEvent.getSender().getHtmlUrl(),
-							issuesEvent.getIssue().getNumber(),
-							issuesEvent.getIssue().getTitle().trim(),
-							issuesEvent.getIssue().getHtmlUrl()));
-				}
-				else {
-					chatBot.postMessages(params, 
-						MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) opened issue [**#{4}: {5}**]({6})",
-							issuesEvent.getRepository().getFullName(),
-							issuesEvent.getRepository().getHtmlUrl(),
-							issuesEvent.getSender().getLogin(),
-							issuesEvent.getSender().getHtmlUrl(),
-							issuesEvent.getIssue().getNumber(),
-							issuesEvent.getIssue().getTitle().trim(),
-							issuesEvent.getIssue().getHtmlUrl()),
-						"> " + issuesEvent.getIssue().getBody());
-				}
-				statistics.add(issuesEvent, true);
-				break;
-			case "closed":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) closed issue [**#{4}: {5}**]({6})",
-					issuesEvent.getRepository().getFullName(),
-					issuesEvent.getRepository().getHtmlUrl(),
-					issuesEvent.getSender().getLogin(),
-					issuesEvent.getSender().getHtmlUrl(),
-					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle().trim(),
-					issuesEvent.getIssue().getHtmlUrl()));
-				statistics.add(issuesEvent, false);
-				break;
-			case "reopened":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) reopened issue [**#{4}: {5}**]({6})",
-					issuesEvent.getRepository().getFullName(),
-					issuesEvent.getRepository().getHtmlUrl(),
-					issuesEvent.getSender().getLogin(),
-					issuesEvent.getSender().getHtmlUrl(),
-					issuesEvent.getIssue().getNumber(),
-					issuesEvent.getIssue().getTitle().trim(),
-					issuesEvent.getIssue().getHtmlUrl()));
-				statistics.add(issuesEvent, true);
-				break;
-		}
+    	if (issuesEvent.getAction().equals("opened") && issuesEvent.getIssue().getBody() != null
+    			&& !issuesEvent.getIssue().getBody().isEmpty()) {
+        	chatBot.postMessages(params, githubBean.stringify(issuesEvent), issuesEvent.getIssue().getBody());
+    	}
+    	else {
+        	chatBot.postMessages(params, githubBean.stringify(issuesEvent));
+    	}
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=issue_comment")
@@ -262,18 +116,7 @@ public class GithubHookController {
     public void issueComment(final WebhookParameters params, final @RequestBody IssueCommentEvent issueCommentEvent) {
 		switch (issueCommentEvent.getAction()) {
 			case "created":
-				String commentTarget = (issueCommentEvent.getIssue().getPullRequest() == null) ? "issue" : "pull request";
-				chatBot.postMessages(params, 
-					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on {5} [**#{6}: {7}**]({8})",
-						issueCommentEvent.getRepository().getFullName(),
-						issueCommentEvent.getRepository().getHtmlUrl(),
-						issueCommentEvent.getSender().getLogin(),
-						issueCommentEvent.getSender().getHtmlUrl(),
-						issueCommentEvent.getComment().getHtmlUrl(),
-						commentTarget,
-						issueCommentEvent.getIssue().getNumber(),
-						issueCommentEvent.getIssue().getTitle().trim(),
-						issueCommentEvent.getIssue().getHtmlUrl()),
+				chatBot.postMessages(params, githubBean.stringify(issueCommentEvent),
 					"> " + issueCommentEvent.getComment().getBody());
 				break;
 		}
@@ -282,14 +125,7 @@ public class GithubHookController {
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=member")
     @ResponseBody
     public void member(final WebhookParameters params, final @RequestBody MemberEvent memberEvent) {
-		chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) {4} [**{5}**]({6})",
-			memberEvent.getRepository().getFullName(),
-			memberEvent.getRepository().getHtmlUrl(),
-			memberEvent.getSender().getLogin(),
-			memberEvent.getSender().getHtmlUrl(),
-			memberEvent.getAction(),
-			memberEvent.getMember().getLogin(),
-			memberEvent.getMember().getHtmlUrl()));
+		chatBot.postMessage(params, githubBean.stringify(memberEvent));
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=pull_request")
@@ -443,17 +279,7 @@ public class GithubHookController {
     public void pullRequestReviewComment(final WebhookParameters params, final @RequestBody PullRequestReviewCommentEvent pullRequestReviewCommentEvent) {
 		switch (pullRequestReviewCommentEvent.getAction()) {
 			case "created":
-				chatBot.postMessages(params, 
-					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented on **{4}**]({5}) of pull request [**#{6}: {7}**]({8})",
-						pullRequestReviewCommentEvent.getRepository().getFullName(),
-						pullRequestReviewCommentEvent.getRepository().getHtmlUrl(),
-						pullRequestReviewCommentEvent.getSender().getLogin(),
-						pullRequestReviewCommentEvent.getSender().getHtmlUrl(),
-						pullRequestReviewCommentEvent.getComment().getPath(),
-						pullRequestReviewCommentEvent.getComment().getHtmlUrl(),
-						pullRequestReviewCommentEvent.getPullRequest().getNumber(),
-						pullRequestReviewCommentEvent.getPullRequest().getTitle().trim(),
-						pullRequestReviewCommentEvent.getPullRequest().getHtmlUrl()),
+				chatBot.postMessages(params, githubBean.stringify(pullRequestReviewCommentEvent),
 					"> " + pullRequestReviewCommentEvent.getComment().getBody());
 					break;
 		}
