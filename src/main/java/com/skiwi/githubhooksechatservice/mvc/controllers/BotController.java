@@ -1,5 +1,6 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
+import java.time.Instant;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubUtils;
+import com.skiwi.githubhooksechatservice.service.GithubService;
 
 /**
  *
@@ -27,6 +29,9 @@ public class BotController {
 	@Autowired
 	private GithubUtils githubUtils;
 	
+	@Autowired
+	private GithubService githubService;
+	
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     @ResponseBody
     public String hello() {
@@ -37,7 +42,16 @@ public class BotController {
     @RequestMapping(value = "/gittest", method = RequestMethod.GET)
     @ResponseBody
     public String gitScan(@RequestParam("name") String name) {
-    	AnySetterJSONObject[] blocks = githubUtils.fetchRepoEvents(name);
+    	AbstractEvent[] blocks = githubUtils.fetchRepoEvents(name);
+        return Arrays.toString(blocks);
+    }
+
+    @RequestMapping(value = "/gittrack", method = RequestMethod.GET)
+    @ResponseBody
+    public String gitTrack(@RequestParam("name") String name) {
+    	AbstractEvent[] blocks = githubUtils.fetchRepoEvents(name);
+    	long eventId = Arrays.stream(blocks).mapToLong(bl -> bl.getId()).max().orElse(0);
+    	githubService.update(name, Instant.now().getEpochSecond(), eventId - 1);
         return Arrays.toString(blocks);
     }
 
