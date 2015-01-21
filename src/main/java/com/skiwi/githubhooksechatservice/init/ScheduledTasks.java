@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.mvc.beans.RepositoryStats;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
-import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 import com.skiwi.githubhooksechatservice.service.ConfigService;
 
@@ -24,9 +23,6 @@ public class ScheduledTasks {
 	
     @Autowired
     private ChatBot chatBot;
-    
-    @Autowired
-    private BotConfiguration config;
     
     @Autowired
     private Statistics statistics;

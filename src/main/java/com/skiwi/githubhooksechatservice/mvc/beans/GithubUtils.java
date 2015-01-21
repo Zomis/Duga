@@ -8,10 +8,10 @@ import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 
 public class GithubUtils {
 	
-    public AbstractEvent[] data(String name, String repository) {
+    public AbstractEvent[] fetchRepoEvents(String name) {
     	ObjectMapper mapper = new ObjectMapper(); // just need one
     	try {
-    		URL url = new URL("https://api.github.com/repos/" + name + "/" + repository + "/events");
+    		URL url = new URL("https://api.github.com/repos/" + name + "/events");
 			AbstractEvent[] data = mapper.readValue(url, AbstractEvent[].class);
 			return data;
 		} catch (IOException e) {

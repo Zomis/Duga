@@ -36,8 +36,8 @@ public class BotController {
 
     @RequestMapping(value = "/gittest", method = RequestMethod.GET)
     @ResponseBody
-    public String gitScan(@RequestParam("name") String name, @RequestParam("repository") String repository) {
-    	AnySetterJSONObject[] blocks = githubUtils.data(name, repository);
+    public String gitScan(@RequestParam("name") String name) {
+    	AnySetterJSONObject[] blocks = githubUtils.fetchRepoEvents(name);
         return Arrays.toString(blocks);
     }
 
