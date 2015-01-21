@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.skiwi.githubhooksechatservice.mvc.beans.StartupBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 
 @Configuration
@@ -42,6 +43,11 @@ public class RootConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean(initMethod = "start", destroyMethod = "destroy")
+	public StartupBean startup() {
+		return new StartupBean();
 	}
 	
 	@Bean

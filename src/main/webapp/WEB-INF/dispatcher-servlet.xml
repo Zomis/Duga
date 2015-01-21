@@ -34,39 +34,6 @@
 
     <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <value>classpath:githubhooksechatservice-environment.properties</value>
-        </property>
-    </bean>
-
-    <!-- properties -->
-    <bean id="configuration" class="com.skiwi.githubhooksechatservice.mvc.configuration.Configuration">
-        <property name="rootUrl" value="${env.rootUrl}"/>
-        <property name="chatUrl" value="${env.chatUrl}"/>
-        <property name="botEmail" value="${env.botEmail}"/>
-        <property name="botPassword" value="${env.botPassword}"/>
-        <property name="roomId" value="${env.roomId}"/>
-        <property name="chatThrottle" value="${env.chatThrottle}"/>
-        <property name="chatMaxBurst" value="${env.chatMaxBurst}"/>
-        <property name="chatMinimumDelay" value="${env.chatMinimumDelay}"/>
-        <property name="deployGreetingEnabled" value="${env.deployGreetingEnabled}"/>
-        <property name="deployGreetingText" value="${env.deployGreetingText}"/>
-        <property name="undeployGoodbyeEnabled" value="${env.undeployGoodbyeEnabled}"/>
-        <property name="undeployGoodbyeText" value="${env.undeployGoodbyeText}"/>
-        <property name="userMappings" value="${env.userMappings}"/>
-        <property name="dailyRooms" value="${env.dailyRooms}"/>
-    </bean>
-
-<!-- <bean id="chatBot" class="com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot">
-		<constructor-arg ref="configuration"/>
-	</bean> -->	
-
-<!--     <bean name="statistics" class="com.skiwi.githubhooksechatservice.mvc.beans.Statistics" /> -->
-    
-    <!-- startup bean -->
-    <bean name="startup" init-method="start" class="com.skiwi.githubhooksechatservice.mvc.beans.StartupBean" lazy-init="false" />
-    
     <task:annotation-driven />
     <bean name="scheduledTasks" class="com.skiwi.githubhooksechatservice.chatbot.duga.ScheduledBean" />
 </beans>
