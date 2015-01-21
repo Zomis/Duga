@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
-import com.skiwi.githubhooksechatservice.events.github.User;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *

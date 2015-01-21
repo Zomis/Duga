@@ -2,6 +2,9 @@
 package com.skiwi.githubhooksechatservice.events.github;
 
 import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.skiwi.githubhooksechatservice.events.github.classes.Organization;
+import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 import java.util.Objects;
 

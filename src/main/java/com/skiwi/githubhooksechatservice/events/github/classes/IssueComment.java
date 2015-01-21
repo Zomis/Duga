@@ -1,5 +1,5 @@
 
-package com.skiwi.githubhooksechatservice.events.github;
+package com.skiwi.githubhooksechatservice.events.github.classes;
 
 import java.util.Objects;
 
@@ -10,30 +10,21 @@ import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
  *
  * @author Frank van Heeswijk
  */
-public final class CommitComment extends AnySetterJSONObject {
+public final class IssueComment extends AnySetterJSONObject {
 	@JsonProperty
 	private String url;
 	
 	@JsonProperty("html_url")
 	private String htmlUrl;
 	
+	@JsonProperty("issue_url")
+	private String issueUrl;
+	
 	@JsonProperty
 	private long id;
 	
 	@JsonProperty
 	private User user;
-	
-	@JsonProperty
-	private Long position;
-	
-	@JsonProperty
-	private Long line;
-	
-	@JsonProperty
-	private String path;
-	
-	@JsonProperty("commit_id")
-	private String commitId;
 	
 	@JsonProperty("created_at")
 	private String createdAt;
@@ -52,28 +43,16 @@ public final class CommitComment extends AnySetterJSONObject {
 		return htmlUrl;
 	}
 
+	public String getIssueUrl() {
+		return issueUrl;
+	}
+
 	public long getId() {
 		return id;
 	}
 
 	public User getUser() {
 		return user;
-	}
-
-	public Long getPosition() {
-		return position;
-	}
-
-	public Long getLine() {
-		return line;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public String getCommitId() {
-		return commitId;
 	}
 
 	public String getCreatedAt() {
@@ -91,17 +70,14 @@ public final class CommitComment extends AnySetterJSONObject {
 	@Override
 	public int hashCode() {
 		int hash = 3;
-		hash = 59 * hash + Objects.hashCode(this.url);
-		hash = 59 * hash + Objects.hashCode(this.htmlUrl);
-		hash = 59 * hash + (int)(this.id ^ (this.id >>> 32));
-		hash = 59 * hash + Objects.hashCode(this.user);
-		hash = 59 * hash + Objects.hashCode(this.position);
-		hash = 59 * hash + Objects.hashCode(this.line);
-		hash = 59 * hash + Objects.hashCode(this.path);
-		hash = 59 * hash + Objects.hashCode(this.commitId);
-		hash = 59 * hash + Objects.hashCode(this.createdAt);
-		hash = 59 * hash + Objects.hashCode(this.updatedAt);
-		hash = 59 * hash + Objects.hashCode(this.body);
+		hash = 29 * hash + Objects.hashCode(this.url);
+		hash = 29 * hash + Objects.hashCode(this.htmlUrl);
+		hash = 29 * hash + Objects.hashCode(this.issueUrl);
+		hash = 29 * hash + (int)(this.id ^ (this.id >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.user);
+		hash = 29 * hash + Objects.hashCode(this.createdAt);
+		hash = 29 * hash + Objects.hashCode(this.updatedAt);
+		hash = 29 * hash + Objects.hashCode(this.body);
 		return hash;
 	}
 
@@ -113,29 +89,20 @@ public final class CommitComment extends AnySetterJSONObject {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final CommitComment other = (CommitComment)obj;
+		final IssueComment other = (IssueComment)obj;
 		if (!Objects.equals(this.url, other.url)) {
 			return false;
 		}
 		if (!Objects.equals(this.htmlUrl, other.htmlUrl)) {
 			return false;
 		}
+		if (!Objects.equals(this.issueUrl, other.issueUrl)) {
+			return false;
+		}
 		if (this.id != other.id) {
 			return false;
 		}
 		if (!Objects.equals(this.user, other.user)) {
-			return false;
-		}
-		if (!Objects.equals(this.position, other.position)) {
-			return false;
-		}
-		if (!Objects.equals(this.line, other.line)) {
-			return false;
-		}
-		if (!Objects.equals(this.path, other.path)) {
-			return false;
-		}
-		if (!Objects.equals(this.commitId, other.commitId)) {
 			return false;
 		}
 		if (!Objects.equals(this.createdAt, other.createdAt)) {
@@ -149,6 +116,4 @@ public final class CommitComment extends AnySetterJSONObject {
 		}
 		return true;
 	}
-	
-	
 }

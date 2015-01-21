@@ -5,6 +5,11 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.skiwi.githubhooksechatservice.events.github.classes.Label;
+import com.skiwi.githubhooksechatservice.events.github.classes.Organization;
+import com.skiwi.githubhooksechatservice.events.github.classes.PullRequest;
+import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *

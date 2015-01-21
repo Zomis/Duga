@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.skiwi.githubhooksechatservice.events.github.GithubRepository;
 import com.skiwi.githubhooksechatservice.events.github.IssuesEvent;
-import com.skiwi.githubhooksechatservice.events.github.LegacyCommit;
-import com.skiwi.githubhooksechatservice.events.github.LegacyRepository;
+import com.skiwi.githubhooksechatservice.events.github.classes.GithubRepository;
+import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
+import com.skiwi.githubhooksechatservice.events.github.classes.LegacyRepository;
 import com.skiwi.githubhooksechatservice.events.travis.Repository;
 
 public class Statistics {

@@ -1,4 +1,4 @@
-package com.skiwi.githubhooksechatservice.events.github;
+package com.skiwi.githubhooksechatservice.events.github.classes;
 
 public interface GithubRepository {
 

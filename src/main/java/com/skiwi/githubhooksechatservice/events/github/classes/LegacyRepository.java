@@ -1,5 +1,5 @@
 
-package com.skiwi.githubhooksechatservice.events.github;
+package com.skiwi.githubhooksechatservice.events.github.classes;
 
 import java.util.Objects;
 
@@ -10,7 +10,7 @@ import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
  *
  * @author Frank van Heeswijk
  */
-public final class Repository extends AnySetterJSONObject implements GithubRepository {
+public final class LegacyRepository extends AnySetterJSONObject implements GithubRepository {
     @JsonProperty
     private long id;
     
@@ -21,7 +21,7 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
     private String fullName;
     
     @JsonProperty
-    private User owner;
+    private LegacySimpleUser owner;
     
     @JsonProperty("private")
     private boolean isPrivate;
@@ -144,13 +144,13 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
     private String releasesUrl;
     
     @JsonProperty("created_at")
-    private String createdAt;
+    private long createdAt;
     
     @JsonProperty("updated_at")
     private String updatedAt;
     
     @JsonProperty("pushed_at")
-    private String pushedAt;
+    private long pushedAt;
     
     @JsonProperty("git_url")
     private String gitUrl;
@@ -211,9 +211,12 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
     
     @JsonProperty("default_branch")
     private String defaultBranch;
-	
-	@JsonProperty(value = "public", required = false)
-	private Boolean isPublic;
+    
+    @JsonProperty
+    private long stargazers;
+    
+    @JsonProperty("master_branch")
+    private String masterBranch;
 	
 	@JsonProperty(required = false)
 	private String organization;
@@ -232,7 +235,7 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
         return fullName;
     }
 
-    public User getOwner() {
+    public LegacySimpleUser getOwner() {
         return owner;
     }
 
@@ -398,7 +401,7 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
         return releasesUrl;
     }
 
-    public String getCreatedAt() {
+    public long getCreatedAt() {
         return createdAt;
     }
 
@@ -406,7 +409,7 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
         return updatedAt;
     }
 
-    public String getPushedAt() {
+    public long getPushedAt() {
         return pushedAt;
     }
 
@@ -489,10 +492,14 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
     public String getDefaultBranch() {
         return defaultBranch;
     }
-	
-	public Boolean isPublic() {
-		return isPublic;
-	}
+
+    public long getStargazers() {
+        return stargazers;
+    }
+
+    public String getMasterBranch() {
+        return masterBranch;
+    }
 	
 	public String getOrganization() {
 		return organization;
@@ -500,76 +507,77 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 53 * hash + (int)(this.id ^ (this.id >>> 32));
-		hash = 53 * hash + Objects.hashCode(this.name);
-		hash = 53 * hash + Objects.hashCode(this.fullName);
-		hash = 53 * hash + Objects.hashCode(this.owner);
-		hash = 53 * hash + (this.isPrivate ? 1 : 0);
-		hash = 53 * hash + Objects.hashCode(this.htmlUrl);
-		hash = 53 * hash + Objects.hashCode(this.description);
-		hash = 53 * hash + (this.fork ? 1 : 0);
-		hash = 53 * hash + Objects.hashCode(this.url);
-		hash = 53 * hash + Objects.hashCode(this.forksUrl);
-		hash = 53 * hash + Objects.hashCode(this.keysUrl);
-		hash = 53 * hash + Objects.hashCode(this.collaboratorsUrl);
-		hash = 53 * hash + Objects.hashCode(this.teamsUrl);
-		hash = 53 * hash + Objects.hashCode(this.hooksUrl);
-		hash = 53 * hash + Objects.hashCode(this.issueEventsUrl);
-		hash = 53 * hash + Objects.hashCode(this.eventsUrl);
-		hash = 53 * hash + Objects.hashCode(this.assigneesUrl);
-		hash = 53 * hash + Objects.hashCode(this.branchesUrl);
-		hash = 53 * hash + Objects.hashCode(this.tagsUrl);
-		hash = 53 * hash + Objects.hashCode(this.blobsUrl);
-		hash = 53 * hash + Objects.hashCode(this.gitTagsUrl);
-		hash = 53 * hash + Objects.hashCode(this.gitRefsUrl);
-		hash = 53 * hash + Objects.hashCode(this.treesUrl);
-		hash = 53 * hash + Objects.hashCode(this.statusesUrl);
-		hash = 53 * hash + Objects.hashCode(this.languagesUrl);
-		hash = 53 * hash + Objects.hashCode(this.stargazersUrl);
-		hash = 53 * hash + Objects.hashCode(this.contributorsUrl);
-		hash = 53 * hash + Objects.hashCode(this.subscribersUrl);
-		hash = 53 * hash + Objects.hashCode(this.subscriptionUrl);
-		hash = 53 * hash + Objects.hashCode(this.commitsUrl);
-		hash = 53 * hash + Objects.hashCode(this.gitCommitsUrl);
-		hash = 53 * hash + Objects.hashCode(this.commentsUrl);
-		hash = 53 * hash + Objects.hashCode(this.issueCommentUrl);
-		hash = 53 * hash + Objects.hashCode(this.contentsUrl);
-		hash = 53 * hash + Objects.hashCode(this.compareUrl);
-		hash = 53 * hash + Objects.hashCode(this.mergesUrl);
-		hash = 53 * hash + Objects.hashCode(this.archiveUrl);
-		hash = 53 * hash + Objects.hashCode(this.downloadsUrl);
-		hash = 53 * hash + Objects.hashCode(this.issuesUrl);
-		hash = 53 * hash + Objects.hashCode(this.pullsUrl);
-		hash = 53 * hash + Objects.hashCode(this.milestonesUrl);
-		hash = 53 * hash + Objects.hashCode(this.notificationsUrl);
-		hash = 53 * hash + Objects.hashCode(this.labelsUrl);
-		hash = 53 * hash + Objects.hashCode(this.releasesUrl);
-		hash = 53 * hash + Objects.hashCode(this.createdAt);
-		hash = 53 * hash + Objects.hashCode(this.updatedAt);
-		hash = 53 * hash + Objects.hashCode(this.pushedAt);
-		hash = 53 * hash + Objects.hashCode(this.gitUrl);
-		hash = 53 * hash + Objects.hashCode(this.sshUrl);
-		hash = 53 * hash + Objects.hashCode(this.cloneUrl);
-		hash = 53 * hash + Objects.hashCode(this.svnUrl);
-		hash = 53 * hash + Objects.hashCode(this.homepage);
-		hash = 53 * hash + (int)(this.size ^ (this.size >>> 32));
-		hash = 53 * hash + (int)(this.stargazersCount ^ (this.stargazersCount >>> 32));
-		hash = 53 * hash + (int)(this.watchersCount ^ (this.watchersCount >>> 32));
-		hash = 53 * hash + Objects.hashCode(this.language);
-		hash = 53 * hash + (this.hasIssues ? 1 : 0);
-		hash = 53 * hash + (this.hasDownloads ? 1 : 0);
-		hash = 53 * hash + (this.hasWiki ? 1 : 0);
-		hash = 53 * hash + (this.hasPages ? 1 : 0);
-		hash = 53 * hash + (int)(this.forksCount ^ (this.forksCount >>> 32));
-		hash = 53 * hash + Objects.hashCode(this.mirrorUrl);
-		hash = 53 * hash + (int)(this.openIssuesCount ^ (this.openIssuesCount >>> 32));
-		hash = 53 * hash + (int)(this.forks ^ (this.forks >>> 32));
-		hash = 53 * hash + (int)(this.openIssues ^ (this.openIssues >>> 32));
-		hash = 53 * hash + (int)(this.watchers ^ (this.watchers >>> 32));
-		hash = 53 * hash + Objects.hashCode(this.defaultBranch);
-		hash = 53 * hash + Objects.hashCode(this.isPublic);
-		hash = 53 * hash + Objects.hashCode(this.organization);
+		int hash = 3;
+		hash = 29 * hash + (int)(this.id ^ (this.id >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.name);
+		hash = 29 * hash + Objects.hashCode(this.fullName);
+		hash = 29 * hash + Objects.hashCode(this.owner);
+		hash = 29 * hash + (this.isPrivate ? 1 : 0);
+		hash = 29 * hash + Objects.hashCode(this.htmlUrl);
+		hash = 29 * hash + Objects.hashCode(this.description);
+		hash = 29 * hash + (this.fork ? 1 : 0);
+		hash = 29 * hash + Objects.hashCode(this.url);
+		hash = 29 * hash + Objects.hashCode(this.forksUrl);
+		hash = 29 * hash + Objects.hashCode(this.keysUrl);
+		hash = 29 * hash + Objects.hashCode(this.collaboratorsUrl);
+		hash = 29 * hash + Objects.hashCode(this.teamsUrl);
+		hash = 29 * hash + Objects.hashCode(this.hooksUrl);
+		hash = 29 * hash + Objects.hashCode(this.issueEventsUrl);
+		hash = 29 * hash + Objects.hashCode(this.eventsUrl);
+		hash = 29 * hash + Objects.hashCode(this.assigneesUrl);
+		hash = 29 * hash + Objects.hashCode(this.branchesUrl);
+		hash = 29 * hash + Objects.hashCode(this.tagsUrl);
+		hash = 29 * hash + Objects.hashCode(this.blobsUrl);
+		hash = 29 * hash + Objects.hashCode(this.gitTagsUrl);
+		hash = 29 * hash + Objects.hashCode(this.gitRefsUrl);
+		hash = 29 * hash + Objects.hashCode(this.treesUrl);
+		hash = 29 * hash + Objects.hashCode(this.statusesUrl);
+		hash = 29 * hash + Objects.hashCode(this.languagesUrl);
+		hash = 29 * hash + Objects.hashCode(this.stargazersUrl);
+		hash = 29 * hash + Objects.hashCode(this.contributorsUrl);
+		hash = 29 * hash + Objects.hashCode(this.subscribersUrl);
+		hash = 29 * hash + Objects.hashCode(this.subscriptionUrl);
+		hash = 29 * hash + Objects.hashCode(this.commitsUrl);
+		hash = 29 * hash + Objects.hashCode(this.gitCommitsUrl);
+		hash = 29 * hash + Objects.hashCode(this.commentsUrl);
+		hash = 29 * hash + Objects.hashCode(this.issueCommentUrl);
+		hash = 29 * hash + Objects.hashCode(this.contentsUrl);
+		hash = 29 * hash + Objects.hashCode(this.compareUrl);
+		hash = 29 * hash + Objects.hashCode(this.mergesUrl);
+		hash = 29 * hash + Objects.hashCode(this.archiveUrl);
+		hash = 29 * hash + Objects.hashCode(this.downloadsUrl);
+		hash = 29 * hash + Objects.hashCode(this.issuesUrl);
+		hash = 29 * hash + Objects.hashCode(this.pullsUrl);
+		hash = 29 * hash + Objects.hashCode(this.milestonesUrl);
+		hash = 29 * hash + Objects.hashCode(this.notificationsUrl);
+		hash = 29 * hash + Objects.hashCode(this.labelsUrl);
+		hash = 29 * hash + Objects.hashCode(this.releasesUrl);
+		hash = 29 * hash + (int)(this.createdAt ^ (this.createdAt >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.updatedAt);
+		hash = 29 * hash + (int)(this.pushedAt ^ (this.pushedAt >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.gitUrl);
+		hash = 29 * hash + Objects.hashCode(this.sshUrl);
+		hash = 29 * hash + Objects.hashCode(this.cloneUrl);
+		hash = 29 * hash + Objects.hashCode(this.svnUrl);
+		hash = 29 * hash + Objects.hashCode(this.homepage);
+		hash = 29 * hash + (int)(this.size ^ (this.size >>> 32));
+		hash = 29 * hash + (int)(this.stargazersCount ^ (this.stargazersCount >>> 32));
+		hash = 29 * hash + (int)(this.watchersCount ^ (this.watchersCount >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.language);
+		hash = 29 * hash + (this.hasIssues ? 1 : 0);
+		hash = 29 * hash + (this.hasDownloads ? 1 : 0);
+		hash = 29 * hash + (this.hasWiki ? 1 : 0);
+		hash = 29 * hash + (this.hasPages ? 1 : 0);
+		hash = 29 * hash + (int)(this.forksCount ^ (this.forksCount >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.mirrorUrl);
+		hash = 29 * hash + (int)(this.openIssuesCount ^ (this.openIssuesCount >>> 32));
+		hash = 29 * hash + (int)(this.forks ^ (this.forks >>> 32));
+		hash = 29 * hash + (int)(this.openIssues ^ (this.openIssues >>> 32));
+		hash = 29 * hash + (int)(this.watchers ^ (this.watchers >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.defaultBranch);
+		hash = 29 * hash + (int)(this.stargazers ^ (this.stargazers >>> 32));
+		hash = 29 * hash + Objects.hashCode(this.masterBranch);
+		hash = 29 * hash + Objects.hashCode(this.organization);
 		return hash;
 	}
 
@@ -581,7 +589,7 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Repository other = (Repository)obj;
+		final LegacyRepository other = (LegacyRepository)obj;
 		if (this.id != other.id) {
 			return false;
 		}
@@ -714,13 +722,13 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
 		if (!Objects.equals(this.releasesUrl, other.releasesUrl)) {
 			return false;
 		}
-		if (!Objects.equals(this.createdAt, other.createdAt)) {
+		if (this.createdAt != other.createdAt) {
 			return false;
 		}
 		if (!Objects.equals(this.updatedAt, other.updatedAt)) {
 			return false;
 		}
-		if (!Objects.equals(this.pushedAt, other.pushedAt)) {
+		if (this.pushedAt != other.pushedAt) {
 			return false;
 		}
 		if (!Objects.equals(this.gitUrl, other.gitUrl)) {
@@ -783,7 +791,10 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
 		if (!Objects.equals(this.defaultBranch, other.defaultBranch)) {
 			return false;
 		}
-		if (!Objects.equals(this.isPublic, other.isPublic)) {
+		if (this.stargazers != other.stargazers) {
+			return false;
+		}
+		if (!Objects.equals(this.masterBranch, other.masterBranch)) {
 			return false;
 		}
 		if (!Objects.equals(this.organization, other.organization)) {

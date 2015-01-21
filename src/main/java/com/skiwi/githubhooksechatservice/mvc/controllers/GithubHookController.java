@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
-import com.skiwi.githubhooksechatservice.events.github.Commit;
 import com.skiwi.githubhooksechatservice.events.github.CommitCommentEvent;
 import com.skiwi.githubhooksechatservice.events.github.CreateEvent;
 import com.skiwi.githubhooksechatservice.events.github.DeleteEvent;
@@ -31,14 +30,15 @@ import com.skiwi.githubhooksechatservice.events.github.ForkEvent;
 import com.skiwi.githubhooksechatservice.events.github.GollumEvent;
 import com.skiwi.githubhooksechatservice.events.github.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.events.github.IssuesEvent;
-import com.skiwi.githubhooksechatservice.events.github.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.MemberEvent;
-import com.skiwi.githubhooksechatservice.events.github.PingEvent;
 import com.skiwi.githubhooksechatservice.events.github.PullRequestEvent;
 import com.skiwi.githubhooksechatservice.events.github.PullRequestReviewCommentEvent;
 import com.skiwi.githubhooksechatservice.events.github.PushEvent;
 import com.skiwi.githubhooksechatservice.events.github.TeamAddEvent;
 import com.skiwi.githubhooksechatservice.events.github.WatchEvent;
+import com.skiwi.githubhooksechatservice.events.github.classes.Commit;
+import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
+import com.skiwi.githubhooksechatservice.events.github.classes.PingEvent;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 
 /**
