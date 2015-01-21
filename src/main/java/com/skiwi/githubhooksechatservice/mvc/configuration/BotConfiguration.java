@@ -116,6 +116,7 @@ public class BotConfiguration {
 		this.deployGreetingText = deployGreetingText;
 	}
 
+	@Deprecated
 	public boolean getUndeployGoodbyeEnabled() {
 		return undeployGoodbyeEnabled;
 	}
@@ -124,6 +125,7 @@ public class BotConfiguration {
 		this.undeployGoodbyeEnabled = undeployGoodbyeEnabled;
 	}
 
+	@Deprecated
 	public String getUndeployGoodbyeText() {
 		return undeployGoodbyeText;
 	}

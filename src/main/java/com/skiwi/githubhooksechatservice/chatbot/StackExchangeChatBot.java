@@ -61,6 +61,8 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     
     private String chatFKey;
     
+	private String undeployGoodbyeText;
+    
     public StackExchangeChatBot() {
 		this.executorService.submit(this::drainMessagesQueue);
         
@@ -109,11 +111,18 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 		
         String deployGreeting = configService.getConfig("deployGreeting", "");
 		if (!deployGreeting.isEmpty()) {
-			WebhookParameters params = new WebhookParameters();
-			params.setRoomId("20298");
-			params.setPost(true);
-			postMessage(params, deployGreeting);
+	        String deployGreetingRooms = configService.getConfig("deployGreetingRooms", "");
+	        for (String greetingRoom : deployGreetingRooms.split(",")) {
+	        	if (greetingRoom.matches("^\\d+$")) {
+					WebhookParameters params = new WebhookParameters();
+					params.setRoomId(greetingRoom);
+					params.setPost(true);
+					postMessage(params, deployGreeting);
+	        	}
+	        }
 		}
+		
+		this.undeployGoodbyeText = configService.getConfig("undeployGoodbyeText", "");
     }
     
     private void loginOpenId() {
@@ -245,8 +254,8 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 
     @Override
     public void stop() {
-		if (configuration.getUndeployGoodbyeEnabled()) {
-			postMessage(configuration.getUndeployGoodbyeText());
+		if (!this.undeployGoodbyeText.isEmpty()) {
+			postMessage(this.undeployGoodbyeText);
 		}
 		this.executorService.shutdown();
     }
