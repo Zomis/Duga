@@ -58,11 +58,11 @@
         <property name="dailyRooms" value="${env.dailyRooms}"/>
     </bean>
 
-	<bean id="chatBot" class="com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot">
+<!-- <bean id="chatBot" class="com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot">
 		<constructor-arg ref="configuration"/>
-	</bean>
+	</bean> -->	
 
-    <bean name="statistics" class="com.skiwi.githubhooksechatservice.mvc.beans.Statistics" />
+<!--     <bean name="statistics" class="com.skiwi.githubhooksechatservice.mvc.beans.Statistics" /> -->
     
     <!-- startup bean -->
     <bean name="startup" init-method="start" class="com.skiwi.githubhooksechatservice.mvc.beans.StartupBean" lazy-init="false" />

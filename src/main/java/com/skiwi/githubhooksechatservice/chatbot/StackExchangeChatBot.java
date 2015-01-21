@@ -24,6 +24,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.html.HtmlDocument;
@@ -39,6 +41,7 @@ import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
  *
  * @author Frank van Heeswijk
  */
+@Service
 public class StackExchangeChatBot implements ChatBot, DisposableBean {
     private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
     
@@ -49,12 +52,12 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     
     private final MechanizeAgent agent;
     
-    private final Configuration configuration;
+    @Autowired
+    private Configuration configuration;
     
     private String chatFKey;
     
-    public StackExchangeChatBot(final Configuration configuration) {
-        this.configuration = configuration;
+    public StackExchangeChatBot() {
 		this.executorService.submit(this::drainMessagesQueue);
         
         this.agent = new MechanizeAgent();
