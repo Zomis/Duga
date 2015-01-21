@@ -36,6 +36,7 @@ import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
 import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
+import com.skiwi.githubhooksechatservice.service.ConfigService;
 
 /**
  *
@@ -54,6 +55,9 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     
     @Autowired
     private BotConfiguration configuration;
+    
+    @Autowired
+    private ConfigService configService;
     
     private String chatFKey;
     
@@ -103,8 +107,12 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
         this.chatFKey = fkey;
         LOGGER.info("Found fkey: " + fkey);
 		
-		if (configuration.getDeployGreetingOn()) {
-			postMessage(configuration.getDeployGreetingText());
+        String deployGreeting = configService.getConfig("deployGreeting", "");
+		if (!deployGreeting.isEmpty()) {
+			WebhookParameters params = new WebhookParameters();
+			params.setRoomId("20298");
+			params.setPost(true);
+			postMessage(params, deployGreeting);
 		}
     }
     

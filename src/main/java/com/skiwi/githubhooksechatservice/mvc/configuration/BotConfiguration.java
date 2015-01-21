@@ -98,6 +98,7 @@ public class BotConfiguration {
         this.chatMinimumDelay = chatMinimumDelay;
     }
 
+    @Deprecated
 	public boolean getDeployGreetingOn() {
 		return deployGreetingEnabled;
 	}
@@ -106,6 +107,7 @@ public class BotConfiguration {
 		this.deployGreetingEnabled = deployGreetingEnabled;
 	}
 
+	@Deprecated
 	public String getDeployGreetingText() {
 		return deployGreetingText;
 	}
