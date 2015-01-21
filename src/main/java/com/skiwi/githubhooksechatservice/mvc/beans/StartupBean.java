@@ -1,4 +1,3 @@
-
 package com.skiwi.githubhooksechatservice.mvc.beans;
 
 import org.springframework.beans.factory.DisposableBean;

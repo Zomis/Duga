@@ -1,4 +1,3 @@
-
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
