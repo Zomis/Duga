@@ -53,8 +53,8 @@ public class RootConfig {
 	}
 	
 	@Bean
-	public com.skiwi.githubhooksechatservice.mvc.configuration.Configuration config() {
-		com.skiwi.githubhooksechatservice.mvc.configuration.Configuration config = new com.skiwi.githubhooksechatservice.mvc.configuration.Configuration();
+	public com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration config() {
+		com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration config = new com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration();
 		config.setBotEmail(env.getRequiredProperty("env.botEmail"));
 		config.setBotPassword(env.getRequiredProperty("env.botPassword"));
 		config.setChatMaxBurst(Integer.parseInt(env.getRequiredProperty("env.chatMaxBurst")));

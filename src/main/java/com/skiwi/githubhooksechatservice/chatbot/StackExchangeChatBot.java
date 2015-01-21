@@ -34,7 +34,7 @@ import com.gistlabs.mechanize.document.html.form.Form;
 import com.gistlabs.mechanize.document.html.form.SubmitButton;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
-import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
+import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 
 /**
@@ -53,7 +53,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
     private final MechanizeAgent agent;
     
     @Autowired
-    private Configuration configuration;
+    private BotConfiguration configuration;
     
     private String chatFKey;
     

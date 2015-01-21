@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  *
  * @author Frank van Heeswijk
  */
-public class Configuration {
+public class BotConfiguration {
     private String rootUrl;
     private String chatUrl;
     
