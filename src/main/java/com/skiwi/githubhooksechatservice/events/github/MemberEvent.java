@@ -20,19 +20,12 @@ public final class MemberEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
 	
-	@JsonProperty
-	private User sender;
-
 	public User getMember() {
 		return member;
 	}
 
 	public String getAction() {
 		return action;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
@@ -29,9 +28,6 @@ public final class CreateEvent extends GithubEvent {
     @JsonProperty("pusher_type")
     private String pusherType;
     
-    @JsonProperty
-    private User sender;
-
     public String getRef() {
         return ref;
     }
@@ -50,10 +46,6 @@ public final class CreateEvent extends GithubEvent {
 
     public String getPusherType() {
         return pusherType;
-    }
-
-    public User getSender() {
-        return sender;
     }
 
 	@Override

@@ -3,6 +3,7 @@ package com.skiwi.githubhooksechatservice.events.github;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skiwi.githubhooksechatservice.events.github.classes.Organization;
 import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 public abstract class GithubEvent extends AbstractEvent {
 	
@@ -12,6 +13,9 @@ public abstract class GithubEvent extends AbstractEvent {
 	@JsonProperty(required = false)
 	protected Organization organization;
 	
+	@JsonProperty
+	protected User sender;
+
 	public final Repository getRepository() {
 		return repository;
 	}
@@ -20,8 +24,12 @@ public abstract class GithubEvent extends AbstractEvent {
 		return organization;
 	}
 	
+	public final User getSender() {
+		return sender;
+	}
+
 	public void setRepo(Repository repository) {
 		this.repository = repository;
 	}
-
+	
 }

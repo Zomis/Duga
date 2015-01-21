@@ -28,9 +28,6 @@ public final class IssuesEvent extends GithubEvent {
 	@JsonProperty(required = false)
 	private Label label;
 	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
 	}
@@ -45,10 +42,6 @@ public final class IssuesEvent extends GithubEvent {
 	
 	public Label getLabel() {
 		return label;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

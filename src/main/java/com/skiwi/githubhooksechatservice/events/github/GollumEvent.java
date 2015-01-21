@@ -8,7 +8,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.skiwi.githubhooksechatservice.events.github.classes.User;
 import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
 
 /**
@@ -20,15 +19,8 @@ public final class GollumEvent extends GithubEvent {
 	@JsonProperty
 	private WikiPage[] pages;
 	
-	@JsonProperty
-	private User sender;
-
 	public List<WikiPage> getPages() {
 		return Arrays.asList(pages);
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

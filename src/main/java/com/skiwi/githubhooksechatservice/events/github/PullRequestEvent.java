@@ -31,9 +31,6 @@ public final class PullRequestEvent extends GithubEvent {
 	@JsonProperty(required = false)
 	private Label label;
 	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
 	}
@@ -52,10 +49,6 @@ public final class PullRequestEvent extends GithubEvent {
 	
 	public Label getLabel() {
 		return label;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

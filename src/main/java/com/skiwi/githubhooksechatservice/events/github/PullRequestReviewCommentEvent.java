@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.PullRequest;
 import com.skiwi.githubhooksechatservice.events.github.classes.PullRequestReviewComment;
-import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
@@ -25,9 +24,6 @@ public final class PullRequestReviewCommentEvent extends GithubEvent {
 	@JsonProperty("pull_request")
 	private PullRequest pullRequest;
 	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
 	}
@@ -38,10 +34,6 @@ public final class PullRequestReviewCommentEvent extends GithubEvent {
 
 	public PullRequest getPullRequest() {
 		return pullRequest;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

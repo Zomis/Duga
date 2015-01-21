@@ -21,19 +21,12 @@ public final class TeamAddEvent extends GithubEvent {
 	@JsonProperty(required = false)
 	private User user;
 	
-	@JsonProperty
-	private User sender;
-
 	public Team getTeam() {
 		return team;
 	}
 
 	public User getUser() {
 		return user;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

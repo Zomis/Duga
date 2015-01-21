@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
-import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
@@ -18,15 +17,8 @@ public final class ForkEvent extends GithubEvent {
 	@JsonProperty
 	private Repository forkee;
 	
-	@JsonProperty
-	private User sender;
-
 	public Repository getForkee() {
 		return forkee;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

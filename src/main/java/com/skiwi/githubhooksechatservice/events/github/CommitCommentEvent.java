@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.CommitComment;
-import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
@@ -18,15 +17,8 @@ public final class CommitCommentEvent extends GithubEvent {
 	@JsonProperty
 	private CommitComment comment;
 	
-	@JsonProperty
-	private User sender;
-
 	public CommitComment getComment() {
 		return comment;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

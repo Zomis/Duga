@@ -6,7 +6,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
@@ -17,15 +16,8 @@ public final class WatchEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
 	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.Issue;
 import com.skiwi.githubhooksechatservice.events.github.classes.IssueComment;
-import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
@@ -25,9 +24,6 @@ public final class IssueCommentEvent extends GithubEvent {
 	@JsonProperty
 	private IssueComment comment;
 	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
 	}
@@ -38,10 +34,6 @@ public final class IssueCommentEvent extends GithubEvent {
 
 	public IssueComment getComment() {
 		return comment;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
