@@ -16,7 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 import com.skiwi.githubhooksechatservice.model.FollowedRepository;
-import com.skiwi.githubhooksechatservice.mvc.beans.GithubUtils;
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.RepositoryStats;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
@@ -40,13 +40,15 @@ public class ScheduledTasks {
     @Autowired
     private GithubService githubService;
 
+    @Autowired
+    private GithubBean githubBean;
+
     @Scheduled(cron = "0 0 * * * *") // second minute hour day day day
     public void scanRepos() {
     	List<FollowedRepository> repos = githubService.getAll();
-    	GithubUtils github = new GithubUtils();
     	
     	for (FollowedRepository repo : repos) {
-        	AbstractEvent[] data = github.fetchRepoEvents(repo.getName());
+        	AbstractEvent[] data = githubBean.fetchRepoEvents(repo.getName());
         	long update = Instant.now().getEpochSecond();
         	
         	for (AbstractEvent event : data) {

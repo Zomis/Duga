@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import com.skiwi.githubhooksechatservice.mvc.beans.GithubUtils;
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.StartupBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 
@@ -54,8 +54,8 @@ public class RootConfig {
 	}
 	
 	@Bean
-	public GithubUtils githubUtils() {
-		return new GithubUtils();
+	public GithubBean githubUtils() {
+		return new GithubBean();
 	}
 	
 	@Bean

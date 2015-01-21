@@ -6,7 +6,7 @@ import java.net.URL;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 
-public class GithubUtils {
+public class GithubBean {
 	
     public AbstractEvent[] fetchRepoEvents(String name) {
     	ObjectMapper mapper = new ObjectMapper(); // just need one

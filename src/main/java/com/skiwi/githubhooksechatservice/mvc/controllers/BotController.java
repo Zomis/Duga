@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
-import com.skiwi.githubhooksechatservice.mvc.beans.GithubUtils;
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.service.GithubService;
 
 /**
@@ -27,7 +27,7 @@ public class BotController {
 	private ChatBot chatBot;
 	
 	@Autowired
-	private GithubUtils githubUtils;
+	private GithubBean githubUtils;
 	
 	@Autowired
 	private GithubService githubService;
