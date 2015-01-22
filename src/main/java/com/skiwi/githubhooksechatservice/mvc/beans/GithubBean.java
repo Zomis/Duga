@@ -414,7 +414,13 @@ public class GithubBean {
 
 	public String stringify(PushEvent pushEvent, LegacyCommit commit) {
 		String branch = pushEvent.getRef().replace("refs/heads/", "");
-		String committer = commit.getCommitter().getUsername();
+		String committer;
+		if (commit.getCommitter() != null) {
+			committer = commit.getCommitter().getUsername();
+		}
+		else {
+			committer = pushEvent.getPusherLogin();
+		}
 		if (committer == null) {
 			return MessageFormat.format("\\[[**{0}**]({1})\\] *Unrecognized author* pushed commit [**{2}**]({3}) to [**{4}**]({5})",
 				pushEvent.getRepository().getFullName(), 

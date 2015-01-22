@@ -802,4 +802,10 @@ public final class LegacyRepository extends AnySetterJSONObject implements Githu
 		}
 		return true;
 	}
+
+	public void fixUrl() {
+		this.fullName = this.name;
+		this.url = "http://www.github.com/" + this.fullName;
+		this.htmlUrl = this.url;
+	}
 }

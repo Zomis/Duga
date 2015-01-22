@@ -3,9 +3,12 @@ package com.skiwi.githubhooksechatservice.events.github;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
@@ -57,6 +60,9 @@ public final class PushEvent extends AbstractEvent {
     
     @JsonProperty
     private LegacySimpleUser pusher;
+
+    @JsonIgnore
+	private String pusherLogin;
 
     public String getRef() {
         return ref;
@@ -193,13 +199,27 @@ public final class PushEvent extends AbstractEvent {
 		this.organization = event.organization;
 		this.pusher = event.pusher;
 		this.ref = event.ref;
-		this.repository = event.repository;
 	}
 
 	@Override
 	public String toString() {
 		return "PushEvent [before=" + before + ", commits="
 				+ Arrays.toString(commits) + "]";
+	}
+	
+	public void setActor(Map<String, Object> map) {
+		this.pusherLogin = String.valueOf(map.get("login"));
+	}
+	
+	public String getPusherLogin() {
+		return pusherLogin;
+	}
+	
+	@JsonSetter
+	public void setRepo(LegacyRepository repository) {
+		System.out.println("push event set repo " + repository);
+		this.repository = repository;
+		this.repository.fixUrl();
 	}
 	
 }

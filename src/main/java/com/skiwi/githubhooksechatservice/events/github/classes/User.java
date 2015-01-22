@@ -215,4 +215,9 @@ public final class User extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void fixUrl() {
+		this.url = "http://www.github.com/" + this.login;
+		this.htmlUrl = this.url;
+	}
 }

@@ -30,6 +30,13 @@ public abstract class GithubEvent extends AbstractEvent {
 
 	public void setRepo(Repository repository) {
 		this.repository = repository;
+		this.repository.fixUrl();
+	}
+	
+	public void setActor(User user) {
+		/* id, login, url */
+		this.sender = user;
+		this.sender.fixUrl();
 	}
 	
 }

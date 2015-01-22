@@ -94,7 +94,6 @@ public final class IssuesEvent extends GithubEvent {
 		this.action = event.action;
 		this.assignee = event.assignee;
 		this.issue = event.issue;
-		this.sender = event.sender;
 		this.label = event.label;
 	}
 	

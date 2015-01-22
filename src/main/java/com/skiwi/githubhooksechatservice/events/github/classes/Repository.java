@@ -796,5 +796,11 @@ public final class Repository extends AnySetterJSONObject implements GithubRepos
 	public String toString() {
 		return "Repository [id=" + id + ", htmlUrl=" + htmlUrl + "]";
 	}
+
+	public void fixUrl() {
+		this.fullName = this.name;
+		this.url = "http://www.github.com/" + this.fullName;
+		this.htmlUrl = this.url;
+	}
 	
 }

@@ -146,4 +146,8 @@ public final class LegacyCommit extends AnySetterJSONObject {
 		return "LegacyCommit [message=" + message + "]";
 	}
 	
+	public void setSha(String sha) {
+		this.id = sha;
+	}
+	
 }
