@@ -27,7 +27,7 @@ import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
 public class GithubBean {
 	
     public AbstractEvent[] fetchRepoEvents(String name) {
-    	ObjectMapper mapper = new ObjectMapper(); // just need one
+    	ObjectMapper mapper = new ObjectMapper();
     	try {
     		URL url = new URL("https://api.github.com/repos/" + name + "/events");
 			AbstractEvent[] data = mapper.readValue(url, AbstractEvent[].class);
@@ -38,6 +38,18 @@ public class GithubBean {
 		}
     }
 
+	public AbstractEvent[] fetchUserEvents(String name) {
+    	ObjectMapper mapper = new ObjectMapper();
+    	try {
+    		URL url = new URL("https://api.github.com/users/" + name + "/events");
+			AbstractEvent[] data = mapper.readValue(url, AbstractEvent[].class);
+			return data;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public String stringify(CommitCommentEvent commitCommentEvent) {
 		if (commitCommentEvent.getComment().getPath() == null) {
 			return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on commit [**{5}**]({6})",
@@ -460,6 +472,5 @@ public class GithubBean {
 	public String stringify(PingEvent pingEvent) {
 		return "Ping: " + pingEvent.getZen();
 	}
-	
 
 }
