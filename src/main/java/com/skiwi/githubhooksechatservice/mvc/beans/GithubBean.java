@@ -14,7 +14,13 @@ import com.skiwi.githubhooksechatservice.events.github.GollumEvent;
 import com.skiwi.githubhooksechatservice.events.github.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.events.github.IssuesEvent;
 import com.skiwi.githubhooksechatservice.events.github.MemberEvent;
+import com.skiwi.githubhooksechatservice.events.github.PullRequestEvent;
 import com.skiwi.githubhooksechatservice.events.github.PullRequestReviewCommentEvent;
+import com.skiwi.githubhooksechatservice.events.github.PushEvent;
+import com.skiwi.githubhooksechatservice.events.github.TeamAddEvent;
+import com.skiwi.githubhooksechatservice.events.github.WatchEvent;
+import com.skiwi.githubhooksechatservice.events.github.classes.Commit;
+import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
 
 public class GithubBean {
@@ -227,6 +233,221 @@ public class GithubBean {
 			pullRequestReviewCommentEvent.getPullRequest().getNumber(),
 			pullRequestReviewCommentEvent.getPullRequest().getTitle().trim(),
 			pullRequestReviewCommentEvent.getPullRequest().getHtmlUrl());
+	}
+
+	public String stringify(PullRequestEvent pullRequestEvent) {
+		Commit head = pullRequestEvent.getPullRequest().getHead();
+		Commit base = pullRequestEvent.getPullRequest().getBase();
+		String headText;
+		String baseText;
+		if (head.getRepo().equals(base.getRepo())) {
+			headText = head.getRef();
+			baseText = base.getRef();
+		}
+		else {
+			headText = head.getRepo().getFullName() + "/" + head.getRef();
+			baseText = base.getRepo().getFullName() + "/" + base.getRef();
+		}
+		switch (pullRequestEvent.getAction()) {
+			case "assigned":
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) assigned [**{4}**]({5}) to pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getAssignee().getLogin(),
+					pullRequestEvent.getAssignee().getHtmlUrl(),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
+					pullRequestEvent.getPullRequest().getHtmlUrl());
+			case "unassigned":
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) unassigned [**{4}**]({5}) from pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getAssignee().getLogin(),
+					pullRequestEvent.getAssignee().getHtmlUrl(),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
+					pullRequestEvent.getPullRequest().getHtmlUrl());
+			case "labeled":
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added label [**{4}**]({5}) to pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getLabel().getName(),
+					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
+					pullRequestEvent.getPullRequest().getHtmlUrl());
+			case "unlabeled":
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) removed label [**{4}**]({5}) from pull request [**#{6}: {7}**]({8})",
+					pullRequestEvent.getRepository().getFullName(),
+					pullRequestEvent.getRepository().getHtmlUrl(),
+					pullRequestEvent.getSender().getLogin(),
+					pullRequestEvent.getSender().getHtmlUrl(),
+					pullRequestEvent.getLabel().getName(),
+					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
+					pullRequestEvent.getPullRequest().getNumber(),
+					pullRequestEvent.getPullRequest().getTitle().trim(),
+					pullRequestEvent.getPullRequest().getHtmlUrl());
+			case "opened":
+				if (pullRequestEvent.getPullRequest().getBody() == null || pullRequestEvent.getPullRequest().getBody().isEmpty()) {
+					return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created pull request [**#{4}: {5}**]({6}) to merge [**{7}**]({8}) into [**{9}**]({10})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
+							pullRequestEvent.getPullRequest().getHtmlUrl(),
+							headText,
+							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
+							baseText,
+							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef());
+				}
+				else {
+					return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created pull request [**#{4}: {5}**]({6}) to merge [**{7}**]({8}) into [**{9}**]({10})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
+							pullRequestEvent.getPullRequest().getHtmlUrl(),
+							headText,
+							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
+							baseText,
+							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef(),
+						"> " + pullRequestEvent.getPullRequest().getBody());
+				}
+			case "closed":
+				if (pullRequestEvent.getPullRequest().isMerged()) {
+					return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) merged pull request [**#{4}: {5}**]({6}) from [**{7}**]({8}) into [**{9}**]({10})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
+							pullRequestEvent.getPullRequest().getHtmlUrl(),
+							headText,
+							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
+							baseText,
+							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef());
+				}
+				else {
+					return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) rejected pull request [**#{4}: {5}**]({6})",
+							pullRequestEvent.getRepository().getFullName(),
+							pullRequestEvent.getRepository().getHtmlUrl(),
+							pullRequestEvent.getSender().getLogin(),
+							pullRequestEvent.getSender().getHtmlUrl(),
+							pullRequestEvent.getPullRequest().getNumber(),
+							pullRequestEvent.getPullRequest().getTitle().trim(),
+							pullRequestEvent.getPullRequest().getHtmlUrl());
+				}
+			case "reopened":
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) reopened pull request [**#{4}: {5}**]({6})",
+						pullRequestEvent.getRepository().getFullName(),
+						pullRequestEvent.getRepository().getHtmlUrl(),
+						pullRequestEvent.getSender().getLogin(),
+						pullRequestEvent.getSender().getHtmlUrl(),
+						pullRequestEvent.getPullRequest().getNumber(),
+						pullRequestEvent.getPullRequest().getTitle().trim(),
+						pullRequestEvent.getPullRequest().getHtmlUrl());
+			case "synchronize":
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) synchronized pull request [**#{4}: {5}**]({6})",
+						pullRequestEvent.getRepository().getFullName(),
+						pullRequestEvent.getRepository().getHtmlUrl(),
+						pullRequestEvent.getSender().getLogin(),
+						pullRequestEvent.getSender().getHtmlUrl(),
+						pullRequestEvent.getPullRequest().getNumber(),
+						pullRequestEvent.getPullRequest().getTitle().trim(),
+						pullRequestEvent.getPullRequest().getHtmlUrl());
+			default:
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) " + pullRequestEvent.getAction() +
+						" pull request [**#{4}: {5}**]({6})",
+						pullRequestEvent.getRepository().getFullName(),
+						pullRequestEvent.getRepository().getHtmlUrl(),
+						pullRequestEvent.getSender().getLogin(),
+						pullRequestEvent.getSender().getHtmlUrl(),
+						pullRequestEvent.getPullRequest().getNumber(),
+						pullRequestEvent.getPullRequest().getTitle().trim(),
+						pullRequestEvent.getPullRequest().getHtmlUrl());
+		}
+	}
+
+	public String stringify(WatchEvent watchEvent) {
+		String action = watchEvent.getAction().equals("started") ? "starred" : watchEvent.getAction();
+		return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) " + action + " us",
+				watchEvent.getRepository().getFullName(),
+				watchEvent.getRepository().getHtmlUrl(),
+				watchEvent.getSender().getLogin(),
+				watchEvent.getSender().getHtmlUrl());
+	}
+
+	public String stringify(TeamAddEvent teamAddEvent) {
+		if (teamAddEvent.getUser() == null) {
+			return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added us to team [**{4}**]({5})",
+				teamAddEvent.getRepository().getFullName(),
+				teamAddEvent.getRepository().getHtmlUrl(),
+				teamAddEvent.getSender().getLogin(),
+				teamAddEvent.getSender().getHtmlUrl(),
+				teamAddEvent.getTeam().getName(),
+				teamAddEvent.getSender().getHtmlUrl() + "/" + teamAddEvent.getTeam().getName());
+		}
+		else {
+			return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added [**{4}**]({5}) to team [**{6}**]({7})",
+				teamAddEvent.getRepository().getFullName(),
+				teamAddEvent.getRepository().getHtmlUrl(),
+				teamAddEvent.getSender().getLogin(),
+				teamAddEvent.getSender().getHtmlUrl(),
+				teamAddEvent.getUser().getLogin(),
+				teamAddEvent.getUser().getHtmlUrl(),
+				teamAddEvent.getTeam().getName(),
+				teamAddEvent.getSender().getHtmlUrl() + "/" + teamAddEvent.getTeam().getName());
+		}
+	}
+
+	public String stringify(PushEvent pushEvent, LegacyCommit commit) {
+		String branch = pushEvent.getRef().replace("refs/heads/", "");
+		String committer = commit.getCommitter().getUsername();
+		if (committer == null) {
+			return MessageFormat.format("\\[[**{0}**]({1})\\] *Unrecognized author* pushed commit [**{2}**]({3}) to [**{4}**]({5})",
+				pushEvent.getRepository().getFullName(), 
+				pushEvent.getRepository().getHtmlUrl(),
+				commit.getId().substring(0, 8), 
+				commit.getUrl(),
+				branch,
+				pushEvent.getRepository().getUrl() + "/tree/" + branch);
+		}
+		else {
+			return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
+				pushEvent.getRepository().getFullName(), 
+				pushEvent.getRepository().getHtmlUrl(),
+				committer, 
+				"https://github.com/" + committer,
+				commit.getId().substring(0, 8), 
+				commit.getUrl(),
+				branch,
+				pushEvent.getRepository().getUrl() + "/tree/" + branch);
+		}
+	}
+
+	public String stringify(PushEvent pushEvent, int size) {
+		String commitText = (size == 1 ? "commit" : "commits");
+		String branch = pushEvent.getRef().replace("refs/heads/", "");
+		return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed {4} {5} to [**{6}**]({7})",
+			pushEvent.getRepository().getFullName(), 
+			pushEvent.getRepository().getHtmlUrl(),
+			pushEvent.getPusher().getName(),
+			"https://github.com/" + pushEvent.getPusher().getName(), 
+			size,
+			commitText,
+			branch,
+			pushEvent.getRepository().getUrl() + "/tree/" + branch);
 	}
 	
 

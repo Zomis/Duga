@@ -1,7 +1,5 @@
-
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +34,6 @@ import com.skiwi.githubhooksechatservice.events.github.PullRequestReviewCommentE
 import com.skiwi.githubhooksechatservice.events.github.PushEvent;
 import com.skiwi.githubhooksechatservice.events.github.TeamAddEvent;
 import com.skiwi.githubhooksechatservice.events.github.WatchEvent;
-import com.skiwi.githubhooksechatservice.events.github.classes.Commit;
 import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.classes.PingEvent;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
@@ -132,146 +129,7 @@ public class GithubHookController {
     @ResponseBody
     public void pullRequest(final WebhookParameters params, final @RequestBody PullRequestEvent pullRequestEvent) {
     	statistics.informAboutURL(pullRequestEvent.getRepository());
-		Commit head = pullRequestEvent.getPullRequest().getHead();
-		Commit base = pullRequestEvent.getPullRequest().getBase();
-		String headText;
-		String baseText;
-		if (head.getRepo().equals(base.getRepo())) {
-			headText = head.getRef();
-			baseText = base.getRef();
-		}
-		else {
-			headText = head.getRepo().getFullName() + "/" + head.getRef();
-			baseText = base.getRepo().getFullName() + "/" + base.getRef();
-		}
-		switch (pullRequestEvent.getAction()) {
-			case "assigned":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) assigned [**{4}**]({5}) to pull request [**#{6}: {7}**]({8})",
-					pullRequestEvent.getRepository().getFullName(),
-					pullRequestEvent.getRepository().getHtmlUrl(),
-					pullRequestEvent.getSender().getLogin(),
-					pullRequestEvent.getSender().getHtmlUrl(),
-					pullRequestEvent.getAssignee().getLogin(),
-					pullRequestEvent.getAssignee().getHtmlUrl(),
-					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle().trim(),
-					pullRequestEvent.getPullRequest().getHtmlUrl()));
-				break;
-			case "unassigned":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) unassigned [**{4}**]({5}) from pull request [**#{6}: {7}**]({8})",
-					pullRequestEvent.getRepository().getFullName(),
-					pullRequestEvent.getRepository().getHtmlUrl(),
-					pullRequestEvent.getSender().getLogin(),
-					pullRequestEvent.getSender().getHtmlUrl(),
-					pullRequestEvent.getAssignee().getLogin(),
-					pullRequestEvent.getAssignee().getHtmlUrl(),
-					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle().trim(),
-					pullRequestEvent.getPullRequest().getHtmlUrl()));
-				break;
-			case "labeled":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added label [**{4}**]({5}) to pull request [**#{6}: {7}**]({8})",
-					pullRequestEvent.getRepository().getFullName(),
-					pullRequestEvent.getRepository().getHtmlUrl(),
-					pullRequestEvent.getSender().getLogin(),
-					pullRequestEvent.getSender().getHtmlUrl(),
-					pullRequestEvent.getLabel().getName(),
-					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
-					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle().trim(),
-					pullRequestEvent.getPullRequest().getHtmlUrl()));
-				break;
-			case "unlabeled":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) removed label [**{4}**]({5}) from pull request [**#{6}: {7}**]({8})",
-					pullRequestEvent.getRepository().getFullName(),
-					pullRequestEvent.getRepository().getHtmlUrl(),
-					pullRequestEvent.getSender().getLogin(),
-					pullRequestEvent.getSender().getHtmlUrl(),
-					pullRequestEvent.getLabel().getName(),
-					pullRequestEvent.getRepository().getHtmlUrl() + "/labels/" + pullRequestEvent.getLabel().getName().replace(" ", "%20"),
-					pullRequestEvent.getPullRequest().getNumber(),
-					pullRequestEvent.getPullRequest().getTitle().trim(),
-					pullRequestEvent.getPullRequest().getHtmlUrl()));
-				break;
-			case "opened":
-				if (pullRequestEvent.getPullRequest().getBody() == null || pullRequestEvent.getPullRequest().getBody().isEmpty()) {
-					chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created pull request [**#{4}: {5}**]({6}) to merge [**{7}**]({8}) into [**{9}**]({10})",
-							pullRequestEvent.getRepository().getFullName(),
-							pullRequestEvent.getRepository().getHtmlUrl(),
-							pullRequestEvent.getSender().getLogin(),
-							pullRequestEvent.getSender().getHtmlUrl(),
-							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle().trim(),
-							pullRequestEvent.getPullRequest().getHtmlUrl(),
-							headText,
-							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
-							baseText,
-							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef()));
-				}
-				else {
-					chatBot.postMessages(params, 
-						MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created pull request [**#{4}: {5}**]({6}) to merge [**{7}**]({8}) into [**{9}**]({10})",
-							pullRequestEvent.getRepository().getFullName(),
-							pullRequestEvent.getRepository().getHtmlUrl(),
-							pullRequestEvent.getSender().getLogin(),
-							pullRequestEvent.getSender().getHtmlUrl(),
-							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle().trim(),
-							pullRequestEvent.getPullRequest().getHtmlUrl(),
-							headText,
-							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
-							baseText,
-							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef()),
-						"> " + pullRequestEvent.getPullRequest().getBody());
-				}
-				break;
-			case "closed":
-				if (pullRequestEvent.getPullRequest().isMerged()) {
-					chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) merged pull request [**#{4}: {5}**]({6}) from [**{7}**]({8}) into [**{9}**]({10})",
-							pullRequestEvent.getRepository().getFullName(),
-							pullRequestEvent.getRepository().getHtmlUrl(),
-							pullRequestEvent.getSender().getLogin(),
-							pullRequestEvent.getSender().getHtmlUrl(),
-							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle().trim(),
-							pullRequestEvent.getPullRequest().getHtmlUrl(),
-							headText,
-							head.getRepo().getHtmlUrl() + "/tree/" + head.getRef(),
-							baseText,
-							base.getRepo().getHtmlUrl() + "/tree/" + base.getRef()));
-				}
-				else {
-					chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) rejected pull request [**#{4}: {5}**]({6})",
-							pullRequestEvent.getRepository().getFullName(),
-							pullRequestEvent.getRepository().getHtmlUrl(),
-							pullRequestEvent.getSender().getLogin(),
-							pullRequestEvent.getSender().getHtmlUrl(),
-							pullRequestEvent.getPullRequest().getNumber(),
-							pullRequestEvent.getPullRequest().getTitle().trim(),
-							pullRequestEvent.getPullRequest().getHtmlUrl()));
-				}
-				break;
-			case "reopened":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) reopened pull request [**#{4}: {5}**]({6})",
-						pullRequestEvent.getRepository().getFullName(),
-						pullRequestEvent.getRepository().getHtmlUrl(),
-						pullRequestEvent.getSender().getLogin(),
-						pullRequestEvent.getSender().getHtmlUrl(),
-						pullRequestEvent.getPullRequest().getNumber(),
-						pullRequestEvent.getPullRequest().getTitle().trim(),
-						pullRequestEvent.getPullRequest().getHtmlUrl()));
-				break;
-			case "synchronize":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) synchronized pull request [**#{4}: {5}**]({6})",
-						pullRequestEvent.getRepository().getFullName(),
-						pullRequestEvent.getRepository().getHtmlUrl(),
-						pullRequestEvent.getSender().getLogin(),
-						pullRequestEvent.getSender().getHtmlUrl(),
-						pullRequestEvent.getPullRequest().getNumber(),
-						pullRequestEvent.getPullRequest().getTitle().trim(),
-						pullRequestEvent.getPullRequest().getHtmlUrl()));
-				break;
-		}
+    	chatBot.postMessage(params, githubBean.stringify(pullRequestEvent));
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=pull_request_review_comment")
@@ -295,46 +153,11 @@ public class GithubHookController {
 		List<LegacyCommit> nonDistinctCommits = partitionedCommits.get(false);
 		
 		if (!nonDistinctCommits.isEmpty()) {
-			String commitText = (nonDistinctCommits.size() == 1) ? "commit" : "commits";
-			String branch = pushEvent.getRef().replace("refs/heads/", "");
-			chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed {4} {5} to [**{6}**]({7})",
-				pushEvent.getRepository().getFullName(), 
-				pushEvent.getRepository().getHtmlUrl(),
-				pushEvent.getPusher().getName(),
-				"https://github.com/" + pushEvent.getPusher().getName(), 
-				nonDistinctCommits.size(),
-				commitText,
-				branch,
-				pushEvent.getRepository().getUrl() + "/tree/" + branch));
+			chatBot.postMessage(params, githubBean.stringify(pushEvent, nonDistinctCommits.size()));
 		}
 		
         distinctCommits.forEach(commit -> {
-			String branch = pushEvent.getRef().replace("refs/heads/", "");
-			String committer = commit.getCommitter().getUsername();
-			if (committer == null) {
-				chatBot.postMessages(params, 
-					MessageFormat.format("\\[[**{0}**]({1})\\] *Unrecognized author* pushed commit [**{2}**]({3}) to [**{4}**]({5})",
-						pushEvent.getRepository().getFullName(), 
-						pushEvent.getRepository().getHtmlUrl(),
-						commit.getId().substring(0, 8), 
-						commit.getUrl(),
-						branch,
-						pushEvent.getRepository().getUrl() + "/tree/" + branch),
-					"> " + commit.getMessage());
-			}
-			else {
-				chatBot.postMessages(params, 
-					MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) pushed commit [**{4}**]({5}) to [**{6}**]({7})",
-						pushEvent.getRepository().getFullName(), 
-						pushEvent.getRepository().getHtmlUrl(),
-						committer, 
-						"https://github.com/" + committer,
-						commit.getId().substring(0, 8), 
-						commit.getUrl(),
-						branch,
-						pushEvent.getRepository().getUrl() + "/tree/" + branch),
-					"> " + commit.getMessage());
-			}
+			chatBot.postMessages(params, githubBean.stringify(pushEvent, commit), "> " + commit.getMessage());
 			statistics.add(pushEvent.getRepository(), commit);
 		});
     }
@@ -344,11 +167,7 @@ public class GithubHookController {
     public void watch(final WebhookParameters params, final @RequestBody WatchEvent watchEvent) {
 		switch (watchEvent.getAction()) {
 			case "started":
-				chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) starred us",
-					watchEvent.getRepository().getFullName(),
-					watchEvent.getRepository().getHtmlUrl(),
-					watchEvent.getSender().getLogin(),
-					watchEvent.getSender().getHtmlUrl()));
+				chatBot.postMessage(params, githubBean.stringify(watchEvent));
 				break;
 		}
     }
@@ -356,26 +175,7 @@ public class GithubHookController {
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=team_add")
     @ResponseBody
     public void teamAdd(final WebhookParameters params, final @RequestBody TeamAddEvent teamAddEvent) {
-		if (teamAddEvent.getUser() == null) {
-			chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added us to team [**{4}**]({5})",
-				teamAddEvent.getRepository().getFullName(),
-				teamAddEvent.getRepository().getHtmlUrl(),
-				teamAddEvent.getSender().getLogin(),
-				teamAddEvent.getSender().getHtmlUrl(),
-				teamAddEvent.getTeam().getName(),
-				teamAddEvent.getSender().getHtmlUrl() + "/" + teamAddEvent.getTeam().getName()));
-		}
-		else {
-			chatBot.postMessage(params, MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) added [**{4}**]({5}) to team [**{6}**]({7})",
-				teamAddEvent.getRepository().getFullName(),
-				teamAddEvent.getRepository().getHtmlUrl(),
-				teamAddEvent.getSender().getLogin(),
-				teamAddEvent.getSender().getHtmlUrl(),
-				teamAddEvent.getUser().getLogin(),
-				teamAddEvent.getUser().getHtmlUrl(),
-				teamAddEvent.getTeam().getName(),
-				teamAddEvent.getSender().getHtmlUrl() + "/" + teamAddEvent.getTeam().getName()));
-		}
+    	chatBot.postMessage(params, githubBean.stringify(teamAddEvent));
     }
 	
 	@ExceptionHandler(Exception.class)
