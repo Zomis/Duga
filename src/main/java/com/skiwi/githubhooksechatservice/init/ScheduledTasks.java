@@ -54,6 +54,7 @@ public class ScheduledTasks {
     public void scanRepos() {
     	try {
     		updateRepos();
+    		updateUsers();
     	}
     	catch (Exception ex) {
     		ex.printStackTrace();
@@ -97,6 +98,43 @@ public class ScheduledTasks {
         	long eventId = events.stream().mapToLong(ev -> ev.getId()).max().orElse(repo.getLastEventId());
         	System.out.println("Update : " + eventId);
         	githubService.update(repo.getName(), update, eventId);
+    	}
+	}
+
+    private void updateUsers() {
+    	List<FollowedUser> users = githubService.getAllUsers();
+    	for (FollowedUser user : users) {
+        	long update = Instant.now().getEpochSecond();
+        	AbstractEvent[] data = githubBean.fetchUserEvents(user.getName());
+        	
+        	List<AbstractEvent> events = Arrays.asList(data);
+        	System.out.println("Last id: " + user.getLastEventId());
+        	System.out.println("IDS before: " + Arrays.toString(events.stream().mapToLong(ev -> ev.getId()).toArray()));
+        	events.sort(Comparator.comparingLong(event -> event.getId()));
+        	System.out.println("IDS after : " + Arrays.toString(events.stream().mapToLong(ev -> ev.getId()).toArray()));
+
+        	WebhookParameters params = new WebhookParameters();
+        	params.setPost(false);
+        	params.setRoomId(user.getRoomIds());
+
+        	for (AbstractEvent event : events) {
+        		if (event instanceof CreateEvent) {
+        			CreateEvent ev = (CreateEvent) event;
+        			if (ev.getRefType().equals("repository")) {
+                		if (event.getId() > user.getLastEventId()) {
+                			System.out.println("POST: " + event);
+                    		controller.post(params, event);
+                		}
+                		else {
+                    		System.out.println(event);
+                		}
+        			}
+        		}
+        	}
+
+        	long eventId = events.stream().mapToLong(ev -> ev.getId()).max().orElse(user.getLastEventId());
+        	System.out.println("Update : " + eventId);
+        	githubService.updateUser(user.getName(), update, eventId);
     	}
 	}
 
