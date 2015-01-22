@@ -4,13 +4,13 @@ package com.skiwi.githubhooksechatservice.events.github.classes;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class PingEvent extends AnySetterJSONObject {
+public final class PingEvent extends AbstractEvent {
     @JsonProperty
     private String zen;
     

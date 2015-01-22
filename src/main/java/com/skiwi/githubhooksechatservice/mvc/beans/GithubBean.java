@@ -21,6 +21,7 @@ import com.skiwi.githubhooksechatservice.events.github.TeamAddEvent;
 import com.skiwi.githubhooksechatservice.events.github.WatchEvent;
 import com.skiwi.githubhooksechatservice.events.github.classes.Commit;
 import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
+import com.skiwi.githubhooksechatservice.events.github.classes.PingEvent;
 import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
 
 public class GithubBean {
@@ -448,6 +449,10 @@ public class GithubBean {
 			commitText,
 			branch,
 			pushEvent.getRepository().getUrl() + "/tree/" + branch);
+	}
+
+	public String stringify(PingEvent pingEvent) {
+		return "Ping: " + pingEvent.getZen();
 	}
 	
 

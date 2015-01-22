@@ -140,4 +140,10 @@ public final class LegacyCommit extends AnySetterJSONObject {
 		}
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "LegacyCommit [message=" + message + "]";
+	}
+	
 }

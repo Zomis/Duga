@@ -195,4 +195,11 @@ public final class PushEvent extends AbstractEvent {
 		this.ref = event.ref;
 		this.repository = event.repository;
 	}
+
+	@Override
+	public String toString() {
+		return "PushEvent [before=" + before + ", commits="
+				+ Arrays.toString(commits) + "]";
+	}
+	
 }

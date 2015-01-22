@@ -62,7 +62,7 @@ public class GithubHookController {
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=ping")
     @ResponseBody
     public void ping(final WebhookParameters params, final @RequestBody PingEvent pingEvent) {
-        chatBot.postMessage(params, "Ping: " + pingEvent.getZen());
+        chatBot.postMessage(params, githubBean.stringify(pingEvent));
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=commit_comment")

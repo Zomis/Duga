@@ -250,4 +250,10 @@ public final class Issue extends AnySetterJSONObject {
 		}
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Issue [id=" + id + ", number=" + number + ", title=" + title + "]";
+	}
+	
 }
