@@ -3,6 +3,7 @@ package com.skiwi.githubhooksechatservice.init;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,10 +16,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
+import com.skiwi.githubhooksechatservice.events.github.CreateEvent;
 import com.skiwi.githubhooksechatservice.model.FollowedRepository;
+import com.skiwi.githubhooksechatservice.model.FollowedUser;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.RepositoryStats;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
+import com.skiwi.githubhooksechatservice.mvc.controllers.GithubHookController;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 import com.skiwi.githubhooksechatservice.service.ConfigService;
 import com.skiwi.githubhooksechatservice.service.GithubService;
@@ -42,22 +46,17 @@ public class ScheduledTasks {
 
     @Autowired
     private GithubBean githubBean;
+    
+    @Autowired
+    private GithubHookController controller;
 
-    @Scheduled(cron = "0 0 * * * *") // second minute hour day day day
+    @Scheduled(cron = "0 * * * * *") // second minute hour day day day
     public void scanRepos() {
-    	List<FollowedRepository> repos = githubService.getAll();
-    	
-    	for (FollowedRepository repo : repos) {
-        	AbstractEvent[] data = githubBean.fetchRepoEvents(repo.getName());
-        	long update = Instant.now().getEpochSecond();
-        	
-        	for (AbstractEvent event : data) {
-        		System.out.println(event);
-        	}
-
-//        	System.out.println(Arrays.toString(data));
-        	long eventId = Arrays.stream(data).mapToLong(ev -> ev.getId()).max().orElse(0);
-        	githubService.update(repo.getName(), update, eventId);
+    	try {
+    		updateRepos();
+    	}
+    	catch (Exception ex) {
+    		ex.printStackTrace();
     	}
     	
     	/* 
@@ -69,7 +68,39 @@ public class ScheduledTasks {
     	 * */
     }
     
-    @Scheduled(cron = "0 0 1 * * *") // second minute hour day day day
+    private void updateRepos() {
+    	List<FollowedRepository> repos = githubService.getAll();
+    	for (FollowedRepository repo : repos) {
+        	long update = Instant.now().getEpochSecond();
+        	AbstractEvent[] data = githubBean.fetchRepoEvents(repo.getName());
+        	
+        	List<AbstractEvent> events = Arrays.asList(data);
+        	System.out.println("Last id: " + repo.getLastEventId());
+        	System.out.println("IDS before: " + Arrays.toString(events.stream().mapToLong(ev -> ev.getId()).toArray()));
+        	events.sort(Comparator.comparingLong(event -> event.getId()));
+        	System.out.println("IDS after : " + Arrays.toString(events.stream().mapToLong(ev -> ev.getId()).toArray()));
+
+        	WebhookParameters params = new WebhookParameters();
+        	params.setPost(true);
+        	params.setRoomId(repo.getRoomIds());
+
+        	for (AbstractEvent event : events) {
+        		if (event.getId() > repo.getLastEventId()) {
+        			System.out.println("POST: " + event);
+            		controller.post(params, event);
+        		}
+        		else {
+            		System.out.println(event);
+        		}
+        	}
+
+        	long eventId = events.stream().mapToLong(ev -> ev.getId()).max().orElse(repo.getLastEventId());
+        	System.out.println("Update : " + eventId);
+        	githubService.update(repo.getName(), update, eventId);
+    	}
+	}
+
+	@Scheduled(cron = "0 0 1 * * *") // second minute hour day day day
 	public void dailyMessage() {
 		logger.info("time!");
 		Map<String, RepositoryStats> stats = statistics.getRepoStats();
