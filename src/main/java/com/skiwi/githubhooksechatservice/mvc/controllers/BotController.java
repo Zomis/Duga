@@ -55,6 +55,15 @@ public class BotController {
         return Arrays.toString(blocks);
     }
 
+    @RequestMapping(value = "/gituser", method = RequestMethod.GET)
+    @ResponseBody
+    public String gitTrackUser(@RequestParam("name") String name) {
+    	AbstractEvent[] blocks = githubUtils.fetchUserEvents(name);
+    	long eventId = Arrays.stream(blocks).mapToLong(bl -> bl.getId()).max().orElse(0);
+    	githubService.updateUser(name, Instant.now().getEpochSecond(), eventId - 1);
+        return Arrays.toString(blocks);
+    }
+
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
     public void test(WebhookParameters params) {
