@@ -83,6 +83,14 @@ public class GithubBean {
 			case "tag":
 				refUrl = createEvent.getRepository().getHtmlUrl() + "/releases/tag/" + createEvent.getRef();
 				break;
+			case "repository":
+				refUrl = createEvent.getRepository().getHtmlUrl();
+				return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created {4}",
+						createEvent.getRepository().getFullName(),
+						createEvent.getRepository().getHtmlUrl(),
+						createEvent.getSender().getLogin(),
+						createEvent.getSender().getHtmlUrl(),
+						createEvent.getRefType());
 		}
 		return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) created {4} [**{5}**]({6})",
 			createEvent.getRepository().getFullName(),
