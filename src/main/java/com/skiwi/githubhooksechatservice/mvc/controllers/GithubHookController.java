@@ -1,8 +1,10 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot;
+import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 import com.skiwi.githubhooksechatservice.events.github.CommitCommentEvent;
 import com.skiwi.githubhooksechatservice.events.github.CreateEvent;
 import com.skiwi.githubhooksechatservice.events.github.DeleteEvent;
@@ -38,6 +41,7 @@ import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.classes.PingEvent;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
+import com.skiwi.githubhooksechatservice.service.RuntimeLogService;
 
 /**
  *
@@ -58,6 +62,38 @@ public class GithubHookController {
 	
 	@Autowired
 	private GithubBean githubBean;
+	
+	private RuntimeLogService runtimeLog;
+	
+	private final Map<Class<? extends AbstractEvent>, BiConsumer<WebhookParameters, AbstractEvent>> map;
+	
+	public GithubHookController() {
+		this.map = new HashMap<>();
+		this.map.put(PingEvent.class, (params, event) -> ping(params, (PingEvent) event));
+		this.map.put(CommitCommentEvent.class, (params, event) -> commitComment(params, (CommitCommentEvent) event));
+		this.map.put(CreateEvent.class, (params, event) -> create(params, (CreateEvent) event));
+		this.map.put(DeleteEvent.class, (params, event) -> delete(params, (DeleteEvent) event));
+		this.map.put(ForkEvent.class, (params, event) -> fork(params, (ForkEvent) event));
+		this.map.put(GollumEvent.class, (params, event) -> gollum(params, (GollumEvent) event));
+		this.map.put(IssuesEvent.class, (params, event) -> issues(params, (IssuesEvent) event));
+		this.map.put(IssueCommentEvent.class, (params, event) -> issueComment(params, (IssueCommentEvent) event));
+		this.map.put(MemberEvent.class, (params, event) -> member(params, (MemberEvent) event));
+		this.map.put(PullRequestEvent.class, (params, event) -> pullRequest(params, (PullRequestEvent) event));
+		this.map.put(PullRequestReviewCommentEvent.class, (params, event) -> pullRequestReviewComment(params, (PullRequestReviewCommentEvent) event));
+		this.map.put(PushEvent.class, (params, event) -> push(params, (PushEvent) event));
+		this.map.put(WatchEvent.class, (params, event) -> watch(params, (WatchEvent) event));
+		this.map.put(TeamAddEvent.class, (params, event) -> teamAdd(params, (TeamAddEvent) event));
+	}
+	
+	public void post(WebhookParameters params, AbstractEvent event) {
+		BiConsumer<WebhookParameters, AbstractEvent> consumer = this.map.get(event.getClass());
+		if (consumer != null) {
+			consumer.accept(params, event);
+		}
+		else {
+			runtimeLog.log("Unknown event class: " + event.getClass());
+		}
+	}
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=ping")
     @ResponseBody
