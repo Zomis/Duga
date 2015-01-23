@@ -41,26 +41,26 @@ public class BotController {
 
     @RequestMapping(value = "/gittest", method = RequestMethod.GET)
     @ResponseBody
-    public String gitScan(@RequestParam("name") String name) {
-    	AbstractEvent[] blocks = githubUtils.fetchRepoEvents(name);
+    public String gitScan(@RequestParam("name") String name, @RequestParam(required = false, value = "user") Boolean user) {
+    	AbstractEvent[] blocks = githubUtils.fetchEvents(false, name);
         return Arrays.toString(blocks);
     }
 
     @RequestMapping(value = "/gittrack", method = RequestMethod.GET)
     @ResponseBody
     public String gitTrack(@RequestParam("name") String name) {
-    	AbstractEvent[] blocks = githubUtils.fetchRepoEvents(name);
+    	AbstractEvent[] blocks = githubUtils.fetchEvents(false, name);
     	long eventId = Arrays.stream(blocks).mapToLong(bl -> bl.getId()).max().orElse(0);
-    	githubService.update(name, Instant.now().getEpochSecond(), eventId - 1);
+    	githubService.update(name, Instant.now().getEpochSecond(), eventId, false);
         return Arrays.toString(blocks);
     }
 
     @RequestMapping(value = "/gituser", method = RequestMethod.GET)
     @ResponseBody
     public String gitTrackUser(@RequestParam("name") String name) {
-    	AbstractEvent[] blocks = githubUtils.fetchUserEvents(name);
+    	AbstractEvent[] blocks = githubUtils.fetchEvents(true, name);
     	long eventId = Arrays.stream(blocks).mapToLong(bl -> bl.getId()).max().orElse(0);
-    	githubService.updateUser(name, Instant.now().getEpochSecond(), eventId - 1);
+    	githubService.update(name, Instant.now().getEpochSecond(), eventId, true);
         return Arrays.toString(blocks);
     }
 

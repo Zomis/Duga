@@ -6,8 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="followed_repo")
-public class FollowedRepository {
+@Table(name="duga_followed")
+public class Followed {
 	
 	@Id
 	@GeneratedValue
@@ -20,6 +20,8 @@ public class FollowedRepository {
 	private long lastEventId;
 	
 	private String roomIds;
+	
+	private Integer followType = 0;
 	
 	public Integer getId() {
 		return id;
@@ -59,6 +61,18 @@ public class FollowedRepository {
 	
 	public void setRoomIds(String roomIds) {
 		this.roomIds = roomIds;
+	}
+	
+	public Integer getFollowType() {
+		return followType;
+	}
+	
+	public void setFollowType(Integer followType) {
+		this.followType = followType;
+	}
+	
+	public boolean isUser() {
+		return followType == 1;
 	}
 	
 }

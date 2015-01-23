@@ -23,25 +23,19 @@ import com.skiwi.githubhooksechatservice.events.github.classes.Commit;
 import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.classes.PingEvent;
 import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
+import com.skiwi.githubhooksechatservice.model.Followed;
 
 public class GithubBean {
 	
-    public AbstractEvent[] fetchRepoEvents(String name) {
-    	ObjectMapper mapper = new ObjectMapper();
-    	try {
-    		URL url = new URL("https://api.github.com/repos/" + name + "/events");
-			AbstractEvent[] data = mapper.readValue(url, AbstractEvent[].class);
-			return data;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-    }
+	public AbstractEvent[] fetchEvents(Followed follow) {
+		return fetchEvents(follow.getFollowType() == 1, follow.getName());
+	}
 
-	public AbstractEvent[] fetchUserEvents(String name) {
+	public AbstractEvent[] fetchEvents(boolean user, String name) {
     	ObjectMapper mapper = new ObjectMapper();
     	try {
-    		URL url = new URL("https://api.github.com/users/" + name + "/events");
+    		String type = user ? "users" : "repos";
+    		URL url = new URL("https://api.github.com/" + type + "/" + name + "/events");
 			AbstractEvent[] data = mapper.readValue(url, AbstractEvent[].class);
 			return data;
 		} catch (IOException e) {
