@@ -45,7 +45,8 @@ public class GithubBean {
 	}
 	
 	public String stringify(CommitCommentEvent commitCommentEvent) {
-		if (commitCommentEvent.getComment().getPath() == null) {
+		String path = commitCommentEvent.getComment().getPath();
+		if (path == null || path.isEmpty()) {
 			return MessageFormat.format("\\[[**{0}**]({1})\\] [**{2}**]({3}) [commented]({4}) on commit [**{5}**]({6})",
 					commitCommentEvent.getRepository().getFullName(),
 					commitCommentEvent.getRepository().getHtmlUrl(),
