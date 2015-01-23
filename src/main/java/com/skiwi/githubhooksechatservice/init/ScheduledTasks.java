@@ -158,12 +158,17 @@ public class ScheduledTasks {
     			
    			for (Entry<String, RepositoryStats> statsEntry : statsList) {
    				RepositoryStats stat = statsEntry.getValue();
-				String repoMessage = MessageFormat.format("\\[[**{0}**]({1})\\] {2} commits. {3} issues opened and {4} closed",
+				String repoMessage = MessageFormat.format("\\[[**{0}**]({1})\\] {2} " + pluralize("commit", stat.getCommits()) 
+						+ ". {3} " + pluralize("issue", stat.getIssuesOpened()) + " opened and {4} closed",
 					stat.getName(), stat.getUrl(),
 					stat.getCommits(), stat.getIssuesOpened(), stat.getIssuesClosed());
 				
        			chatBot.postMessages(params, repoMessage);
    			}
     	}
+	}
+
+	private String pluralize(String string, int number) {
+		return number == 1 ? string : string + 's';
 	}
 }
