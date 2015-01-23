@@ -2,6 +2,7 @@ package com.skiwi.githubhooksechatservice.init;
 
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -145,6 +146,9 @@ public class ScheduledTasks {
     	statistics.reset();
     	String rooms = configService.getConfig("dailyRooms", "");
     	
+    	List<Entry<String, RepositoryStats>> statsList = new ArrayList<Entry<String, RepositoryStats>>(stats.entrySet());
+    	statsList.sort(Comparator.comparing(ee -> ee.getKey()));
+    	
 		for (String room : rooms.split(",")) {
    			WebhookParameters params = new WebhookParameters();
    			params.setRoomId(room);
@@ -152,7 +156,7 @@ public class ScheduledTasks {
 			
    			chatBot.postMessages(params, "***RELOAD!***");
     			
-   			for (Entry<String, RepositoryStats> statsEntry : stats.entrySet()) {
+   			for (Entry<String, RepositoryStats> statsEntry : statsList) {
    				RepositoryStats stat = statsEntry.getValue();
 				String repoMessage = MessageFormat.format("\\[[**{0}**]({1})\\] {2} commits. {3} issues opened and {4} closed",
 					stat.getName(), stat.getUrl(),
