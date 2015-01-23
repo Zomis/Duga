@@ -31,7 +31,9 @@ public class Statistics {
 	}
 	
 	public void add(LegacyRepository repository, LegacyCommit commit) {
-		service.add(repository, 1, 0, 0, commit.getAdded().size(), commit.getRemoved().size());
+		final int additions = 0;
+		final int deletions = 0;
+		service.add(repository, 1, 0, 0, additions, deletions);
 	}
 	
 	public void informAboutURL(GithubRepository repository) {
