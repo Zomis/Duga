@@ -2,6 +2,7 @@ package com.skiwi.githubhooksechatservice.mvc.beans;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Deprecated
 public class RepositoryStats {
 	
 	private final AtomicInteger issuesOpened = new AtomicInteger();

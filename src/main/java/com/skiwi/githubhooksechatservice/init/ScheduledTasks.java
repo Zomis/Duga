@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -19,13 +17,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 import com.skiwi.githubhooksechatservice.events.github.CreateEvent;
+import com.skiwi.githubhooksechatservice.model.DailyInfo;
 import com.skiwi.githubhooksechatservice.model.Followed;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
-import com.skiwi.githubhooksechatservice.mvc.beans.RepositoryStats;
-import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 import com.skiwi.githubhooksechatservice.mvc.controllers.GithubHookController;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 import com.skiwi.githubhooksechatservice.service.ConfigService;
+import com.skiwi.githubhooksechatservice.service.DailyService;
 import com.skiwi.githubhooksechatservice.service.GithubService;
 
 @Configuration
@@ -37,7 +35,7 @@ public class ScheduledTasks {
     private ChatBot chatBot;
     
     @Autowired
-    private Statistics statistics;
+    private DailyService dailyService;
     
     @Autowired
     private ConfigService configService;
@@ -108,12 +106,10 @@ public class ScheduledTasks {
 	@Scheduled(cron = "0 0 1 * * *") // second minute hour day day day
 	public void dailyMessage() {
 		logger.info("time!");
-		Map<String, RepositoryStats> stats = statistics.getRepoStats();
-    	statistics.reset();
+		
+		List<DailyInfo> results = new ArrayList<>(dailyService.getAndReset());
     	String rooms = configService.getConfig("dailyRooms", "");
-    	
-    	List<Entry<String, RepositoryStats>> statsList = new ArrayList<Entry<String, RepositoryStats>>(stats.entrySet());
-    	statsList.sort(Comparator.comparing(ee -> ee.getKey()));
+    	results.sort(Comparator.comparing(ee -> ee.getName()));
     	
 		for (String room : rooms.split(",")) {
    			WebhookParameters params = new WebhookParameters();
@@ -121,9 +117,8 @@ public class ScheduledTasks {
    			params.setPost(true);
 			
    			chatBot.postMessages(params, "***RELOAD!***");
-    			
-   			for (Entry<String, RepositoryStats> statsEntry : statsList) {
-   				RepositoryStats stat = statsEntry.getValue();
+    		
+   			for (DailyInfo stat : results) {
 				String repoMessage = MessageFormat.format("\\[[**{0}**]({1})\\] {2} " + pluralize("commit", stat.getCommits()) 
 						+ ". {3} " + pluralize("issue", stat.getIssuesOpened()) + " opened and {4} closed",
 					stat.getName(), stat.getUrl(),
