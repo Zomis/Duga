@@ -1,9 +1,9 @@
 package com.skiwi.githubhooksechatservice.init;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -70,13 +70,12 @@ public class ScheduledTasks {
     
     private void scanFollowed(final Followed follow) {
     	long update = Instant.now().getEpochSecond();
-    	AbstractEvent[] data = githubBean.fetchEvents(follow);
-    	
-    	List<AbstractEvent> events = Arrays.asList(data);
-    	System.out.println("Last id: " + follow.getLastEventId());
-    	System.out.println("IDS before: " + Arrays.toString(events.stream().mapToLong(ev -> ev.getId()).toArray()));
-    	events.sort(Comparator.comparingLong(event -> event.getId()));
-    	System.out.println("IDS after : " + Arrays.toString(events.stream().mapToLong(ev -> ev.getId()).toArray()));
+    	List<AbstractEvent> events;
+		try {
+			events = githubBean.fetchEvents(follow);
+		} catch (IOException e) {
+    		return;
+    	}
 
     	WebhookParameters params = new WebhookParameters();
     	params.setPost(true);

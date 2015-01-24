@@ -3,6 +3,10 @@ package com.skiwi.githubhooksechatservice.mvc.beans;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
@@ -27,21 +31,39 @@ import com.skiwi.githubhooksechatservice.model.Followed;
 
 public class GithubBean {
 	
-	public AbstractEvent[] fetchEvents(Followed follow) {
-		return fetchEvents(follow.getFollowType() == 1, follow.getName());
+	public List<AbstractEvent> fetchEvents(Followed follow) throws IOException {
+		return fetchEvents(follow.getFollowType() == 1, follow.getName(), follow.getLastEventId());
 	}
 
-	public AbstractEvent[] fetchEvents(boolean user, String name) {
-    	ObjectMapper mapper = new ObjectMapper();
-    	try {
-    		String type = user ? "users" : "repos";
-    		URL url = new URL("https://api.github.com/" + type + "/" + name + "/events");
-			AbstractEvent[] data = mapper.readValue(url, AbstractEvent[].class);
-			return data;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+	private final ObjectMapper mapper = new ObjectMapper();
+	
+	private AbstractEvent[] fetchEventsByPage(boolean user, String name, int page) throws IOException {
+   		String type = user ? "users" : "repos";
+   		URL url = new URL("https://api.github.com/" + type + "/" + name + "/events?page=" + page);
+   		AbstractEvent[] data = mapper.readValue(url, AbstractEvent[].class);
+   		return data;
+	}
+	
+	public List<AbstractEvent> fetchEvents(boolean user, String name, long lastEvent) throws IOException {
+   		int page = 1;
+   		AbstractEvent[] data = fetchEventsByPage(user, name, page);
+   		if (data == null) {
+   			return null;
+   		}
+		List<AbstractEvent> list = new ArrayList<AbstractEvent>(Arrays.asList(data));
+
+		if (lastEvent >= 0) {
+			boolean foundEvent = list.stream().anyMatch(ev -> ev.getId() >= lastEvent);
+			while (!foundEvent) {
+				data = fetchEventsByPage(user, name, page);
+				if (data == null) {
+					break;
+				}
+				list.addAll(Arrays.asList(data));
+			}
 		}
+		list.sort(Comparator.comparingLong(event -> event.getId()));
+		return list;
 	}
 	
 	public String stringify(CommitCommentEvent commitCommentEvent) {

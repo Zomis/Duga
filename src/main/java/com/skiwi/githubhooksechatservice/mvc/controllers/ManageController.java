@@ -1,7 +1,8 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
+import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -81,10 +82,16 @@ public class ManageController {
     	if (user == null) {
     		user = false;
     	}
-    	AbstractEvent[] blocks = githubUtils.fetchEvents(user, name);
-    	long eventId = Arrays.stream(blocks).mapToLong(bl -> bl.getId()).max().orElse(0);
-    	githubService.update(name, Instant.now().getEpochSecond(), eventId, false);
-        return Arrays.toString(blocks);
+    	List<AbstractEvent> blocks;
+		try {
+			blocks = githubUtils.fetchEvents(user, name, -1);
+	    	long eventId = blocks.stream().mapToLong(bl -> bl.getId()).max().orElse(0);
+	    	githubService.update(name, Instant.now().getEpochSecond(), eventId, false);
+	        return String.valueOf(blocks.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return e.toString() + ": " + e.getMessage();
+		}
     }
 
     @RequestMapping(value = "/speak", method = RequestMethod.GET)
