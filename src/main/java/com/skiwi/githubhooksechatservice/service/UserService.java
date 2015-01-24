@@ -4,6 +4,8 @@ import com.skiwi.githubhooksechatservice.model.DugaUser;
 
 public interface UserService {
 	
-	public DugaUser getUser(String login);
+	DugaUser getUser(String login);
+
+	void createUser(String username, String password);
 
 }
