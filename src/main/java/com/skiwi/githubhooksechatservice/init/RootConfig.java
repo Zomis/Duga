@@ -24,6 +24,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.StartupBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
+import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 
 @Configuration
 @EnableTransactionManagement
@@ -59,21 +60,16 @@ public class RootConfig {
 	}
 	
 	@Bean
-	public com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration config() {
-		com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration config = new com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration();
+	public BotConfiguration config() {
+		BotConfiguration config = new BotConfiguration();
 		config.setBotEmail(env.getRequiredProperty("env.botEmail"));
 		config.setBotPassword(env.getRequiredProperty("env.botPassword"));
 		config.setChatMaxBurst(Integer.parseInt(env.getRequiredProperty("env.chatMaxBurst")));
 		config.setChatMinimumDelay(Integer.parseInt(env.getRequiredProperty("env.chatMinimumDelay")));
 		config.setChatThrottle(Integer.parseInt(env.getRequiredProperty("env.chatThrottle")));
 		config.setChatUrl(env.getRequiredProperty("env.chatUrl"));
-		config.setDailyRooms(env.getRequiredProperty("env.dailyRooms"));
-		config.setDeployGreetingEnabled(Boolean.parseBoolean(env.getRequiredProperty("env.deployGreetingEnabled")));
-		config.setDeployGreetingText(env.getRequiredProperty("env.deployGreetingText"));
 		config.setRoomId(env.getRequiredProperty("env.roomId"));
 		config.setRootUrl(env.getRequiredProperty("env.rootUrl"));
-		config.setUndeployGoodbyeEnabled(Boolean.parseBoolean(env.getRequiredProperty("env.undeployGoodbyeEnabled")));
-		config.setUndeployGoodbyeText(env.getRequiredProperty("env.undeployGoodbyeText"));
 		config.setUserMappings(env.getRequiredProperty("env.userMappings"));
 		return config;
 	}

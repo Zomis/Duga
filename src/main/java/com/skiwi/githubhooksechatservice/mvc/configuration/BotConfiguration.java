@@ -23,14 +23,6 @@ public class BotConfiguration {
     private int chatMaxBurst;
     private int chatMinimumDelay;
 	
-	private boolean deployGreetingEnabled;
-	private String deployGreetingText;
-	
-	private boolean undeployGoodbyeEnabled;
-	private String undeployGoodbyeText;
-	
-	private String dailyRooms;
-	
 	private String userMappings;
 	private Map<String, String> userMappingsMap = new HashMap<>();
 
@@ -98,42 +90,6 @@ public class BotConfiguration {
         this.chatMinimumDelay = chatMinimumDelay;
     }
 
-    @Deprecated
-	public boolean getDeployGreetingOn() {
-		return deployGreetingEnabled;
-	}
-
-	public void setDeployGreetingEnabled(final boolean deployGreetingEnabled) {
-		this.deployGreetingEnabled = deployGreetingEnabled;
-	}
-
-	@Deprecated
-	public String getDeployGreetingText() {
-		return deployGreetingText;
-	}
-
-	public void setDeployGreetingText(final String deployGreetingText) {
-		this.deployGreetingText = deployGreetingText;
-	}
-
-	@Deprecated
-	public boolean getUndeployGoodbyeEnabled() {
-		return undeployGoodbyeEnabled;
-	}
-
-	public void setUndeployGoodbyeEnabled(final boolean undeployGoodbyeEnabled) {
-		this.undeployGoodbyeEnabled = undeployGoodbyeEnabled;
-	}
-
-	@Deprecated
-	public String getUndeployGoodbyeText() {
-		return undeployGoodbyeText;
-	}
-
-	public void setUndeployGoodbyeText(final String undeployGoodbyeText) {
-		this.undeployGoodbyeText = undeployGoodbyeText;
-	}
-
 	public String getUserMappings() {
 		return userMappings;
 	}
@@ -150,12 +106,4 @@ public class BotConfiguration {
 		return userMappingsMap;
 	}
 	
-	@Deprecated
-	public String getDailyRooms() {
-		return dailyRooms;
-	}
-	
-	public void setDailyRooms(String dailyRooms) {
-		this.dailyRooms = dailyRooms;
-	}
 }
