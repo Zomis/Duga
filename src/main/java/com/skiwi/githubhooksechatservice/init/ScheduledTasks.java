@@ -51,7 +51,7 @@ public class ScheduledTasks {
     @Autowired
     private GithubHookController controller;
 
-    @Scheduled(cron = "0 * * * * *") // second minute hour day day day
+    @Scheduled(cron = "0 */5 * * * *") // second minute hour day day day
     public void scanRepos() {
     	try {
         	List<Followed> followed = githubService.getAll();
