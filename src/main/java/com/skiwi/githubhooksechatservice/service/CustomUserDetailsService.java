@@ -2,7 +2,9 @@ package com.skiwi.githubhooksechatservice.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,7 +50,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 				accountNonLocked,
 				getAuthorities(domainUser.getRole())
 		);
-		System.out.println("user: " + user + " pass " + user.getPassword());
 		return user;
 	}
 	
@@ -58,21 +59,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return authList;
 	}
 	
-	public List<String> getRoles(Role role) {
-		List<String> roles = new ArrayList<String>();
-		if (role.getRole().equals("ADMIN")) {
-			roles.add("ROLE_MODERATOR");
-			roles.add("ROLE_ADMIN");
-			roles.add("MODERATOR");
-			roles.add("ADMIN");
-		} else if (role.getRole().equals("MODERATOR")) {
-			roles.add("ROLE_MODERATOR");
-			roles.add("MODERATOR");
-		}
+	public Set<String> getRoles(Role role) {
+		Set<String> roles = new HashSet<String>();
+		roles.add(role.getRole());
+		roles.add("USER"); // everyone is a user
+		roles.add("ROLE_USER"); // everyone is a user
 		return roles;
 	}
 	
-	public static List<GrantedAuthority> getGrantedAuthorities(List<String> roles) {
+	public static List<GrantedAuthority> getGrantedAuthorities(Set<String> roles) {
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		
 		for (String role : roles) {

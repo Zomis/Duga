@@ -30,7 +30,7 @@ public class UserDAOImpl implements UserDAO {
 	@Override
 	public DugaUser getUser(String login) {
 		try {
-			Query query = openSession().createQuery("from User u where u.login = :login");
+			Query query = openSession().createQuery("from DugaUser u where u.login = :login");
 			query.setParameter("login", login);
 			System.out.println("executing query with parameter" + login);
 			return (DugaUser) query.uniqueResult();
@@ -53,7 +53,7 @@ public class UserDAOImpl implements UserDAO {
 			user = new DugaUser();
 			user.setLogin(login);
 			user.setPassword(passwordEncoder.encode(password));
-			user.setRole(roleDAO.createOrGetRole("MODERATOR"));
+			user.setRole(roleDAO.createOrGetRole("USER"));
 			openSession().save(user);
 			return user;
 		}
