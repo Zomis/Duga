@@ -23,6 +23,8 @@ public class Followed {
 	
 	private Integer followType = 0;
 	
+	private String interestingEvents;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -73,6 +75,14 @@ public class Followed {
 	
 	public boolean isUser() {
 		return followType == 1;
+	}
+	
+	public String getInterestingEvents() {
+		return interestingEvents;
+	}
+	
+	public void setInterestingEvents(String interestingEvents) {
+		this.interestingEvents = interestingEvents;
 	}
 	
 }

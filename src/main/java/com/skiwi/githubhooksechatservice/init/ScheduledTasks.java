@@ -16,10 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
-import com.skiwi.githubhooksechatservice.events.github.CreateEvent;
 import com.skiwi.githubhooksechatservice.model.DailyInfo;
 import com.skiwi.githubhooksechatservice.model.Followed;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubEventFilter;
 import com.skiwi.githubhooksechatservice.mvc.controllers.GithubHookController;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 import com.skiwi.githubhooksechatservice.service.ConfigService;
@@ -31,6 +31,8 @@ import com.skiwi.githubhooksechatservice.service.GithubService;
 public class ScheduledTasks {
     private static final Logger logger = Logger.getLogger(ScheduledTasks.class.getSimpleName());
 	
+    private final GithubEventFilter eventFilter = new GithubEventFilter();
+    
     @Autowired
     private ChatBot chatBot;
     
@@ -82,17 +84,16 @@ public class ScheduledTasks {
     	params.setRoomId(follow.getRoomIds());
 
     	Stream<AbstractEvent> stream = events.stream();
-    	if (follow.getFollowType() == 1) {
-        	stream = stream.filter(ev -> ev instanceof CreateEvent).filter(ev -> ((CreateEvent) ev).getRefType().equals("repository"));
-    	}
-		stream.forEach(ev -> post(ev, follow.getLastEventId(), params));
+    	stream = eventFilter.filter(stream, follow.getInterestingEvents());
+    	
+    	stream.forEach(ev -> post(ev, follow.getLastEventId(), params));
     	
     	long eventId = events.stream().mapToLong(ev -> ev.getId()).max().orElse(follow.getLastEventId());
     	System.out.println("Update : " + eventId);
     	githubService.update(follow.getName(), update, eventId, follow.getFollowType() == 1);
 	}
     
-    private void post(AbstractEvent event, long lastEventId, WebhookParameters params) {
+	private void post(AbstractEvent event, long lastEventId, WebhookParameters params) {
 	    if (event.getId() > lastEventId) {
 			System.out.println("POST: " + event);
     		controller.post(params, event);
