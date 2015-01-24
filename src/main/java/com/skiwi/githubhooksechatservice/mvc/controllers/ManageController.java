@@ -1,5 +1,8 @@
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
+import java.time.Instant;
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,10 +10,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
+import com.skiwi.githubhooksechatservice.service.GithubService;
 import com.skiwi.githubhooksechatservice.service.UserService;
 
 @Controller
 public class ManageController {
+	
+	@Autowired
+	private GithubBean githubUtils;
+	
+	@Autowired
+	private GithubService githubService;
 	
 	@Autowired
 	private UserService userService;
@@ -62,4 +75,20 @@ public class ManageController {
         return "manage";
     }
 
+    @RequestMapping(value = "/config/track", method = RequestMethod.GET)
+    @ResponseBody
+    public String gitTrack(@RequestParam("name") String name, @RequestParam("user") Boolean user) {
+    	if (user == null) {
+    		user = false;
+    	}
+    	AbstractEvent[] blocks = githubUtils.fetchEvents(user, name);
+    	long eventId = Arrays.stream(blocks).mapToLong(bl -> bl.getId()).max().orElse(0);
+    	githubService.update(name, Instant.now().getEpochSecond(), eventId, false);
+        return Arrays.toString(blocks);
+    }
+
+    @RequestMapping(value = "/speak", method = RequestMethod.GET)
+    public String say(WebhookParameters params) {
+        return "speak";
+    }
 }
