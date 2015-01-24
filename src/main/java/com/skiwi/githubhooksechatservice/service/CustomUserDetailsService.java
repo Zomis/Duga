@@ -62,7 +62,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public Set<String> getRoles(Role role) {
 		Set<String> roles = new HashSet<String>();
 		roles.add(role.getRole());
-		roles.add("USER"); // everyone is a user
+		roles.add("ROLE_" + role.getRole());
 		roles.add("ROLE_USER"); // everyone is a user
 		return roles;
 	}

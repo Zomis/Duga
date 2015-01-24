@@ -67,7 +67,7 @@ public class ManageController {
 	
     @RequestMapping(value = "/config", method = RequestMethod.GET)
     public String config() {
-        return "config";
+        return "admin-config";
     }
 
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
