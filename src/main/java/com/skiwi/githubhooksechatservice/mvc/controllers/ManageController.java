@@ -86,7 +86,7 @@ public class ManageController {
 		try {
 			blocks = githubUtils.fetchEvents(user, name, -1);
 	    	long eventId = blocks.stream().mapToLong(bl -> bl.getId()).max().orElse(0);
-	    	githubService.update(name, Instant.now().getEpochSecond(), eventId, false);
+	    	githubService.update(name, Instant.now().getEpochSecond(), eventId, user);
 	        return String.valueOf(blocks.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
