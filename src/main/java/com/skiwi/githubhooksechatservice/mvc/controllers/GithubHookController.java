@@ -142,6 +142,12 @@ public class GithubHookController {
     	else {
         	chatBot.postMessages(params, githubBean.stringify(issuesEvent));
     	}
+    	if (issuesEvent.isOpened()) {
+        	statistics.add(issuesEvent, true);
+    	}
+    	if (issuesEvent.isClosed()) {
+        	statistics.add(issuesEvent, false);
+    	}
     }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=issue_comment")
