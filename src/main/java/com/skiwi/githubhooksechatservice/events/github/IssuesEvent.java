@@ -111,7 +111,7 @@ public final class IssuesEvent extends GithubEvent {
 	}
 	
 	public boolean isOpened() {
-		return this.action.equals("opened") && this.action.equals("reopened");
+		return this.action.equals("opened") || this.action.equals("reopened");
 	}
 	
 }
