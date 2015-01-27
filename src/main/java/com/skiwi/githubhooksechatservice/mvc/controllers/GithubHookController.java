@@ -137,7 +137,7 @@ public class GithubHookController {
     public void issues(final WebhookParameters params, final @RequestBody IssuesEvent issuesEvent) {
     	if (issuesEvent.getAction().equals("opened") && issuesEvent.getIssue().getBody() != null
     			&& !issuesEvent.getIssue().getBody().isEmpty()) {
-        	chatBot.postMessages(params, githubBean.stringify(issuesEvent), issuesEvent.getIssue().getBody());
+        	chatBot.postMessages(params, githubBean.stringify(issuesEvent), "> " + issuesEvent.getIssue().getBody());
     	}
     	else {
         	chatBot.postMessages(params, githubBean.stringify(issuesEvent));
