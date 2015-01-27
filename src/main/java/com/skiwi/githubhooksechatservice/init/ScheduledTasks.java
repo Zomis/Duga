@@ -51,7 +51,7 @@ public class ScheduledTasks {
     @Autowired
     private GithubHookController controller;
 
-    @Scheduled(cron = "0 */5 * * * *") // second minute hour day day day
+    @Scheduled(cron = "0 0 */2 * * *") // second minute hour day day day
     public void scanRepos() {
     	final int API_LIMIT = 4; // 12 times per hour, 4 items each time = 48 requests. API limit is 60. Leaves some space for other uses.
     	try {
