@@ -21,6 +21,8 @@ public class GithubEventFilter {
 	
     private Predicate<AbstractEvent> predicateMatch(String str) {
     	switch (str) {
+    		case "*":
+    			return ev -> true;
 			case "create-tag":
 				return ev -> asEvent(ev, CreateEvent.class, cr -> cr.getRefType().equals("tag"));
 			case "create-repository":
