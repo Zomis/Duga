@@ -53,9 +53,13 @@ public class ScheduledTasks {
 
     @Scheduled(cron = "0 */5 * * * *") // second minute hour day day day
     public void scanRepos() {
+    	final int API_LIMIT = 4; // 12 times per hour, 4 items each time = 48 requests. API limit is 60. Leaves some space for other uses.
     	try {
-        	List<Followed> followed = githubService.getAll();
-        	followed.forEach(this::scanFollowed);
+        	List<Followed> followed = new ArrayList<Followed>(githubService.getAll());
+        	followed.sort(Comparator.comparingLong(follow -> follow.getLastChecked()));
+        	followed.stream()
+        		.limit(API_LIMIT)
+        		.forEach(this::scanFollowed);
     	}
     	catch (Exception ex) {
     		ex.printStackTrace();
