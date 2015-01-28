@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
+import com.skiwi.githubhooksechatservice.events.github.classes.GithubRepository;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
+import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 import com.skiwi.githubhooksechatservice.service.GithubService;
 import com.skiwi.githubhooksechatservice.service.UserService;
 
@@ -28,6 +30,9 @@ public class ManageController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private Statistics statistics;
 	
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home() {
@@ -92,6 +97,34 @@ public class ManageController {
 			e.printStackTrace();
 			return e.toString() + ": " + e.getMessage();
 		}
+    }
+
+    @RequestMapping(value = "/config/fakestat", method = RequestMethod.GET)
+    @ResponseBody
+    public String fakeDailyStat(@RequestParam("name") String name, @RequestParam("url") String url) {
+    	statistics.informAboutURL(new GithubRepository() {
+			
+			@Override
+			public String getUrl() {
+				return url;
+			}
+			
+			@Override
+			public String getName() {
+				return name;
+			}
+			
+			@Override
+			public String getHtmlUrl() {
+				return url;
+			}
+			
+			@Override
+			public String getFullName() {
+				return name;
+			}
+		});
+    	return "Added entry for " + name + ": " + url;
     }
 
     @RequestMapping(value = "/speak", method = RequestMethod.GET)
