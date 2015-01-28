@@ -113,7 +113,7 @@ public class ScheduledTasks {
 		
 		List<DailyInfo> results = new ArrayList<>(dailyService.getAndReset());
     	String rooms = configService.getConfig("dailyRooms", "");
-    	results.sort(Comparator.comparing(ee -> ee.getName()));
+    	results.sort(Comparator.comparing(ee -> ee.getName().toLowerCase()));
     	
 		for (String room : rooms.split(",")) {
    			WebhookParameters params = new WebhookParameters();
