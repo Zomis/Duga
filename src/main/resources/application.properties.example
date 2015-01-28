@@ -1,3 +1,5 @@
+## Rename this file to `application.properties` and configure db properties and botEmail + botPassword to your settings
+
 #DB properties:
 db.driver=org.postgresql.Driver
 db.url=jdbc:postgresql://localhost:5432/div
@@ -17,9 +19,4 @@ env.roomId = 16134
 env.chatThrottle = 10000
 env.chatMaxBurst = 2
 env.chatMinimumDelay = 500
-env.deployGreetingEnabled = true
-env.deployGreetingText = Monking!
-env.undeployGoodbyeEnabled = true
-env.undeployGoodbyeText = TTQW
-env.dailyRooms = 8595,16134
 env.userMappings = skiwi2 -> skiwi, Zomis -> SimonAndréForsberg, janosgyerik -> janos
