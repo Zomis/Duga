@@ -2,6 +2,7 @@ package com.skiwi.githubhooksechatservice.mvc.beans;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.skiwi.githubhooksechatservice.events.github.IssueCommentEvent;
 import com.skiwi.githubhooksechatservice.events.github.IssuesEvent;
 import com.skiwi.githubhooksechatservice.events.github.classes.GithubRepository;
 import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
@@ -16,11 +17,15 @@ public class Statistics {
 	
 	public void add(IssuesEvent issuesEvent, boolean increased) {
 		if (increased) {
-			service.add(issuesEvent.getRepository(), 0, 1, 0, 0, 0);
+			service.addIssues(issuesEvent.getRepository(), 1, 0, 0);
 		}
 		else {
-			service.add(issuesEvent.getRepository(), 0, 0, 1, 0, 0);
+			service.addIssues(issuesEvent.getRepository(), 0, 1, 0);
 		}
+	}
+
+	public void add(IssueCommentEvent issueCommentEvent) {
+		service.addIssues(issueCommentEvent.getRepository(), 0, 0, 1);
 	}
 
 	public void fixRepositoryURL(Repository repository) {
@@ -33,11 +38,11 @@ public class Statistics {
 	public void add(LegacyRepository repository, LegacyCommit commit) {
 		final int additions = 0;
 		final int deletions = 0;
-		service.add(repository, 1, 0, 0, additions, deletions);
+		service.addCommits(repository, 1, additions, deletions);
 	}
 	
 	public void informAboutURL(GithubRepository repository) {
-		service.add(repository, 0, 0, 0, 0, 0);
+		service.addCommits(repository, 0, 0, 0);
 	}
 	
 }

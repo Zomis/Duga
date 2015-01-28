@@ -18,9 +18,13 @@ public class DailyServiceImpl implements DailyService {
 	private DailyInfoDAO dailyDAO;
 
 	@Override
-	public DailyInfo add(GithubRepository repository, int commits, int opened,
-			int closed, int additions, int deletions) {
-		return dailyDAO.add(repository.getFullName(), repository.getHtmlUrl(), commits, opened, closed, additions, deletions);
+	public DailyInfo addCommits(GithubRepository repository, int commits, int additions, int deletions) {
+		return dailyDAO.addCommits(repository.getFullName(), repository.getHtmlUrl(), commits, additions, deletions);
+	}
+
+	@Override
+	public DailyInfo addIssues(GithubRepository repository, int opened, int closed, int comments) {
+		return dailyDAO.addIssues(repository.getFullName(), repository.getHtmlUrl(), opened, closed, comments);
 	}
 
 	@Override

@@ -157,6 +157,7 @@ public class GithubHookController {
 			case "created":
 				chatBot.postMessages(params, githubBean.stringify(issueCommentEvent),
 					"> " + issueCommentEvent.getComment().getBody());
+				statistics.add(issueCommentEvent);
 				break;
 		}
     }

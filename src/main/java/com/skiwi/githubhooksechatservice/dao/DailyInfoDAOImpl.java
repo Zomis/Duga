@@ -2,6 +2,7 @@ package com.skiwi.githubhooksechatservice.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -22,20 +23,29 @@ public class DailyInfoDAOImpl implements DailyInfoDAO {
 	}
 
 	@Override
-	public DailyInfo add(String name, String url, int commits, int opened, int closed, int additions, int deletions) {
+	public DailyInfo addCommits(String name, String url, int commits, int additions, int deletions) {
+		return add(name, url, daily -> daily.addCommits(commits, additions, deletions));
+	}
+	
+	@Override
+	public DailyInfo addIssues(String name, String url, int opened, int closed, int comments) {
+		return add(name, url, daily -> daily.addIssues(opened, closed, comments));
+	}
+	
+	private DailyInfo add(String name, String url, Consumer<DailyInfo> perform) {
 		try {
 			Query query = openSession().createQuery("from DailyInfo daily where daily.name = :name");
 			query.setParameter("name", name);
 			DailyInfo dailyInfo = (DailyInfo) query.uniqueResult();
 			if (dailyInfo != null) {
-				dailyInfo.add(commits, opened, closed, additions, deletions);
+				perform.accept(dailyInfo);
 				openSession().merge(dailyInfo);
 				return dailyInfo;
 			}
 			dailyInfo = new DailyInfo();
 			dailyInfo.setName(name);
 			dailyInfo.setUrl(url);
-			dailyInfo.add(commits, opened, closed, additions, deletions);
+			perform.accept(dailyInfo);
 			openSession().save(dailyInfo);
 			return dailyInfo;
 		}

@@ -8,8 +8,9 @@ import com.skiwi.githubhooksechatservice.model.DailyInfo;
 
 public interface DailyService {
 	
-	DailyInfo add(GithubRepository repository, int commits, int opened, int closed,
-			int additions, int deletions);
+	DailyInfo addCommits(GithubRepository repository, int commits, int additions, int deletions);
+	DailyInfo addIssues(GithubRepository repository, int opened, int closed, int comments);
+	
 	List<DailyInfo> getAndReset();
 	List<DailyInfo> get();
 	String getUrl(String fullNameGithubStyle);

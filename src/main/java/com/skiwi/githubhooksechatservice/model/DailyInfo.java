@@ -27,6 +27,8 @@ public class DailyInfo {
 	
 	private Integer deletions = 0;
 	
+	private Integer comments = 0;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -90,11 +92,23 @@ public class DailyInfo {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+	
+	public Integer getComments() {
+		return comments;
+	}
+	
+	public void setComments(Integer comments) {
+		this.comments = comments;
+	}
 
-	public void add(int commits, int opened, int closed, int additions, int deletions) {
-		this.commits += commits;
+	public void addIssues(int opened, int closed, int comments) {
 		this.issuesOpened += opened;
 		this.issuesClosed += closed;
+		this.comments += comments;
+	}
+	
+	public void addCommits(int commits, int additions, int deletions) {
+		this.commits += commits;
 		this.additions += additions;
 		this.deletions += deletions;
 	}

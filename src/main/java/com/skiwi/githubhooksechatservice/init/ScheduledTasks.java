@@ -123,17 +123,34 @@ public class ScheduledTasks {
    			chatBot.postMessages(params, "***RELOAD!***");
     		
    			for (DailyInfo stat : results) {
-				String repoMessage = MessageFormat.format("\\[[**{0}**]({1})\\] {2} " + pluralize("commit", stat.getCommits()) 
-						+ ". {3} " + pluralize("issue", stat.getIssuesOpened()) + " opened and {4} closed",
-					stat.getName(), stat.getUrl(),
-					stat.getCommits(), stat.getIssuesOpened(), stat.getIssuesClosed());
-				
-       			chatBot.postMessages(params, repoMessage);
+   				StringBuilder str = new StringBuilder(MessageFormat.format("\\[[**{0}**]({1})\\]",
+					stat.getName(), stat.getUrl()));
+   				int startLength = str.length();
+   				
+   				addStat(str, stat.getCommits(), "commit");
+   				addStat(str, stat.getIssuesOpened(), "opened issue");
+   				addStat(str, stat.getIssuesClosed(), "closed issue");
+   				
+   				addStat(str, stat.getComments(), "issue comment");
+   				addStat(str, stat.getAdditions(), "addition");
+   				addStat(str, stat.getDeletions(), "deletion");
+   				if (str.length() > startLength) {
+   	       			chatBot.postMessages(params, str.toString());
+   				}
    			}
     	}
 	}
 
-	private String pluralize(String string, int number) {
-		return number == 1 ? string : string + 's';
+	private void addStat(StringBuilder str, int count, String text) {
+		if (count > 0) {
+			str.append(' ');
+			str.append(count);
+			str.append(' ');
+			str.append(text);
+			if (count > 1) {
+				str.append('s');
+			}
+			str.append('.');
+		}
 	}
 }
