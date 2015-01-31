@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
+import com.skiwi.githubhooksechatservice.mvc.beans.StackExchangeAPIBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.StartupBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
 import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
@@ -57,6 +58,11 @@ public class RootConfig {
 	@Bean
 	public GithubBean githubUtils() {
 		return new GithubBean();
+	}
+	
+	@Bean
+	public StackExchangeAPIBean stackAPI() {
+		return new StackExchangeAPIBean();
 	}
 	
 	@Bean
