@@ -84,19 +84,14 @@ public class ScheduledTasks {
     private long lastComment;
     private long fromDate;
 
+	private final WebhookParameters params = WebhookParameters.toRoom("8595");
+	private final WebhookParameters debug = WebhookParameters.toRoom("20298");
+	
     @Scheduled(cron = "0 */2 * * * *") // second minute hour day day day
     public void scanComments() {
     	if (!Instant.now().isAfter(nextFetch)) {
     		return;
     	}
-
-    	WebhookParameters params = new WebhookParameters();
-    	params.setPost(true);
-    	params.setRoomId("8595");
-
-    	WebhookParameters debug = new WebhookParameters();
-    	debug.setPost(true);
-    	debug.setRoomId("20298");
 
     	try {
     		StackComments comments = stackAPI.fetchComments("stackoverflow", fromDate);

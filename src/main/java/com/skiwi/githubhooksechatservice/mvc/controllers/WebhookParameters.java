@@ -28,4 +28,11 @@ public class WebhookParameters {
 		this.post = post;
 	}
 	
+	public static WebhookParameters toRoom(String roomId) {
+		WebhookParameters params = new WebhookParameters();
+		params.setPost(true);
+		params.setRoomId(roomId);
+		return params;
+	}
+	
 }
