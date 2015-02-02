@@ -10,6 +10,9 @@ public class StackExchangeComment {
 	@JsonProperty("comment_id")
 	private long commentId;
 	
+	@JsonProperty("creation_date")
+	private long creationDate;
+	
 	@JsonProperty
 	private String body;
 	
@@ -37,6 +40,10 @@ public class StackExchangeComment {
 
 	public String getLink() {
 		return link;
+	}
+	
+	public long getCreationDate() {
+		return creationDate;
 	}
 	
 }
