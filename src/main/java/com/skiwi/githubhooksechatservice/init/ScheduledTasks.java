@@ -101,12 +101,12 @@ public class ScheduledTasks {
     			}
     			
     			long previousLastComment = lastComment;
-    			lastComment = items.stream().mapToLong(comment -> comment.getCommentId()).max().orElse(lastComment);
-    			fromDate = items.stream().mapToLong(comment -> comment.getCreationDate()).max().orElse(fromDate);
     			for (StackExchangeComment comment : items) {
     				if (comment.getCommentId() <= previousLastComment) {
     					continue;
     				}
+    				lastComment = Math.max(comment.getCommentId(), lastComment);
+    				fromDate = Math.max(comment.getCommentId(), fromDate);
     				if (isInterestingComment(comment)) {
     					chatBot.postMessage(params, comment.getLink());
     				}
