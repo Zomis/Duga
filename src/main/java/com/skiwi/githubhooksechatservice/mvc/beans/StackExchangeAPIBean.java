@@ -27,7 +27,7 @@ public class StackExchangeAPIBean {
 	}
 	
 	public StackComments fetchComments(String site, long fromDate) throws JsonParseException, JsonMappingException, IOException {
-		final String filter = "!SWJ_BpB*hGj5g523vF";
+		final String filter = "!1zSk*x-OuqVk2k.(bS0NB";
 		final String apiKey = config.getStackAPIKey();
 		URL url = new URL("https://api.stackexchange.com/2.2/comments?page=1&pagesize=100&fromdate=" + fromDate +
 				"&order=desc&sort=creation&site=" + site + "&filter=" + filter + "&key=" + apiKey);

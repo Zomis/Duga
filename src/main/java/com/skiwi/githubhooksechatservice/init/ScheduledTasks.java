@@ -106,7 +106,7 @@ public class ScheduledTasks {
     					continue;
     				}
     				lastComment = Math.max(comment.getCommentId(), lastComment);
-    				fromDate = Math.max(comment.getCommentId(), fromDate);
+    				fromDate = Math.max(comment.getCreationDate(), fromDate);
     				if (isInterestingComment(comment)) {
     					chatBot.postMessage(params, comment.getLink());
     				}
