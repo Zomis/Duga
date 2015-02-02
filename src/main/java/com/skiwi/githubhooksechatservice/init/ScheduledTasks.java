@@ -96,7 +96,7 @@ public class ScheduledTasks {
     	try {
     		StackComments comments = stackAPI.fetchComments("stackoverflow", fromDate);
     		int currentQuota = comments.getQuotaRemaining();
-    		if (currentQuota > remainingQuota) {
+    		if (currentQuota > remainingQuota && fromDate != 0) {
 				chatBot.postMessage(debug, Instant.now() + " Quota has been reset. Was " + remainingQuota + " is now " + currentQuota);
     		}
     		remainingQuota = currentQuota;
