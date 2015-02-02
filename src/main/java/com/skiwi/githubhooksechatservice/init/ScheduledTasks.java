@@ -82,6 +82,7 @@ public class ScheduledTasks {
     private Instant nextFetch = Instant.now();
     private long lastComment;
     private long fromDate;
+    private int remainingQuota;
 
 	private final WebhookParameters params = WebhookParameters.toRoom("8595");
 	private final WebhookParameters debug = WebhookParameters.toRoom("20298");
@@ -94,10 +95,15 @@ public class ScheduledTasks {
 
     	try {
     		StackComments comments = stackAPI.fetchComments("stackoverflow", fromDate);
+    		int currentQuota = comments.getQuotaRemaining();
+    		if (currentQuota > remainingQuota) {
+				chatBot.postMessage(debug, Instant.now() + " Quota has been reset. Was " + remainingQuota + " is now " + currentQuota);
+    		}
+    		remainingQuota = currentQuota;
     		List<StackExchangeComment> items = comments.getItems();
     		if (items != null) {
     			if (items.size() >= 100) {
-    				chatBot.postMessage(debug, Instant.now() + " Warning: Retrieved 100 comments. Might have missed some.");
+    				chatBot.postMessage(debug, Instant.now() + " Warning: Retrieved 100 comments. Might have missed some. This is unlikely to happen");
     			}
     			
     			long previousLastComment = lastComment;

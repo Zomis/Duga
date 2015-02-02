@@ -22,7 +22,6 @@ public class StackExchangeAPIBean {
 	private BotConfiguration config;
 	
 	public StackExchangeAPIBean() {
-//		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 	
