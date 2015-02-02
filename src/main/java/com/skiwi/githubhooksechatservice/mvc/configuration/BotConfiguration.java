@@ -19,6 +19,8 @@ public class BotConfiguration {
     
     private String roomId;
     
+    private String stackAPIKey;
+    
     private int chatThrottle;
     private int chatMaxBurst;
     private int chatMinimumDelay;
@@ -104,6 +106,14 @@ public class BotConfiguration {
 
 	public Map<String, String> getUserMappingsMap() {
 		return userMappingsMap;
+	}
+	
+	public String getStackAPIKey() {
+		return stackAPIKey;
+	}
+	
+	public void setStackAPIKey(String stackAPIKey) {
+		this.stackAPIKey = stackAPIKey;
 	}
 	
 }

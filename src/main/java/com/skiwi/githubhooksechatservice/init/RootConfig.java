@@ -77,6 +77,7 @@ public class RootConfig {
 		config.setRoomId(env.getRequiredProperty("env.roomId"));
 		config.setRootUrl(env.getRequiredProperty("env.rootUrl"));
 		config.setUserMappings(env.getRequiredProperty("env.userMappings"));
+		config.setStackAPIKey(env.getRequiredProperty("env.stackAPIKey"));
 		return config;
 	}
 	
