@@ -8,9 +8,10 @@ import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -32,7 +33,7 @@ import com.skiwi.githubhooksechatservice.service.GithubService;
 @Configuration
 @EnableScheduling
 public class ScheduledTasks {
-    private static final Logger logger = Logger.getLogger(ScheduledTasks.class.getSimpleName());
+    private static final Logger logger = LogManager.getLogger(ScheduledTasks.class);
 	
     private final GithubEventFilter eventFilter = new GithubEventFilter();
     
@@ -97,7 +98,10 @@ public class ScheduledTasks {
     		StackComments comments = stackAPI.fetchComments("stackoverflow", fromDate);
     		List<StackExchangeComment> items = comments.getItems();
     		if (items != null) {
-    			System.out.println("retrieved " + items.size() + " comments");
+    			if (items.size() >= 100) {
+    				chatBot.postMessage(debug, Instant.now() + " Warning: Retrieved 100 comments. Might have missed some.");
+    			}
+    			
     			long previousLastComment = lastComment;
     			lastComment = items.stream().mapToLong(comment -> comment.getCommentId()).max().orElse(lastComment);
     			fromDate = items.stream().mapToLong(comment -> comment.getCreationDate()).max().orElse(fromDate);
@@ -113,10 +117,11 @@ public class ScheduledTasks {
     		}
     		if (comments.getBackoff() != 0) {
     			nextFetch = Instant.now().plusSeconds(comments.getBackoff() + 10);
-    			System.out.println("Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
+    			chatBot.postMessage(debug, Instant.now() + " Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
     		}
     	} catch (Exception e) {
-    		e.printStackTrace();
+    		logger.error("Error retrieving comments", e);
+    		chatBot.postMessage(debug, Instant.now() + " Exception in comment task " + e);
     		return;
     	}
     }
