@@ -3,8 +3,6 @@ package com.skiwi.githubhooksechatservice.init;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -109,8 +107,7 @@ public class ScheduledTasks {
     				if (comment.getCommentId() <= previousLastComment) {
     					continue;
     				}
-    				String commentText = comment.getBodyMarkdown().toLowerCase();
-    				if (commentText.contains("code review") || commentText.contains("codereview")) {
+    				if (isInterestingComment(comment)) {
     					chatBot.postMessage(params, comment.getLink());
     				}
     			}
@@ -126,11 +123,12 @@ public class ScheduledTasks {
     	}
     }
     
-    private Temporal nextReload(Temporal temporal) {
-    	return Instant.now().truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS);
-    }
-    
-    private void scanFollowed(final Followed follow) {
+    private boolean isInterestingComment(StackExchangeComment comment) {
+		String commentText = comment.getBodyMarkdown().toLowerCase();
+    	return commentText.contains("code review") || commentText.contains("codereview");
+	}
+
+	private void scanFollowed(final Followed follow) {
     	long update = Instant.now().getEpochSecond();
     	List<AbstractEvent> events;
 		try {
