@@ -79,51 +79,50 @@ public class ScheduledTasks {
     	 * 
     	 * */
     }
-    
-    private Instant lastFetch = Instant.now();
+
     private Instant nextFetch = Instant.now();
     private long lastComment;
-    
-    @Scheduled(cron = "*/15 * * * * *") // second minute hour day day day
+    private long fromDate;
+
+    @Scheduled(cron = "0 */2 * * * *") // second minute hour day day day
     public void scanComments() {
-    	if (Instant.now().isAfter(nextFetch)) {
-        	try {
-				StackComments comments = stackAPI.fetchComments("stackoverflow", lastFetch.getEpochSecond());
-	        	lastFetch = Instant.now();
-				List<StackExchangeComment> items = comments.getItems();
-	        	WebhookParameters params = new WebhookParameters();
-	        	params.setPost(true);
-	        	params.setRoomId("8595");
-				if (items != null) {
-					System.out.println("retrieved " + items.size() + " comments");
-					long previousLastComment = lastComment;
-					lastComment = items.stream().mapToLong(comment -> comment.getCommentId()).max().orElse(lastComment);
-					for (StackExchangeComment comment : items) {
-						if (comment.getCommentId() <= previousLastComment) {
-							continue;
-						}
-						String commentText = comment.getBodyMarkdown().toLowerCase();
-						if (commentText.contains("code review") || commentText.contains("codereview")) {
-							// "http://stackoverflow.com/q/" + comment.getPostId() + "/#comment" + comment.getCommentId() + "_" + comment.getPostId()
-							chatBot.postMessage(params, comment.getLink());
-						}
-					}
-				}
-				if (comments.getBackoff() != 0) {
-					nextFetch = lastFetch.plusSeconds(comments.getBackoff() + 10);
-					System.out.println("Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
-				}
-				else {
-					Instant tomorrow = Instant.now().with(this::nextReload);
-					long diff = tomorrow.toEpochMilli() - lastFetch.toEpochMilli();
-					long timeDelay = diff / comments.getQuotaRemaining();
-					nextFetch = lastFetch.plusMillis(Math.max(timeDelay, 60 * 1000 * 3));
-					System.out.println("Next fetch is " + nextFetch + " tomorrow is " + tomorrow + " = " + diff + " quota " + comments.getQuotaRemaining());
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
+    	if (!Instant.now().isAfter(nextFetch)) {
+    		return;
+    	}
+
+    	WebhookParameters params = new WebhookParameters();
+    	params.setPost(true);
+    	params.setRoomId("8595");
+
+    	WebhookParameters debug = new WebhookParameters();
+    	debug.setPost(true);
+    	debug.setRoomId("20298");
+
+    	try {
+    		StackComments comments = stackAPI.fetchComments("stackoverflow", fromDate);
+    		List<StackExchangeComment> items = comments.getItems();
+    		if (items != null) {
+    			System.out.println("retrieved " + items.size() + " comments");
+    			long previousLastComment = lastComment;
+    			lastComment = items.stream().mapToLong(comment -> comment.getCommentId()).max().orElse(lastComment);
+    			fromDate = items.stream().mapToLong(comment -> comment.getCreationDate()).max().orElse(fromDate);
+    			for (StackExchangeComment comment : items) {
+    				if (comment.getCommentId() <= previousLastComment) {
+    					continue;
+    				}
+    				String commentText = comment.getBodyMarkdown().toLowerCase();
+    				if (commentText.contains("code review") || commentText.contains("codereview")) {
+    					chatBot.postMessage(params, comment.getLink());
+    				}
+    			}
+    		}
+    		if (comments.getBackoff() != 0) {
+    			nextFetch = Instant.now().plusSeconds(comments.getBackoff() + 10);
+    			System.out.println("Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return;
     	}
     }
     
