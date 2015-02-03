@@ -86,6 +86,7 @@ public class ScheduledTasks {
 
 	private final WebhookParameters params = WebhookParameters.toRoom("8595");
 	private final WebhookParameters debug = WebhookParameters.toRoom("20298");
+	private final WebhookParameters programmers = WebhookParameters.toRoom("21");
 	
     @Scheduled(cron = "0 */2 * * * *") // second minute hour day day day
     public void scanComments() {
@@ -117,6 +118,7 @@ public class ScheduledTasks {
     					chatBot.postMessage(params, comment.getLink());
     				}
     				if (isInterestingCommentProgrammers(comment)) {
+    					chatBot.postMessage(programmers, comment.getLink());
     					chatBot.postMessage(debug, comment.getLink());
     				}
     			}
