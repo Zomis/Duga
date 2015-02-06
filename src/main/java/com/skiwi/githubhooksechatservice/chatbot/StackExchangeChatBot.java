@@ -186,10 +186,13 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 		for (String message : messages) {
 			if (message.length() > MAX_MESSAGE_LENGTH) {
 				final List<String> messageTokens = ChatMessageHelper.splitToTokens(message);
-				for (final String reassembled : ChatMessageHelper.reassembleTokens(messageTokens,
-					MAX_MESSAGE_LENGTH, MESSAGE_CONTINUATION)) {
+				for (final String reassembled : ChatMessageHelper.reassembleTokens(messageTokens, MAX_MESSAGE_LENGTH,
+					MESSAGE_CONTINUATION)) {
 					shortenedMessages.add(new ChatMessage(params, reassembled));
 				}
+			}
+			else {
+				shortenedMessages.add(new ChatMessage(params, message));
 			}
 		}
 		if ( !params.getPost()) {
