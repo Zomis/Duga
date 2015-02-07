@@ -32,8 +32,10 @@ public class StackExchangeAPIBean {
 				"&order=desc&sort=creation&site=" + site + "&filter=" + filter + "&key=" + apiKey);
         URLConnection connection = url.openConnection();
         connection.setRequestProperty("Accept-Encoding", "identity");
-        
-        return mapper.readValue(new GZIPInputStream(connection.getInputStream()), StackComments.class);
+		try (GZIPInputStream stream = new GZIPInputStream(connection.getInputStream())) {
+	        StackComments result = mapper.readValue(stream, StackComments.class);
+	        return result;
+		}
 	}
 	
 }
