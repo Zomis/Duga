@@ -117,12 +117,12 @@ public class ScheduledTasks {
     				if (isInterestingComment(comment)) {
     					chatBot.postMessage(params, comment.getLink());
     				}
-    				float programmersCertainty = calcInterestingLevelProgrammers(comment.getBodyMarkdown());
+    				float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment.getBodyMarkdown());
     				
-    				if (programmersCertainty >= 0.7) {
+    				if (programmersCertainty >= CommentClassification.REAL) {
     					chatBot.postMessage(programmers, comment.getLink());
     				}
-    				if (programmersCertainty >= 0.01) {
+    				if (programmersCertainty >= CommentClassification.DEBUG) {
     					chatBot.postMessage(debug, "Certainty level " + programmersCertainty);
     					chatBot.postMessage(debug, comment.getLink());
     				}
@@ -139,20 +139,6 @@ public class ScheduledTasks {
     	}
     }
     
-    private float calcInterestingLevelProgrammers(String comment) {
-		String commentText = comment.toLowerCase();
-		if (!commentText.contains("programmers")) {
-			return 0;
-		}
-		
-		if (commentText.contains("try programmers") || commentText.contains("for programmers")
-				|| commentText.contains("on programmers") || commentText.contains("at programmers")
-				|| commentText.contains("to programmers")) {
-			return 0.8f;
-		}
-		return 0.3f;
-	}
-
 	private boolean isInterestingComment(StackExchangeComment comment) {
 		String commentText = comment.getBodyMarkdown().toLowerCase();
     	return commentText.contains("code review") || commentText.contains("codereview");
