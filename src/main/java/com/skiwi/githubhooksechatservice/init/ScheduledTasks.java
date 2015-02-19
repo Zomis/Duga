@@ -117,13 +117,14 @@ public class ScheduledTasks {
     				if (isInterestingComment(comment)) {
     					chatBot.postMessage(params, comment.getLink());
     				}
-    				int programmersCertainty = calcInterestingLevelProgrammers(comment);
+    				float programmersCertainty = calcInterestingLevelProgrammers(comment.getBodyMarkdown());
     				
-    				if (programmersCertainty >= 1) {
-    					chatBot.postMessage(debug, comment.getLink());
-    				}
-    				if (programmersCertainty >= 2) {
+    				if (programmersCertainty >= 0.7) {
     					chatBot.postMessage(programmers, comment.getLink());
+    				}
+    				if (programmersCertainty >= 0.01) {
+    					chatBot.postMessage(debug, "Certainty level " + programmersCertainty);
+    					chatBot.postMessage(debug, comment.getLink());
     				}
     			}
     		}
@@ -138,17 +139,18 @@ public class ScheduledTasks {
     	}
     }
     
-    private int calcInterestingLevelProgrammers(StackExchangeComment comment) {
-		String commentText = comment.getBodyMarkdown().toLowerCase();
+    private float calcInterestingLevelProgrammers(String comment) {
+		String commentText = comment.toLowerCase();
 		if (!commentText.contains("programmers")) {
 			return 0;
 		}
+		
 		if (commentText.contains("try programmers") || commentText.contains("for programmers")
 				|| commentText.contains("on programmers") || commentText.contains("at programmers")
 				|| commentText.contains("to programmers")) {
-			return 2;
+			return 0.8f;
 		}
-		return 1;
+		return 0.3f;
 	}
 
 	private boolean isInterestingComment(StackExchangeComment comment) {
