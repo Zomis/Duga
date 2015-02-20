@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -76,6 +77,12 @@ public class ManageController {
         return "admin-config";
     }
 
+	@RequestMapping(value = "/config/threads", method = RequestMethod.GET)
+	public String threads(Model model) {
+		model.addAttribute("threads", Thread.getAllStackTraces());
+		return "threads";
+	}    
+    
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
     public String manage() {
         return "manage";
