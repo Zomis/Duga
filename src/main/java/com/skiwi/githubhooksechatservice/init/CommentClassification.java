@@ -6,8 +6,8 @@ public class CommentClassification {
 	public static final float DEBUG = 0.01f;
 
 	public static float calcInterestingLevelProgrammers(String comment) {
-		String commentText = comment.toLowerCase();
-		if (!commentText.contains("programmers")) {
+		comment = comment.toLowerCase();
+		if (!comment.contains("programmers")) {
 			return 0;
 		}
 		float points = 0.4f;
@@ -23,6 +23,8 @@ public class CommentClassification {
 		points += score(0.05f, comment, "this question");
 		points += score(0.15f, comment, "this site");
 		points += score(0.2f, comment, "programmers.se");
+		points += score(0.07f, comment, "help at");
+		points += score(0.15f, comment, "migrate");
 		points += score(0.1f, comment, "belong");
 		points += score(0.02f, comment, "instead");
 		
