@@ -24,6 +24,7 @@ public class CommentClassification {
 		points += score(0.15f, comment, "this site");
 		points += score(0.2f, comment, "programmers.se");
 		points += score(0.07f, comment, "help at");
+		points += score(0.07f, comment, "place to ask");
 		points += score(0.15f, comment, "migrate");
 		points += score(0.1f, comment, "belong");
 		points += score(0.02f, comment, "instead");
