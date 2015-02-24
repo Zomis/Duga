@@ -27,12 +27,13 @@ import java.util.regex.Pattern;
  */
 public class ChatMessageHelper {
 
-	private static final String LINK_TOKEN_REGEX = "(\\[[^]]++\\]\\(https?+:\\/\\/[^\\s\"]++(\\h++\"[^\"]++\")?\\))";
-	private static final String TAG_TOKEN_REGEX = "(\\[(meta)?+tag:[^\\]]++\\])";
-	private static final String STRIKETHROUGH_TOKEN_REGEX = "(---.*?---)";
-	private static final String CODE_TOKEN_REGEX = "(\\`[^\\`]++\\`)";
-	private static final String MARKDOWN_TOKEN_REGEX = "([*_]{1,3}.*?[*_]{1,3})";
-	private static final String WORD_TOKEN_REGEX = "([^\\s]++)";
+	private static final String LINK_TOKEN_REGEX =
+			"\\[(?>[^\\]]+|(?<=\\\\)])+\\]\\((?:https?|ftp):\\/\\/\\S*(?:\\s+\"(?:[^\"]|(?<=\\\\)\")+\")?\\)";
+	private static final String TAG_TOKEN_REGEX = "\\[(meta-)?+tag:[^\\]]++\\]";
+	private static final String STRIKETHROUGH_TOKEN_REGEX = "---.*?---";
+	private static final String CODE_TOKEN_REGEX = "\\`[^\\`]++\\`";
+	private static final String MARKDOWN_TOKEN_REGEX = "[*_]{1,3}.*?[*_]{1,3}";
+	private static final String WORD_TOKEN_REGEX = "[^\\s]++";
 	private static final String MESSAGE_TOKEN_REGEX = "(" + LINK_TOKEN_REGEX + "|" + TAG_TOKEN_REGEX + "|"
 		+ MARKDOWN_TOKEN_REGEX + "|" + STRIKETHROUGH_TOKEN_REGEX + "|" + CODE_TOKEN_REGEX + "|" + WORD_TOKEN_REGEX
 		+ ")*";
