@@ -4,46 +4,29 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.Team;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class TeamAddEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = TeamAddEvent.class)
+public final class TeamAddEvent extends GithubEvent {
 	@JsonProperty
 	private Team team;
 	
 	@JsonProperty(required = false)
 	private User user;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public Team getTeam() {
 		return team;
 	}
 
 	public User getUser() {
 		return user;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -83,4 +66,10 @@ public final class TeamAddEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(TeamAddEvent event) {
+		this.team = event.team;
+		this.user = event.user;
+	}
+	
 }

@@ -4,6 +4,8 @@ package com.skiwi.githubhooksechatservice.chatbot;
 import java.util.Arrays;
 import java.util.List;
 
+import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
+
 /**
  *
  * @author Frank van Heeswijk
@@ -13,13 +15,28 @@ public interface ChatBot {
     
     void stop();
 
+    @Deprecated
 	default void postMessage(final String text) {
 		postMessages(text);
 	}
 	
+    @Deprecated
 	default void postMessages(final String... messages) {
 		postMessages(Arrays.asList(messages));
 	}
 	
-	void postMessages(final List<String> messages);
+	default void postMessage(final WebhookParameters params, final String text) {
+		postMessages(params, text);
+	}
+	
+	default void postMessages(final WebhookParameters params, final String... messages) {
+		postMessages(params, Arrays.asList(messages));
+	}
+	
+	@Deprecated
+	default void postMessages(final List<String> messages) {
+		postMessages(null, messages);
+	}
+	
+	void postMessages(WebhookParameters params, final List<String> messages);
 }

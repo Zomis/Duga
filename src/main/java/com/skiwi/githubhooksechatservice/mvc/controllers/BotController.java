@@ -1,4 +1,3 @@
-
 package com.skiwi.githubhooksechatservice.mvc.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
+import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
+import com.skiwi.githubhooksechatservice.service.GithubService;
 
 /**
  *
@@ -20,6 +21,12 @@ public class BotController {
 	@Autowired
 	private ChatBot chatBot;
 	
+	@Autowired
+	private GithubBean githubUtils;
+	
+	@Autowired
+	private GithubService githubService;
+	
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     @ResponseBody
     public String hello() {
@@ -29,13 +36,13 @@ public class BotController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @ResponseBody
-    public void test() {
-        chatBot.postMessage("test");
+    public void test(WebhookParameters params) {
+        chatBot.postMessage(params, "test");
     }
 
     @RequestMapping(value = "/say/{text}", method = RequestMethod.GET)
     @ResponseBody
-    public void say(final @PathVariable("text") String text) {
-        chatBot.postMessage(text);
+    public void say(WebhookParameters params, final @PathVariable("text") String text) {
+        chatBot.postMessage(params, text);
     }
 }

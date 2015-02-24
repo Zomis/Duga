@@ -4,39 +4,21 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.CommitComment;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class CommitCommentEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = CommitCommentEvent.class)
+public final class CommitCommentEvent extends GithubEvent {
 	@JsonProperty
 	private CommitComment comment;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public CommitComment getComment() {
 		return comment;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-	
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -72,4 +54,9 @@ public final class CommitCommentEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(CommitCommentEvent event) {
+		this.comment = event.comment;
+	}
+	
 }

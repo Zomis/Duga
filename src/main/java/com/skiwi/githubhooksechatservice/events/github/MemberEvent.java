@@ -4,46 +4,28 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class MemberEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = MemberEvent.class)
+public final class MemberEvent extends GithubEvent {
 	@JsonProperty
 	private User member;
 	
 	@JsonProperty
 	private String action;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public User getMember() {
 		return member;
 	}
 
 	public String getAction() {
 		return action;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -83,4 +65,10 @@ public final class MemberEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(MemberEvent event) {
+		this.member = event.member;
+		this.action = event.action;
+	}
+	
 }

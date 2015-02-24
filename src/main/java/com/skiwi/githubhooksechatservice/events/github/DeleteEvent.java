@@ -4,13 +4,15 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class DeleteEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = DeleteEvent.class)
+public final class DeleteEvent extends GithubEvent {
     @JsonProperty
     private String ref;
     
@@ -20,15 +22,6 @@ public final class DeleteEvent extends AnySetterJSONObject {
     @JsonProperty("pusher_type")
     private String pusherType;
     
-    @JsonProperty
-    private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-    
-    @JsonProperty
-    private User sender;
-
     public String getRef() {
         return ref;
     }
@@ -39,18 +32,6 @@ public final class DeleteEvent extends AnySetterJSONObject {
 
     public String getPusherType() {
         return pusherType;
-    }
-
-    public Repository getRepository() {
-        return repository;
-    }
-
-	public Organization getOrganization() {
-		return organization;
-	}
-	
-    public User getSender() {
-        return sender;
     }
 
 	@Override
@@ -94,4 +75,11 @@ public final class DeleteEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(DeleteEvent event) {
+		this.pusherType = event.pusherType;
+		this.ref = event.ref;
+		this.refType = event.refType;
+	}
+	
 }

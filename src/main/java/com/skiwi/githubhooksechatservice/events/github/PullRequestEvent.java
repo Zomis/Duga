@@ -4,13 +4,18 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.Label;
+import com.skiwi.githubhooksechatservice.events.github.classes.PullRequest;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class PullRequestEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = PullRequestEvent.class)
+public final class PullRequestEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
 	
@@ -26,15 +31,6 @@ public final class PullRequestEvent extends AnySetterJSONObject {
 	@JsonProperty(required = false)
 	private Label label;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
 	}
@@ -53,18 +49,6 @@ public final class PullRequestEvent extends AnySetterJSONObject {
 	
 	public Label getLabel() {
 		return label;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -116,4 +100,13 @@ public final class PullRequestEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(PullRequestEvent event) {
+		this.action = event.action;
+		this.number = event.number;
+		this.pullRequest = event.pullRequest;
+		this.assignee = event.assignee;
+		this.label = event.label;
+	}
+	
 }

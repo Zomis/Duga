@@ -4,39 +4,21 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.Repository;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class ForkEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = ForkEvent.class)
+public final class ForkEvent extends GithubEvent {
 	@JsonProperty
 	private Repository forkee;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public Repository getForkee() {
 		return forkee;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -72,4 +54,9 @@ public final class ForkEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(ForkEvent event) {
+		this.forkee = event.forkee;
+	}
+	
 }

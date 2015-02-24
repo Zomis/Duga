@@ -4,13 +4,18 @@ package com.skiwi.githubhooksechatservice.events.github;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.Issue;
+import com.skiwi.githubhooksechatservice.events.github.classes.Label;
+import com.skiwi.githubhooksechatservice.events.github.classes.User;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class IssuesEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = IssuesEvent.class)
+public final class IssuesEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
 	
@@ -23,15 +28,6 @@ public final class IssuesEvent extends AnySetterJSONObject {
 	@JsonProperty(required = false)
 	private Label label;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
 	}
@@ -46,18 +42,6 @@ public final class IssuesEvent extends AnySetterJSONObject {
 	
 	public Label getLabel() {
 		return label;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -105,4 +89,29 @@ public final class IssuesEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+
+	public void setPayload(IssuesEvent event) {
+		this.action = event.action;
+		this.assignee = event.assignee;
+		this.issue = event.issue;
+		this.label = event.label;
+	}
+	
+	@Override
+	public String toString() {
+		return "IssuesEvent [action=" + action + ", issue=" + issue
+				+ ", assignee=" + assignee + ", label=" + label + ", sender="
+				+ sender + ", repository=" + repository + ", organization="
+				+ organization + "]";
+	}
+	
+	public boolean isClosed() {
+		return this.action.equals("closed");
+				
+	}
+	
+	public boolean isOpened() {
+		return this.action.equals("opened") || this.action.equals("reopened");
+	}
+	
 }

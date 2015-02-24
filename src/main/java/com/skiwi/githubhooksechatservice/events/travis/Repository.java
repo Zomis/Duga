@@ -38,6 +38,10 @@ public final class Repository extends AnySetterJSONObject {
 	public String getUrl() {
 		return url;
 	}
+	
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	@Override
 	public int hashCode() {
@@ -71,5 +75,9 @@ public final class Repository extends AnySetterJSONObject {
 			return false;
 		}
 		return true;
+	}
+
+	public String getFullNameGithubStyle() {
+		return getOwnerName() + "/" + getName();
 	}
 }

@@ -28,7 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skiwi.githubhooksechatservice.apis.commit.CommitResponse;
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.events.travis.BuildEvent;
-import com.skiwi.githubhooksechatservice.mvc.configuration.Configuration;
+import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
+import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 
 /**
  *
@@ -43,13 +44,17 @@ public class TravisHookController {
 	private ChatBot chatBot;
 	
 	@Autowired
-	private Configuration configuration;
+	private BotConfiguration configuration;
+	
+	@Autowired
+	private Statistics stats;
 	
 	@RequestMapping(value = "/payload", method = RequestMethod.POST)
 	@ResponseBody
-	public void build(final @RequestParam("payload") String buildEventJson) throws IOException {
+	public void build(final WebhookParameters params, final @RequestParam("payload") String buildEventJson) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		BuildEvent buildEvent = objectMapper.readValue(buildEventJson, BuildEvent.class);
+		stats.fixRepositoryURL(buildEvent.getRepository());
 		List<String> messages = new ArrayList<>();
 		
 		switch (buildEvent.getType()) {
@@ -104,7 +109,7 @@ public class TravisHookController {
 				break;
 		}
 		
-		chatBot.postMessages(messages);
+		chatBot.postMessages(params, messages);
 	}
 	
 	@ExceptionHandler(Exception.class)

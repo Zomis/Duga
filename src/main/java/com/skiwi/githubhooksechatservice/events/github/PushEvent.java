@@ -3,16 +3,25 @@ package com.skiwi.githubhooksechatservice.events.github;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
+import com.skiwi.githubhooksechatservice.events.github.classes.LegacyRepository;
+import com.skiwi.githubhooksechatservice.events.github.classes.LegacySimpleUser;
+import com.skiwi.githubhooksechatservice.events.github.classes.Organization;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class PushEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = PushEvent.class)
+public final class PushEvent extends AbstractEvent {
     @JsonProperty
     private String ref;
     
@@ -51,6 +60,9 @@ public final class PushEvent extends AnySetterJSONObject {
     
     @JsonProperty
     private LegacySimpleUser pusher;
+
+    @JsonIgnore
+	private String pusherLogin;
 
     public String getRef() {
         return ref;
@@ -173,4 +185,41 @@ public final class PushEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(PushEvent event) {
+		this.after = event.after;
+		this.baseRef = event.baseRef;
+		this.before = event.before;
+		this.commits = event.commits;
+		this.compare = event.compare;
+		this.created = event.created;
+		this.deleted = event.deleted;
+		this.forced = event.forced;
+		this.headCommit = event.headCommit;
+		this.organization = event.organization;
+		this.pusher = event.pusher;
+		this.ref = event.ref;
+	}
+
+	@Override
+	public String toString() {
+		return "PushEvent [before=" + before + ", commits="
+				+ Arrays.toString(commits) + "]";
+	}
+	
+	public void setActor(Map<String, Object> map) {
+		this.pusherLogin = String.valueOf(map.get("login"));
+	}
+	
+	public String getPusherLogin() {
+		return pusherLogin;
+	}
+	
+	@JsonSetter
+	public void setRepo(LegacyRepository repository) {
+		System.out.println("push event set repo " + repository);
+		this.repository = repository;
+		this.repository.fixUrl();
+	}
+	
 }

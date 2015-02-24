@@ -6,39 +6,21 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.skiwi.githubhooksechatservice.events.github.classes.WikiPage;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class GollumEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = GollumEvent.class)
+public final class GollumEvent extends GithubEvent {
 	@JsonProperty
 	private WikiPage[] pages;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public List<WikiPage> getPages() {
 		return Arrays.asList(pages);
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -74,4 +56,9 @@ public final class GollumEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(GollumEvent event) {
+		this.pages = event.pages;
+	}
+	
 }

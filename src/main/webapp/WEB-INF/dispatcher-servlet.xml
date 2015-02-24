@@ -3,20 +3,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:task="http://www.springframework.org/schema/task"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd" xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc">
 
-    <!-- enable annotations -->
-    <mvc:annotation-driven />
-    
-    <!-- auto scan -->
-    <context:component-scan base-package="com.skiwi.githubhooksechatservice" />
-    
     <!-- enable json -->
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
        <property name="messageConverters">
@@ -32,33 +28,4 @@
 
     <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <value>classpath:githubhooksechatservice-environment.properties</value>
-        </property>
-    </bean>
-
-    <!-- properties -->
-    <bean id="configuration" class="com.skiwi.githubhooksechatservice.mvc.configuration.Configuration">
-        <property name="rootUrl" value="${env.rootUrl}"/>
-        <property name="chatUrl" value="${env.chatUrl}"/>
-        <property name="botEmail" value="${env.botEmail}"/>
-        <property name="botPassword" value="${env.botPassword}"/>
-        <property name="roomId" value="${env.roomId}"/>
-        <property name="chatThrottle" value="${env.chatThrottle}"/>
-        <property name="chatMaxBurst" value="${env.chatMaxBurst}"/>
-        <property name="chatMinimumDelay" value="${env.chatMinimumDelay}"/>
-        <property name="deployGreetingEnabled" value="${env.deployGreetingEnabled}"/>
-        <property name="deployGreetingText" value="${env.deployGreetingText}"/>
-        <property name="undeployGoodbyeEnabled" value="${env.undeployGoodbyeEnabled}"/>
-        <property name="undeployGoodbyeText" value="${env.undeployGoodbyeText}"/>
-        <property name="userMappings" value="${env.userMappings}"/>
-    </bean>
-
-	<bean id="chatBot" class="com.skiwi.githubhooksechatservice.chatbot.StackExchangeChatBot">
-		<constructor-arg ref="configuration"/>
-	</bean>
-
-    <!-- startup bean -->
-    <bean name="startup" init-method="start" class="com.skiwi.githubhooksechatservice.mvc.beans.StartupBean" lazy-init="false" />
 </beans>

@@ -6,3 +6,5 @@ MANIFEST.MF
 .project
 .settings/
 target/
+
+application.properties

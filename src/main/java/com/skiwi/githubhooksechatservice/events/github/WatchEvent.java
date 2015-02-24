@@ -1,43 +1,23 @@
 
 package com.skiwi.githubhooksechatservice.events.github;
 
-import com.skiwi.githubhooksechatservice.events.AnySetterJSONObject;
-
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 /**
  *
  * @author Frank van Heeswijk
  */
-public final class WatchEvent extends AnySetterJSONObject {
+@JsonTypeInfo(use = Id.NAME, defaultImpl = WatchEvent.class)
+public final class WatchEvent extends GithubEvent {
 	@JsonProperty
 	private String action;
 	
-	@JsonProperty
-	private Repository repository;
-	
-	@JsonProperty(required = false)
-	private Organization organization;
-	
-	@JsonProperty
-	private User sender;
-
 	public String getAction() {
 		return action;
-	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public User getSender() {
-		return sender;
 	}
 
 	@Override
@@ -73,4 +53,9 @@ public final class WatchEvent extends AnySetterJSONObject {
 		}
 		return true;
 	}
+	
+	public void setPayload(WatchEvent event) {
+		this.action = event.action;
+	}
+	
 }
