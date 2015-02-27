@@ -65,6 +65,7 @@ public class DailyInfoDAOImpl implements DailyInfoDAO {
 			@SuppressWarnings("unchecked")
 			List<DailyInfo> repos = query.list();
 			deleteQuery.executeUpdate();
+			openSession().clear();
 			return repos;
 		}
 		catch (Exception ex) {

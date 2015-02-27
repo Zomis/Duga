@@ -132,6 +132,7 @@ public class ScheduledTasks {
     			nextFetch = Instant.now().plusSeconds(comments.getBackoff() + 10);
     			chatBot.postMessage(debug, Instant.now() + " Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
     		}
+    		items.clear();
     	} catch (Exception e) {
     		logger.error("Error retrieving comments", e);
     		chatBot.postMessage(debug, Instant.now() + " Exception in comment task " + e);
