@@ -1,9 +1,13 @@
 package com.skiwi.githubhooksechatservice.init;
 
+import java.util.regex.Pattern;
+
 public class CommentClassification {
 	
     public static final float REAL = 0.49f;
 	public static final float DEBUG = 0.01f;
+	
+	public static final Pattern pattern = Pattern.compile("https?\\:\\/\\/programmers\\.stackexchange\\.com\\/(help|\\b)?");
 
 	public static float calcInterestingLevelProgrammers(String comment) {
 		comment = comment.toLowerCase();

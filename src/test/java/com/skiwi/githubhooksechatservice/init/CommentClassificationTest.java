@@ -17,6 +17,8 @@ public class CommentClassificationTest {
 	@Test
 	@Ignore
 	public void knownFalsePositives() throws Exception {
+		assertPost("This is an important topic, but possibly too broad for a Stack Overflow question! You might also find some relevant answers on https://programmers.stackexchange.com/");
+		
 		assertIgnore("@MANOJ, in other words, don't forget about basic programming when using Angular. :) What is there to post as answer?I suggest you delete this question as it has little to do with Angular and is unlikely to benefit future Angular programmers.  New Dev 59 secs ago");
 		assertIgnore("Stack Overflow is a Question and Answer site for programmers, not a  code-writing service, you need a freelance programmer for that. As it stands that makes your question off-topic for this site as it's not about a specific programming problem. However if you make an attempt at this yourself and run into problems feel free to ask about them here.  Aiken 3 mins ago");
 		assertIgnore("I thought the purpose of this site was if you're lost on something in programming and you need help from other programmers, you ask because maybe they have some kind of a solution. What you want me to do, ask something I don't need help with? I haven't received an answer, so i thought i'd try again. Nothing wrong with that.  Alex 53 secs ago");
@@ -38,7 +40,6 @@ public class CommentClassificationTest {
 	public void htmlComments() throws Exception {
 		assertPost("A question like this is probably better suited for programmers.stackexchange.com.");
 		assertPost("You may wish to look at programmers.stackexchange.com instead - this is more of a whiteboard problem than a keyboard problem.");
-		
 		
 		//		GET http://chat.stackexchange.com/search?q=programmers&Room=20298&User=125580&pagesize=50&sort=newest
 		assertIgnore("@RenaissanceProgrammer Using Chrome and installing Chromecast solves it for you. The question is more aimed at programmers who want to remove the problem for their end-users.  mahemoff 9 secs ago");
