@@ -17,6 +17,8 @@ public class CommentClassificationTest {
 	@Test
 	@Ignore
 	public void knownFalsePositives() throws Exception {
+		assertDebug("@user2348184 - there's insufficient information to answer this question.  It would get closed and possibly downvoted on Programmers.  GlenH7 1 min ago");
+		
 		assertPost("This is an important topic, but possibly too broad for a Stack Overflow question! You might also find some relevant answers on https://programmers.stackexchange.com/");
 		
 		assertIgnore("@MANOJ, in other words, don't forget about basic programming when using Angular. :) What is there to post as answer?I suggest you delete this question as it has little to do with Angular and is unlikely to benefit future Angular programmers.  New Dev 59 secs ago");
@@ -30,7 +32,6 @@ public class CommentClassificationTest {
 	
 	@Test
 	public void uncertain() throws Exception {
-		assertDebug("@user2348184 - there's insufficient information to answer this question.  It would get closed and possibly downvoted on Programmers.  GlenH7 1 min ago");
 		assertPost("This questions seems to be off-topic here, on StackOverflow, which is a QA site for programmers; but it might be better suited for ServerFault.  Dmitry Alexandrov 1 min ago");
 		assertPost("@BrianTompsett It definitely does not belong at programmers.  Simon Andr Forsberg 1 min ago");
 		assertIgnore("@BrianTompsett - This would be too broad for programmers as well.  Programmers is focused on Q&A (just like all of StackExchange) and is not a discussion site.  GlenH7 1 min ago");
