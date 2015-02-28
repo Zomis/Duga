@@ -56,7 +56,7 @@ public class RootConfig {
 	}
 	
 	@Bean
-	public GithubBean githubUtils() {
+	public GithubBean githubBean() {
 		return new GithubBean();
 	}
 	

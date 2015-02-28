@@ -22,7 +22,7 @@ public class BotController {
 	private ChatBot chatBot;
 	
 	@Autowired
-	private GithubBean githubUtils;
+	private GithubBean githubBean;
 	
 	@Autowired
 	private GithubService githubService;

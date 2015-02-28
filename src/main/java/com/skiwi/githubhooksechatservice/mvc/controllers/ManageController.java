@@ -24,7 +24,7 @@ import com.skiwi.githubhooksechatservice.service.UserService;
 public class ManageController {
 	
 	@Autowired
-	private GithubBean githubUtils;
+	private GithubBean githubBean;
 	
 	@Autowired
 	private GithubService githubService;
@@ -96,7 +96,7 @@ public class ManageController {
     	}
     	List<AbstractEvent> blocks;
 		try {
-			blocks = githubUtils.fetchEvents(user, name, -1);
+			blocks = githubBean.fetchEvents(user, name, -1);
 	    	long eventId = blocks.stream().mapToLong(bl -> bl.getId()).max().orElse(0);
 	    	githubService.update(name, Instant.now().getEpochSecond(), eventId, user);
 	        return String.valueOf(blocks.toString());
