@@ -127,12 +127,12 @@ public class ScheduledTasks {
     					chatBot.postMessage(debug, comment.getLink());
     				}
     			}
-    		}
-    		if (comments.getBackoff() != 0) {
-    			nextFetch = Instant.now().plusSeconds(comments.getBackoff() + 10);
-    			chatBot.postMessage(debug, Instant.now() + " Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
-    		}
-    		items.clear();
+                items.clear();
+            }
+            if (comments.getBackoff() != 0) {
+                nextFetch = Instant.now().plusSeconds(comments.getBackoff() + 10);
+                chatBot.postMessage(debug, Instant.now() + " Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
+            }
     	} catch (Exception e) {
     		logger.error("Error retrieving comments", e);
     		chatBot.postMessage(debug, Instant.now() + " Exception in comment task " + e);
