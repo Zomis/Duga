@@ -90,6 +90,7 @@ public class TravisHookController {
 		
 		switch (buildEvent.getStatusMessage().toLowerCase(Locale.ENGLISH)) {
 			case "broken":
+            case "failed":
 			case "still failing":
 			case "errored":
 				String commitApiUrl = "https://api.github.com/repos/" + buildEvent.getRepository().getOwnerName() + "/" + buildEvent.getRepository().getName() + "/commits/" + buildEvent.getCommit();
