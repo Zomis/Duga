@@ -85,7 +85,6 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 			public HttpUriRequest getRedirect(
 				final HttpRequest httpRequest, final HttpResponse httpResponse, final HttpContext httpContext)
 				throws ProtocolException {
-				httpRequest.getRequestLine().getProtocolVersion().getProtocol();
 				String host = httpRequest.getFirstHeader("Host").getValue();
 				String location = httpResponse.getFirstHeader("Location").getValue();
 				String protocol = (httpRequest.getFirstHeader("Host").getValue().equals("openid.stackexchange.com"))
