@@ -112,13 +112,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 
 	@Override
 	public void start() {
-		loginOpenId();
-		loginRoot();
-		loginChat();
-
-		String fkey = getFKey();
-		this.chatFKey = fkey;
-		LOGGER.info("Found fkey: " + fkey);
+        login();
 
 		String deployGreeting = configService.getConfig("deployGreeting", "");
 		if ( !deployGreeting.isEmpty()) {
@@ -138,6 +132,16 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 
 		this.undeployGoodbyeText = configService.getConfig("undeployGoodbyeText", "");
 	}
+
+    private void login() {
+        loginOpenId();
+        loginRoot();
+        loginChat();
+
+        String fkey = getFKey();
+        this.chatFKey = fkey;
+        LOGGER.info("Found fkey: " + fkey);
+    }
 
 	private void loginOpenId() {
 		HtmlDocument openIdLoginPage = agent.get("https://openid.stackexchange.com/account/login");
@@ -223,7 +227,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 			}
 		} catch(ProbablyNotLoggedInException ex) {
 			LOGGER.info("Not logged in, logging in and then reposting");
-			start();
+			login();
 			try {
 				postMessageToChat(message);
 			} catch(ChatThrottleException | ProbablyNotLoggedInException ex1) {
