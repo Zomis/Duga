@@ -5,11 +5,15 @@ import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.skiwi.githubhooksechatservice.mvc.beans.tasks.UserRepDiffTask;
+
 public class CommentClassificationTest {
 
 	@Test
 	public void testComments() {
 //		assertIgnore("a dummy comment not containing the p-word");
+		assertEquals("Mat's Mug", UserRepDiffTask.clearName("Mat&#39;s Mug"));
+		
 		assertPost("this question would be a better fit at programmers");
 		assertDebug("a dummy comment containing programmers");
 	}

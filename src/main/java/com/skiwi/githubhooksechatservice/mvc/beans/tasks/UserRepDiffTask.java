@@ -54,11 +54,20 @@ public class UserRepDiffTask implements Runnable {
 		}
 	}
 
-	private String clearName(String displayName) {
+	public static String chatName(String displayName) {
+		return clearName(displayName).replace(" ", "");
+	}
+	
+	public static String clearName(String displayName) {
 		while (displayName.contains("&#")) {
-			String replacement = displayName.substring(displayName.indexOf("&#"));
-			replacement = replacement.substring(0, replacement.indexOf(';'));
-			displayName = displayName.replaceFirst("\\&\\#\\d+\\;", replacement);
+			String replacement = displayName.substring(displayName.indexOf("&#") + 2);
+			try {
+				replacement = replacement.substring(0, replacement.indexOf(';'));
+				int ch = Integer.parseInt(replacement);
+				displayName = displayName.replaceFirst("\\&\\#\\d+\\;", String.valueOf((char) ch));
+			} catch (RuntimeException ex) {
+				displayName = displayName.replaceFirst("\\&\\#", "");
+			}
 		}
 		return displayName;
 	}
