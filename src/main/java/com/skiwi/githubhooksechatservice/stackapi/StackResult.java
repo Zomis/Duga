@@ -1,13 +1,8 @@
-package com.skiwi.githubhooksechatservice.init;
-
-import java.util.List;
+package com.skiwi.githubhooksechatservice.stackapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class StackComments {
-	
-	@JsonProperty
-	private List<StackExchangeComment> items;
+public class StackResult {
 	
 	@JsonProperty("has_more")
 	private boolean hasMore;
@@ -45,11 +40,7 @@ public class StackComments {
 	public String getErrorName() {
 		return errorName;
 	}
-	
-	public List<StackExchangeComment> getItems() {
-		return items;
-	}
-	
+
 	public int getQuotaMax() {
 		return quotaMax;
 	}
@@ -57,5 +48,5 @@ public class StackComments {
 	public int getQuotaRemaining() {
 		return quotaRemaining;
 	}
-
+	
 }

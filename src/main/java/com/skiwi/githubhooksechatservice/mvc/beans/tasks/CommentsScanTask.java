@@ -8,10 +8,10 @@ import org.apache.log4j.Logger;
 
 import com.skiwi.githubhooksechatservice.chatbot.ChatBot;
 import com.skiwi.githubhooksechatservice.init.CommentClassification;
-import com.skiwi.githubhooksechatservice.init.StackComments;
-import com.skiwi.githubhooksechatservice.init.StackExchangeComment;
 import com.skiwi.githubhooksechatservice.mvc.beans.StackExchangeAPIBean;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
+import com.skiwi.githubhooksechatservice.stackapi.StackComments;
+import com.skiwi.githubhooksechatservice.stackapi.StackExchangeComment;
 
 public class CommentsScanTask implements Runnable {
     private static final Logger logger = LogManager.getLogger(CommentsScanTask.class);

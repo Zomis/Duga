@@ -1,4 +1,4 @@
-package com.skiwi.githubhooksechatservice.init;
+package com.skiwi.githubhooksechatservice.stackapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
