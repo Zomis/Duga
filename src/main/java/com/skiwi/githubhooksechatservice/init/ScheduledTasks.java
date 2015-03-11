@@ -88,6 +88,11 @@ public class ScheduledTasks {
 	private final WebhookParameters debug = WebhookParameters.toRoom("20298");
 	private final WebhookParameters programmers = WebhookParameters.toRoom("21");
 	
+	@Scheduled(cron = "0 0 1 * * *") // second minute hour day day day
+    public void reload() {
+		chatBot.postMessage(params, "***RELOAD!***");
+    }
+    
     @Scheduled(cron = "0 */2 * * * *") // second minute hour day day day
     public void scanComments() {
     	if (!Instant.now().isAfter(nextFetch)) {
