@@ -18,6 +18,7 @@ import com.skiwi.githubhooksechatservice.mvc.beans.tasks.CommentsScanTask;
 import com.skiwi.githubhooksechatservice.mvc.beans.tasks.GithubTask;
 import com.skiwi.githubhooksechatservice.mvc.beans.tasks.MessageTask;
 import com.skiwi.githubhooksechatservice.mvc.beans.tasks.StatisticTask;
+import com.skiwi.githubhooksechatservice.mvc.beans.tasks.UnansweredTask;
 import com.skiwi.githubhooksechatservice.mvc.beans.tasks.UserRepDiffTask;
 import com.skiwi.githubhooksechatservice.mvc.controllers.GithubHookController;
 import com.skiwi.githubhooksechatservice.service.ConfigService;
@@ -26,7 +27,7 @@ import com.skiwi.githubhooksechatservice.service.GithubService;
 import com.skiwi.githubhooksechatservice.service.TaskService;
 
 public class TaskManager {
-	Logger logger = LogManager.getLogger(TaskManager.class);
+	private static final Logger logger = LogManager.getLogger(TaskManager.class);
 	
 	@Autowired
 	private TaskScheduler scheduler;
@@ -101,6 +102,8 @@ public class TaskManager {
 				return new MessageTask(chatBot, taskInfo[1], taskInfo[2]);
 			case "ratingdiff":
 				return new UserRepDiffTask(stackAPI, taskInfo[1], chatBot, taskInfo[2], taskInfo[3]);
+			case "unanswered":
+				return new UnansweredTask(stackAPI, taskInfo[1], chatBot, taskInfo[2], taskInfo[3]);
 			default:
 				return () -> System.out.println("Unknown task: " + data.getTaskValue());
 		}
