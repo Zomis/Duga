@@ -21,4 +21,9 @@ public class TaskServiceImpl implements TaskService {
 		return taskDAO.getTasks();
 	}
 
+	@Override
+	public TaskData add(String cron, String task) {
+		return taskDAO.add(cron, task);
+	}
+
 }

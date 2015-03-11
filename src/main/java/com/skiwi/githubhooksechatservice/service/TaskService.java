@@ -8,4 +8,6 @@ public interface TaskService {
 	
 	List<TaskData> getTasks();
 
+	TaskData add(String cron, String task);
+
 }

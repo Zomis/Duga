@@ -94,6 +94,13 @@ public class ManageController {
 		return tasks.getTasks().toString();
 	}    
     
+	@RequestMapping(value = "/config/addtask", method = RequestMethod.GET)
+	@ResponseBody
+	public String addTask() {
+		tasks.add("0 42 * * * *", "message;16134;%time%");
+		return "added task";
+	}    
+    
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
     public String manage() {
         return "manage";

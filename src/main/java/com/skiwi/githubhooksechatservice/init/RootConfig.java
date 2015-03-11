@@ -25,6 +25,7 @@ import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.StackExchangeAPIBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.StartupBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
+import com.skiwi.githubhooksechatservice.mvc.beans.TaskManager;
 import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 
 @Configuration
@@ -111,6 +112,11 @@ public class RootConfig {
 		dataSource.setPassword(env.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
 		
 		return dataSource;
+	}
+	
+	@Bean
+	public TaskManager taskManager() {
+		return new TaskManager();
 	}
 	
 	@Bean

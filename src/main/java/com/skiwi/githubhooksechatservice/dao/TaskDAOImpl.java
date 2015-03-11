@@ -35,5 +35,22 @@ public class TaskDAOImpl implements TaskDAO {
 			return null;
 		}
 	}
+
+	@Override
+	public TaskData add(String cron, String task) {
+		TaskData data = new TaskData();
+		data.setCron(cron);
+		data.setTaskValue(task);
+		
+		try {
+			openSession().save(data);
+			return data;
+		}
+		catch (Exception ex) {
+			System.out.println("BIG FAT ERROR: " + ex);
+			ex.printStackTrace();
+			return null;
+		}
+	}
 	
 }

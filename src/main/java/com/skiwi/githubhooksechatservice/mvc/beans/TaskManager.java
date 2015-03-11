@@ -47,5 +47,9 @@ public class TaskManager {
 	public synchronized List<TaskData> getTasks() {
 		return new ArrayList<>(taskData);
 	}
+
+	public TaskData add(String cron, String task) {
+		return taskService.add(cron, task);
+	}
 	
 }

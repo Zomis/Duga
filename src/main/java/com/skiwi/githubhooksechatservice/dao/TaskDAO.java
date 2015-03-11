@@ -9,4 +9,6 @@ public interface TaskDAO {
 	
 	List<TaskData> getTasks();
 
+	TaskData add(String cron, String task);
+
 }
