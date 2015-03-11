@@ -1,6 +1,7 @@
 package com.skiwi.githubhooksechatservice.mvc.beans.tasks;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
@@ -55,10 +56,11 @@ public class CommentsScanTask implements Runnable {
     		List<StackExchangeComment> items = comments.getItems();
     		if (items != null) {
     			if (items.size() >= 100) {
-    				chatBot.postMessage(debug, Instant.now() + " Warning: Retrieved 100 comments. Might have missed some. This is unlikely to happen");
+    				chatBot.postMessage(debug, Instant.now() + " Warning: Retrieved 100 comments. Might have missed some.");
     			}
     			
     			long previousLastComment = lastComment;
+        		Collections.reverse(items);
     			for (StackExchangeComment comment : items) {
     				if (comment.getCommentId() <= previousLastComment) {
     					continue;
