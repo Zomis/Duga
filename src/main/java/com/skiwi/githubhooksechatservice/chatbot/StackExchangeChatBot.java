@@ -3,6 +3,7 @@ package com.skiwi.githubhooksechatservice.chatbot;
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -45,6 +47,7 @@ import com.skiwi.githubhooksechatservice.service.RuntimeLogService;
 public class StackExchangeChatBot implements ChatBot, DisposableBean {
 
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
+	private static final WebhookParameters debugRoom = WebhookParameters.toRoom("20298");
 
 	private static final int MAX_MESSAGE_LENGTH = 500;
 	private static final String MESSAGE_CONTINUATION = "...";
@@ -289,7 +292,25 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 	private void drainMessagesQueue() {
 		try {
 			while (true) {
-				postDrainedMessages(messagesQueue.take());
+				try {
+					postDrainedMessages(messagesQueue.take());
+				}
+				catch (RuntimeException ex) {
+					try {
+						LOGGER.warning("Error in drainMessagesQueue: " + ex.toString());
+						List<ChatMessage> messages = new ArrayList<ChatMessage>();
+						messages.add(new ChatMessage(debugRoom, ex.toString()));
+						messages.addAll(Arrays.stream(ex.getStackTrace())
+								.map(trace -> trace.toString())
+								.map(msg -> new ChatMessage(debugRoom, msg))
+								.limit(5)
+								.collect(Collectors.toList()));
+						postDrainedMessages(messages);
+					}
+					catch (RuntimeException ex2) {
+						// ignored
+					}
+				}
 			}
 		} catch(InterruptedException ex) {
 			List<List<ChatMessage>> drainedMessages = new ArrayList<>();
