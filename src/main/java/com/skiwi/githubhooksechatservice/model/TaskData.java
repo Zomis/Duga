@@ -41,4 +41,10 @@ public class TaskData {
 		this.taskValue = taskValue;
 	}
 
+	@Override
+	public String toString() {
+		return "TaskData [id=" + id + ", cron=" + cron + ", taskValue="
+				+ taskValue + "]";
+	}
+
 }

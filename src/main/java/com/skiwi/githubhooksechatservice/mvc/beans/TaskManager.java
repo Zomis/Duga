@@ -6,6 +6,8 @@ import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -24,6 +26,7 @@ import com.skiwi.githubhooksechatservice.service.GithubService;
 import com.skiwi.githubhooksechatservice.service.TaskService;
 
 public class TaskManager {
+	Logger logger = LogManager.getLogger(TaskManager.class);
 	
 	@Autowired
 	private TaskScheduler scheduler;
@@ -56,10 +59,33 @@ public class TaskManager {
 		taskData.addAll(taskService.getTasks());
 		for (TaskData data : taskData) {
 			Runnable runnable = taskToRunnable(data);
-			ScheduledFuture<?> future = scheduler.schedule(runnable, new CronTrigger(data.getCron()));
+			ScheduledFuture<?> future = scheduler.schedule(new TaskRunner(data, runnable), new CronTrigger(data.getCron()));
 			tasks.add(future);
 			System.out.println("Added task: " + runnable);
 		}
+	}
+	
+	private class TaskRunner implements Runnable {
+
+		private final TaskData data;
+		private final Runnable task;
+
+		public TaskRunner(TaskData data, Runnable runnable) {
+			this.data = data;
+			this.task = runnable;
+		}
+
+		@Override
+		public void run() {
+			try {
+				logger.info("Running task " + data);
+				task.run();
+				logger.info("Finished task " + data);
+			} catch (Exception ex) {
+				logger.error("Error running " + data, ex);
+			}
+		}
+		
 	}
 
 	private Runnable taskToRunnable(TaskData data) {
