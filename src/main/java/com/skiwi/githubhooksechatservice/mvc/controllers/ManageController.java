@@ -17,6 +17,7 @@ import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
 import com.skiwi.githubhooksechatservice.events.github.classes.GithubRepository;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
+import com.skiwi.githubhooksechatservice.mvc.beans.TaskManager;
 import com.skiwi.githubhooksechatservice.service.GithubService;
 import com.skiwi.githubhooksechatservice.service.UserService;
 
@@ -34,6 +35,9 @@ public class ManageController {
 	
 	@Autowired
 	private Statistics statistics;
+	
+	@Autowired
+	private TaskManager tasks;
 	
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home() {
@@ -81,6 +85,13 @@ public class ManageController {
 	public String threads(Model model) {
 		model.addAttribute("threads", Thread.getAllStackTraces());
 		return "threads";
+	}    
+    
+	@RequestMapping(value = "/config/tasks", method = RequestMethod.GET)
+	@ResponseBody
+	public String tasks() {
+		tasks.reload();
+		return tasks.getTasks().toString();
 	}    
     
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
