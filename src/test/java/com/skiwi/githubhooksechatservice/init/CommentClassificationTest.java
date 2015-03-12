@@ -14,6 +14,10 @@ public class CommentClassificationTest {
 //		assertIgnore("a dummy comment not containing the p-word");
 		assertEquals("Mat's Mug", UserRepDiffTask.clearName("Mat&#39;s Mug"));
 		
+		assertTrue(CommentClassification.bodyContainsProgrammersLink("hmm.. maybe I should have put this on <a href=\"http://programmers.stackexchange.com/\">programmers.stackexchange.com</a>?"));
+		assertTrue(CommentClassification.bodyContainsProgrammersLink("try on <a href=\"http://programmers.stackexchange.com/help/on-topic\">programmers</a>"));
+		assertTrue(CommentClassification.bodyContainsProgrammersLink("try on <a href=\"http://programmers.stackexchange.com\">programmers</a>"));
+		assertFalse(CommentClassification.bodyContainsProgrammersLink("see question on <a href=\"http://programmers.stackexchange.com/q/179807/60171\">programmers</a>"));
 		assertPost("this question would be a better fit at programmers");
 		assertDebug("a dummy comment containing programmers");
 	}

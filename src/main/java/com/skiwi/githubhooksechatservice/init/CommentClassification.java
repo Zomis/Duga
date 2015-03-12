@@ -2,13 +2,25 @@ package com.skiwi.githubhooksechatservice.init;
 
 import java.util.regex.Pattern;
 
+import com.skiwi.githubhooksechatservice.stackapi.StackExchangeComment;
+
 public class CommentClassification {
 	
     public static final float REAL = 0.49f;
 	public static final float DEBUG = 0.01f;
 	
-	public static final Pattern pattern = Pattern.compile("https?\\:\\/\\/programmers\\.stackexchange\\.com\\/(help|\\b)?");
+	public static final Pattern PROG_LINK = Pattern.compile(
+			Pattern.quote("<a href=\"http://programmers.stackexchange.com") + "(/|/help/.*)?" + Pattern.quote("\">"));
 
+	public static boolean bodyContainsProgrammersLink(String body) {
+		return PROG_LINK.matcher(body).find();
+	}
+	
+	public static float calcInterestingLevelProgrammers(StackExchangeComment comment) {
+		float matchPattern = bodyContainsProgrammersLink(comment.getBody()) ? 1.0f : 0f;
+		return matchPattern + calcInterestingLevelProgrammers(comment.getBodyMarkdown());
+	}
+	
 	public static float calcInterestingLevelProgrammers(String comment) {
 		comment = comment.toLowerCase();
 		if (!comment.contains("programmers")) {
@@ -49,7 +61,5 @@ public class CommentClassification {
 		}
 		return 0;
 	}
-
-
 
 }

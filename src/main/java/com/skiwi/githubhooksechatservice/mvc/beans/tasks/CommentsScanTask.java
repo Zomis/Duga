@@ -70,7 +70,7 @@ public class CommentsScanTask implements Runnable {
     				if (isInterestingComment(comment)) {
     					chatBot.postMessage(params, comment.getLink());
     				}
-    				float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment.getBodyMarkdown());
+    				float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
     				
     				if (programmersCertainty >= CommentClassification.REAL) {
     					chatBot.postMessage(programmers, comment.getLink());
