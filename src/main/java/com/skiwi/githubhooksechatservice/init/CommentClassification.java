@@ -44,6 +44,7 @@ public class CommentClassification {
 		points += score(0.15f, comment, "migrate");
 		points += score(0.1f, comment, "belong");
 		points += score(0.02f, comment, "instead");
+		points += score(0.03f, comment, "the place for");
 		
 		points += score(0.03f, comment, "try programmers");
 		points += score(0.03f, comment, "for programmers");
