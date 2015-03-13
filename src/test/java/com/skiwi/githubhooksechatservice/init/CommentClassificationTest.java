@@ -33,13 +33,6 @@ public class CommentClassificationTest {
 		assertIgnore("actually this is a technical question about a code bug so it is a fit for SO, not programmers.SE. Though there's more than a few good questions about LSP on programmers, this one being about a specific PHP implementation that seems to have bugs is more specific and better for SO I'd say.  Jimmy Hoffa 2 mins ago");
 		assertIgnore("@roryap this is a bad fit for Programmers, see meta.programmers.stackexchange.com/questions/6582/ Recommended reading: What goes on Programmers.SE? A guide for Stack Overflow  gnat 8 secs ago");
 		assertIgnore("@TylerH this would be a bad fit for Programmers, see meta.programmers.stackexchange.com/questions/6483/ Please stop using Programmers.SE as your toilet bowl  gnat 1 min ago");
-		assertIgnore("@dk14 Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/questions/6483/  gnat 1 min ago");
-		assertIgnore("@bluefog Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/questions/6483/  gnat 26 secs ago");
-		assertIgnore("@Barmar Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/a/6488/40980  gnat 57 secs ago");
-		assertIgnore("@Dai Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/questions/6483/  gnat 1 min ago");
-		assertIgnore("@PaulRichter Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/questions/6483/  gnat 1 min ago");
-		assertIgnore("@anaximander Please stop using Programmers.SE as your toilet bowl. See On discussions and why they don't make good questions  gnat 58 secs ago");
-		assertIgnore("@tripleee Please stop using Programmers.SE as your toilet bowl. Software recommendations are explicitly off-topic over there, just like at Stack Overflow, see meta.programmers.stackexchange.com/questions/6483/  gnat 43 secs ago");
 		assertIgnore("@GladstoneKeep - This question wouldn't be a good fit on Programmers either.  In essence, it's a toolset implementation question (\"How do I make Foo do blah?\") which is off-topic on Progs.  Conceptual project organization question (\"why should I structure like this...\") can sometimes be on topic.  This question looks to be seeking implementation details.  GlenH7 48 secs ago");
 		assertIgnore("Please don't answer questions that are clearly off-topic. It encourages more off-topic questions, as askers may feel they can get an answer anyway even though it's off-topic. This site is for programming and programmers tools related questions, not general computer or OS use questions.  Ken White 25 secs ago");
 		assertIgnore(":-))) I agree with you somewhat. I've migrated to Java then Scala after C++11. Actually C++ is now too complex and too broad for single language - this results 'several languages in one'. But reality is - C programmers often learn C++ and (which makes the deal) then they return to C and become real programmers - after this they start to be language-agnostic. :-|  Roman Nikitchenko 1 min ago");
@@ -64,6 +57,11 @@ public class CommentClassificationTest {
 	
 	@Test
 	public void htmlComments() throws Exception {
+		assertIgnore("@dk14 Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/questions/6483/  gnat 1 min ago");
+		assertIgnore("@bluefog Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/questions/6483/  gnat 26 secs ago");
+		assertIgnore("@Barmar Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/a/6488/40980  gnat 57 secs ago");
+		assertIgnore("@Dai Please stop using Programmers.SE as your toilet bowl. See meta.programmers.stackexchange.com/questions/6483/  gnat 1 min ago");
+		
 		assertPost("A question like this is probably better suited for programmers.stackexchange.com.");
 		assertPost("You may wish to look at programmers.stackexchange.com instead - this is more of a whiteboard problem than a keyboard problem.");
 		
