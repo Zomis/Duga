@@ -10,7 +10,7 @@ public class CommentClassification {
 	public static final float DEBUG = 0.01f;
 	
 	public static final Pattern PROG_LINK = Pattern.compile(
-			Pattern.quote("<a href=\"http://programmers.stackexchange.com") + "(/|/help/.*)?" + Pattern.quote("\">"));
+			Pattern.quote("<a href=\"http") + "s?" + Pattern.quote("://programmers.stackexchange.com") + "(/|/help/.*)?" + Pattern.quote("\">"));
 
 	public static boolean bodyContainsProgrammersLink(String body) {
 		return PROG_LINK.matcher(body).find();
