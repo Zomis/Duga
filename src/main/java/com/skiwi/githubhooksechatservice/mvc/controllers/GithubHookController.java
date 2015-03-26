@@ -41,7 +41,6 @@ import com.skiwi.githubhooksechatservice.events.github.classes.LegacyCommit;
 import com.skiwi.githubhooksechatservice.events.github.classes.PingEvent;
 import com.skiwi.githubhooksechatservice.mvc.beans.GithubBean;
 import com.skiwi.githubhooksechatservice.mvc.beans.Statistics;
-import com.skiwi.githubhooksechatservice.service.RuntimeLogService;
 
 /**
  *
@@ -62,8 +61,6 @@ public class GithubHookController {
 	
 	@Autowired
 	private GithubBean githubBean;
-	
-	private RuntimeLogService runtimeLog;
 	
 	private final Map<Class<? extends AbstractEvent>, BiConsumer<WebhookParameters, AbstractEvent>> map;
 	
@@ -91,7 +88,7 @@ public class GithubHookController {
 			consumer.accept(params, event);
 		}
 		else {
-			runtimeLog.log("Unknown event class: " + event.getClass());
+			LOGGER.warning("Unknown event class: " + event.getClass());
 		}
 	}
 	

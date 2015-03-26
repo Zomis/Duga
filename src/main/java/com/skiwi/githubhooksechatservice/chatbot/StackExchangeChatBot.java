@@ -38,7 +38,6 @@ import com.gistlabs.mechanize.impl.MechanizeAgent;
 import com.skiwi.githubhooksechatservice.mvc.configuration.BotConfiguration;
 import com.skiwi.githubhooksechatservice.mvc.controllers.WebhookParameters;
 import com.skiwi.githubhooksechatservice.service.ConfigService;
-import com.skiwi.githubhooksechatservice.service.RuntimeLogService;
 
 /**
  * @author Frank van Heeswijk
@@ -62,9 +61,6 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 
 	@Autowired
 	private ConfigService configService;
-
-	@Autowired
-	private RuntimeLogService logService;
 
 	private String chatFKey;
 
@@ -127,7 +123,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 					postMessage(params, deployGreeting);
 				}
 				else {
-					logService.log("deploy", "No valid room: " + greetingRoom);
+					LOGGER.warning("Deploy, No valid room: " + greetingRoom);
 				}
 			}
 		}
