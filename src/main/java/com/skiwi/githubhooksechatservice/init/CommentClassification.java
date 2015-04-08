@@ -46,6 +46,7 @@ public class CommentClassification {
 		points += score(0.02f, comment, "instead");
 		points += score(0.03f, comment, "the place for");
 		points -= score(0.3f, comment, "please stop using programmers.se as your toilet bowl");
+		points -= score(0.3f, comment, "what goes on programmers.se? A guide for stack overflow");
 		
 		points += score(0.03f, comment, "try programmers");
 		points += score(0.03f, comment, "for programmers");
