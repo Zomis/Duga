@@ -52,6 +52,7 @@ public class GithubHookController {
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
 	
 	private final static int MAX_NUMBER_NON_DISTINCT_COMMITS_PER_LINE = 2;
+	private static final int TRUNCATE_TARGET = 498; // max chars in a message is 500, there's two chars in the front of the truncated string
 	
 	@Autowired
 	private ChatBot chatBot;
@@ -128,13 +129,17 @@ public class GithubHookController {
     public void gollum(final WebhookParameters params, final @RequestBody GollumEvent gollumEvent) {
 		gollumEvent.getPages().forEach(wikiPage -> chatBot.postMessage(params, githubBean.stringify(gollumEvent, wikiPage)));
     }
+    
+    private static String truncate(String string) {
+    	return StringUtils.substr(string, 0, TRUNCATE_TARGET);
+    }
 	
     @RequestMapping(value = { "/payload", "/hook" }, method = RequestMethod.POST, headers = "X-Github-Event=issues")
     @ResponseBody
     public void issues(final WebhookParameters params, final @RequestBody IssuesEvent issuesEvent) {
     	if (issuesEvent.getAction().equals("opened") && issuesEvent.getIssue().getBody() != null
     			&& !issuesEvent.getIssue().getBody().isEmpty()) {
-        	chatBot.postMessages(params, githubBean.stringify(issuesEvent), "> " + issuesEvent.getIssue().getBody());
+        	chatBot.postMessages(params, githubBean.stringify(issuesEvent), "> " + truncate(issuesEvent.getIssue().getBody()));
     	}
     	else {
         	chatBot.postMessages(params, githubBean.stringify(issuesEvent));
@@ -153,7 +158,7 @@ public class GithubHookController {
 		switch (issueCommentEvent.getAction()) {
 			case "created":
 				chatBot.postMessages(params, githubBean.stringify(issueCommentEvent),
-					"> " + issueCommentEvent.getComment().getBody());
+					"> " + truncate(issueCommentEvent.getComment().getBody()));
 				statistics.add(issueCommentEvent);
 				break;
 		}
