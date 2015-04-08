@@ -21,6 +21,21 @@ public class CommentClassification {
 		return matchPattern + calcInterestingLevelProgrammers(comment.getBodyMarkdown());
 	}
 	
+	public static float calcInterestingLevelSoftwareRecs(StackExchangeComment comment) {
+		return calcInterestingLevelSoftwareRecs(comment.getBodyMarkdown());
+	}
+	
+	public static float calcInterestingLevelSoftwareRecs(String comment) {
+		float points = 0.4f;
+		
+		points += score(0.3f, comment, "software recommendations");
+		points += score(0.3f, comment, "softwarerecs");
+//		points -= score(0.25f, comment, "meta.softwarerecs.stackexchange.com/questions/336/");
+//		points -= score(0.25f, comment, "meta.softwarerecs.stackexchange.com/q/336/");
+		points -= score(0.55f, comment, "/336");
+		return points;
+	}
+	
 	public static float calcInterestingLevelProgrammers(String comment) {
 		comment = comment.toLowerCase();
 		if (!comment.contains("programmers")) {

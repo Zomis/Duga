@@ -25,6 +25,7 @@ public class CommentsScanTask implements Runnable {
 	private final WebhookParameters params = WebhookParameters.toRoom("8595");
 	private final WebhookParameters debug = WebhookParameters.toRoom("20298");
 	private final WebhookParameters programmers = WebhookParameters.toRoom("21");
+	private final WebhookParameters softwareRecs = WebhookParameters.toRoom("22668");
 
 	private StackExchangeAPIBean stackAPI;
 
@@ -78,6 +79,12 @@ public class CommentsScanTask implements Runnable {
     				if (programmersCertainty >= CommentClassification.DEBUG) {
     					chatBot.postMessage(debug, "Certainty level " + programmersCertainty);
     					chatBot.postMessage(debug, comment.getLink());
+    				}
+    				
+    				float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
+    				
+    				if (softwareCertainty >= CommentClassification.REAL) {
+    					chatBot.postMessage(softwareRecs, comment.getLink());
     				}
     			}
                 items.clear();
