@@ -202,7 +202,7 @@ public class GithubHookController {
 		}
 		
         distinctCommits.forEach(commit -> {
-			chatBot.postMessages(params, githubBean.stringify(pushEvent, commit), "> " + commit.getMessage());
+			chatBot.postMessage(params, truncate(githubBean.stringify(pushEvent, commit) + ": " + commit.getMessage()));
 			statistics.add(pushEvent.getRepository(), commit);
 		});
     }
