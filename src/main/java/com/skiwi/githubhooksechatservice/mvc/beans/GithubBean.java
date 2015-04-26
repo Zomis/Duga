@@ -495,7 +495,10 @@ public class GithubBean {
 	}
 
 	public String stringify(PingEvent pingEvent) {
-		return "Ping: " + pingEvent.getZen();
+		return MessageFormat.format("\\[[**{0}**]({1})\\] Ping: {2}",
+			pingEvent.getRepository().getFullName(), 
+			pingEvent.getRepository().getHtmlUrl(),
+			pingEvent.getZen());
 	}
 
 }

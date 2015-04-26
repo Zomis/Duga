@@ -6,14 +6,14 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.skiwi.githubhooksechatservice.events.github.AbstractEvent;
+import com.skiwi.githubhooksechatservice.events.github.GithubEvent;
 
 /**
  *
  * @author Frank van Heeswijk
  */
 @JsonTypeInfo(use = Id.NAME, defaultImpl = PingEvent.class)
-public final class PingEvent extends AbstractEvent {
+public final class PingEvent extends GithubEvent {
     @JsonProperty
     private String zen;
     
