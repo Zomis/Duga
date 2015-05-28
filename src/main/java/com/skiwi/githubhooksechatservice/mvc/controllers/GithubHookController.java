@@ -202,7 +202,11 @@ public class GithubHookController {
 		}
 		
         distinctCommits.forEach(commit -> {
-			chatBot.postMessage(params, truncate(githubBean.stringify(pushEvent, commit) + ": " + commit.getMessage()));
+        	if (commit.getMessage().indexOf('\n') > 0) {
+    			chatBot.postMessages(params, githubBean.stringify(pushEvent, commit), truncate(commit.getMessage()));
+        	} else {
+    			chatBot.postMessage(params, truncate(githubBean.stringify(pushEvent, commit) + ": " + commit.getMessage()));
+        	}
 			statistics.add(pushEvent.getRepository(), commit);
 		});
     }
