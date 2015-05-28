@@ -17,6 +17,8 @@ public class DailyInfo {
 	
 	private String url;
 	
+	private String comment = "";
+	
 	private Integer commits = 0;
 	
 	private Integer issuesOpened = 0;
@@ -111,6 +113,14 @@ public class DailyInfo {
 		this.commits += commits;
 		this.additions += additions;
 		this.deletions += deletions;
+	}
+	
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	
+	public String getComment() {
+		return comment;
 	}
 	
 }
