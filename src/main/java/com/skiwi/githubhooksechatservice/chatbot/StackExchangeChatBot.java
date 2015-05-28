@@ -247,6 +247,7 @@ public class StackExchangeChatBot implements ChatBot, DisposableBean {
 			LOGGER.info(response.getTitle());
 			if (response instanceof JsonDocument) {
 				//success
+				message.onSuccess((JsonDocument) response);
 			}
 			else if (response instanceof HtmlDocument) {
 				//failure
