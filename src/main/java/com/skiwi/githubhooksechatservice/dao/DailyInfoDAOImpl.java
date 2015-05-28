@@ -36,13 +36,14 @@ public class DailyInfoDAOImpl implements DailyInfoDAO {
 		try {
 			Query query = openSession().createQuery("from DailyInfo daily where daily.name = :name");
 			query.setParameter("name", name);
-			DailyInfo dailyInfo = (DailyInfo) query.uniqueResult();
-			if (dailyInfo != null) {
+			List<?> dailyInfos = query.list();
+			if (!dailyInfos.isEmpty()) {
+				DailyInfo dailyInfo = (DailyInfo) dailyInfos.get(0);
 				perform.accept(dailyInfo);
 				openSession().merge(dailyInfo);
 				return dailyInfo;
 			}
-			dailyInfo = new DailyInfo();
+			DailyInfo dailyInfo = new DailyInfo();
 			dailyInfo.setName(name);
 			dailyInfo.setUrl(url);
 			perform.accept(dailyInfo);
