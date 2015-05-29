@@ -41,6 +41,9 @@ public class CommentClassification {
 		if (!comment.contains("programmers")) {
 			return 0;
 		}
+		if (programmersIgnore(comment)) {
+			return 0.42f;
+		}
 		float points = 0.4f;
 		
 		points += score(0.3f, comment, "better fit");
@@ -60,8 +63,6 @@ public class CommentClassification {
 		points += score(0.1f, comment, "belong");
 		points += score(0.02f, comment, "instead");
 		points += score(0.03f, comment, "the place for");
-		points -= score(0.3f, comment, "please stop using programmers.se as your toilet bowl");
-		points -= score(0.3f, comment, "what goes on programmers.se? A guide for stack overflow");
 		
 		points += score(0.03f, comment, "try programmers");
 		points += score(0.03f, comment, "for programmers");
@@ -70,6 +71,21 @@ public class CommentClassification {
 		points += score(0.03f, comment, "to programmers");
 		
 		return points;
+	}
+
+	private static final String[] programmersIgnore = new String[]{
+			"please stop using programmers.se as your toilet bowl",
+			"/7265", // http://meta.programmers.stackexchange.com/questions/7265/when-is-a-software-licensing-question-on-topic
+			"/7182", // http://meta.programmers.stackexchange.com/questions/7182/what-goes-on-programmers-se-a-guide-for-stack-overflow
+	};
+	
+	private static boolean programmersIgnore(String comment) {
+		for (String str : programmersIgnore) {
+			if (comment.contains(str)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static float score(float f, String comment, String string) {
