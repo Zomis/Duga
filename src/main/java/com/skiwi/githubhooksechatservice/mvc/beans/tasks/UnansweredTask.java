@@ -33,7 +33,13 @@ public class UnansweredTask implements Runnable {
 		try {
 			JsonNode result = api.apiCall("info", site, "default");
 			int unanswered = result.get("items").get(0).get("total_unanswered").asInt();
-			bot.postMessage(room, message.replace("%unanswered%", String.valueOf(unanswered)));
+			int total = result.get("items").get(0).get("total_questions").asInt();
+			String message = this.message;
+			double percentageAnswered = (double) (total - unanswered) / total;
+			String percentageStr = String.format("%.4d", percentageAnswered);
+			message = message.replace("%unanswered%", String.valueOf(unanswered));
+			message = message.replace("%percentage%", String.valueOf(percentageStr));
+			bot.postMessage(room, message);
 		} catch (IOException e) {
 			logger.error("Error with StackExchange API Call", e);
 		}
