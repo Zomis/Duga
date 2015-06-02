@@ -31,6 +31,8 @@ public class CommentsScanTask implements Runnable {
 
 	private ChatBot chatBot;
 	
+	private Pattern interestingComment = Pattern.compile("[*`_]{,2}code[*`_]{,2}\s*[*`_]{,2}review[*`_]{,2}", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	
 	public CommentsScanTask(StackExchangeAPIBean stackAPI, ChatBot chatBot) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
@@ -38,7 +40,9 @@ public class CommentsScanTask implements Runnable {
 
 	private boolean isInterestingComment(StackExchangeComment comment) {
 		String commentText = comment.getBodyMarkdown().toLowerCase();
-			return commentText.contains("code review") || commentText.contains("codereview");
+		return interestingComment.matcher(commentText).find(0);
+		// We're using `find()` instead of `matches()` because it can occur anywhere and we don't wanna reject if we can't match the whole comment
+		// See https://docs.oracle.com/javase/8/docs/api/java/util/regex/Matcher.html#matches-- and #find-int- for more information
 	}
 
 	@Override
