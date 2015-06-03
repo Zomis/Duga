@@ -35,7 +35,7 @@ public class CommentsScanTask implements Runnable {
 	 * If any substring of a comment matches this pattern, it's probably interesting.<br>
 	 * No need for case-insensitivity since the comment is already lower-cased by the time it's being compared.
 	 */
-	private Pattern interestingComment = Pattern.compile("[*`_]{,2}code[*`_]{,2}\s*[*`_]{,2}review[*`_]{,2}");
+	private Pattern interestingComment = Pattern.compile("[*`_]{,3}code[*`_]{,3}\s*[*`_]{,3}review[*`_]{,3}");
 	
 	public CommentsScanTask(StackExchangeAPIBean stackAPI, ChatBot chatBot) {
 		this.stackAPI = stackAPI;
