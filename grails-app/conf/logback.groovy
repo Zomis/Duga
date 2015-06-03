@@ -9,6 +9,7 @@ appender('STDOUT', ConsoleAppender) {
     }
 }
 
+logger('org.springframework.boot.autoconfigure.security', INFO)
 root(ERROR, ['STDOUT'])
 
 if(Environment.current == Environment.DEVELOPMENT) {

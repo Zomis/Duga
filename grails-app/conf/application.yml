@@ -2,7 +2,7 @@
 grails:
     profile: web
     codegen:
-        defaultPackage: duga
+        defaultPackage: net.zomis.duga
 info:
     app:
         name: '@info.app.name@'
@@ -67,6 +67,11 @@ grails:
                 scriptlets: html
                 taglib: none
                 staticparts: none
+
+hibernate:
+    cache:
+        use_second_level_cache: false
+        use_query_cache: false
 
 ---
 dataSource:
