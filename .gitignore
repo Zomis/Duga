@@ -8,3 +8,15 @@ MANIFEST.MF
 target/
 
 application.properties
+
+# Created by https://www.gitignore.io
+
+### Gradle ###
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
