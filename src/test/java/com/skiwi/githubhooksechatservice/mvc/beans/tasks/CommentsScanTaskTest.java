@@ -25,7 +25,7 @@ public class CommentsScanTaskTest {
 		}
 		for (String match : shouldMatch)
 			assertTrue(match + " should be interesting, but isn't!", isInterestingComment(match));
-		for (String match : shouldMatch)
+		for (String match : shouldntMatch)
 			assertFalse(match + " shouldn't be interesting, but is!", isInterestingComment(match));
 	}
 }
