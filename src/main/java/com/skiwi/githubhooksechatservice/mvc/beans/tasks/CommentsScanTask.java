@@ -3,6 +3,8 @@ package com.skiwi.githubhooksechatservice.mvc.beans.tasks;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.*;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,9 +35,10 @@ public class CommentsScanTask implements Runnable {
 	
 	/**
 	 * If any substring of a comment matches this pattern, it's probably interesting.<br>
-	 * No need for case-insensitivity since the comment is already lower-cased by the time it's being compared.
+	 * No need for case-insensitivity since the comment is already lower-cased by the time it's being compared.<br>
+	 * It wouldn't do any harm, though.
 	 */
-	private Pattern interestingComment = Pattern.compile("[*`_]{,3}code[*`_]{,3}\\s*[*`_]{,3}review[*`_]{,3}");
+	private Pattern interestingComment = Pattern.compile("[*`_]{0,3}code[*`_]{0,3}\\s*[*`_]{0,3}review[*`_]{0,3}");
 	
 	public CommentsScanTask(StackExchangeAPIBean stackAPI, ChatBot chatBot) {
 		this.stackAPI = stackAPI;
