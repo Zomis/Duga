@@ -3,6 +3,8 @@ package com.skiwi.githubhooksechatservice.mvc.beans.tasks;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.*;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,13 +17,13 @@ import com.skiwi.githubhooksechatservice.stackapi.StackComments;
 import com.skiwi.githubhooksechatservice.stackapi.StackExchangeComment;
 
 public class CommentsScanTask implements Runnable {
-    private static final Logger logger = LogManager.getLogger(CommentsScanTask.class);
-    
-    private Instant nextFetch = Instant.now();
-    private long lastComment;
-    private long fromDate;
-    private int remainingQuota;
-    
+	private static final Logger logger = LogManager.getLogger(CommentsScanTask.class);
+	
+	private Instant nextFetch = Instant.now();
+	private long lastComment;
+	private long fromDate;
+	private int remainingQuota;
+	
 	private final WebhookParameters params = WebhookParameters.toRoom("8595");
 	private final WebhookParameters debug = WebhookParameters.toRoom("20298");
 	private final WebhookParameters programmers = WebhookParameters.toRoom("21");
@@ -31,73 +33,83 @@ public class CommentsScanTask implements Runnable {
 
 	private ChatBot chatBot;
 	
-    public CommentsScanTask(StackExchangeAPIBean stackAPI, ChatBot chatBot) {
+	/**
+	 * If any substring of a comment matches this pattern, it's probably interesting.<br>
+	 * No need for case-insensitivity since the comment is already lower-cased by the time it's being compared.<br>
+	 * It wouldn't do any harm, though.
+	 */
+	private Pattern interestingComment = Pattern.compile("[*`_]{0,3}code[*`_]{0,3}\\s*[*`_]{0,3}review[*`_]{0,3}");
+	
+	public CommentsScanTask(StackExchangeAPIBean stackAPI, ChatBot chatBot) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
 	}
 
 	private boolean isInterestingComment(StackExchangeComment comment) {
-		String commentText = comment.getBodyMarkdown().toLowerCase();
-    	return commentText.contains("code review") || commentText.contains("codereview");
+		String commentText = comment.getBodyMarkdown().toLowerCase(Locale.ENGLISH);
+		return interestingComment.matcher(commentText).find(0);
+		// We're using `find()` instead of `matches()` because it can occur anywhere and we don't wanna reject if we can't match the whole comment
+		// See https://docs.oracle.com/javase/8/docs/api/java/util/regex/Matcher.html#matches-- and #find-int- for more information
+		// (and we're using find(0) to make sure it searches from the start, not somewhere in the middle)
 	}
 
 	@Override
-    public void run() {
-    	if (!Instant.now().isAfter(nextFetch)) {
-    		return;
-    	}
+	public void run() {
+		if (!Instant.now().isAfter(nextFetch)) {
+			return;
+		}
 
-    	try {
-    		StackComments comments = stackAPI.fetchComments("stackoverflow", fromDate);
-    		int currentQuota = comments.getQuotaRemaining();
-    		if (currentQuota > remainingQuota && fromDate != 0) {
+		try {
+			StackComments comments = stackAPI.fetchComments("stackoverflow", fromDate);
+			int currentQuota = comments.getQuotaRemaining();
+			if (currentQuota > remainingQuota && fromDate != 0) {
 				chatBot.postMessage(debug, Instant.now() + " Quota has been reset. Was " + remainingQuota + " is now " + currentQuota);
-    		}
-    		remainingQuota = currentQuota;
-    		List<StackExchangeComment> items = comments.getItems();
-    		if (items != null) {
-    			if (items.size() >= 100) {
-    				chatBot.postMessage(debug, Instant.now() + " Warning: Retrieved 100 comments. Might have missed some.");
-    			}
-    			
-    			long previousLastComment = lastComment;
-        		Collections.reverse(items);
-    			for (StackExchangeComment comment : items) {
-    				if (comment.getCommentId() <= previousLastComment) {
-    					continue;
-    				}
-    				lastComment = Math.max(comment.getCommentId(), lastComment);
-    				fromDate = Math.max(comment.getCreationDate(), fromDate);
-    				if (isInterestingComment(comment)) {
-    					chatBot.postMessage(params, comment.getLink());
-    				}
-    				float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
-    				
-    				if (programmersCertainty >= CommentClassification.REAL) {
-    					chatBot.postMessage(programmers, comment.getLink());
-    				}
-    				if (programmersCertainty >= CommentClassification.DEBUG) {
-    					chatBot.postMessage(debug, "Certainty level " + programmersCertainty);
-    					chatBot.postMessage(debug, comment.getLink());
-    				}
-    				
-    				float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
-    				
-    				if (softwareCertainty >= CommentClassification.REAL) {
-    					chatBot.postMessage(softwareRecs, comment.getLink());
-    				}
-    			}
-                items.clear();
-            }
-            if (comments.getBackoff() != 0) {
-                nextFetch = Instant.now().plusSeconds(comments.getBackoff() + 10);
-                chatBot.postMessage(debug, Instant.now() + " Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
-            }
-    	} catch (Exception e) {
-    		logger.error("Error retrieving comments", e);
-    		chatBot.postMessage(debug, Instant.now() + " Exception in comment task " + e);
-    		return;
-    	}
-    }
+			}
+			remainingQuota = currentQuota;
+			List<StackExchangeComment> items = comments.getItems();
+			if (items != null) {
+				if (items.size() >= 100) {
+					chatBot.postMessage(debug, Instant.now() + " Warning: Retrieved 100 comments. Might have missed some.");
+				}
+				
+				long previousLastComment = lastComment;
+				Collections.reverse(items);
+				for (StackExchangeComment comment : items) {
+					if (comment.getCommentId() <= previousLastComment) {
+						continue;
+					}
+					lastComment = Math.max(comment.getCommentId(), lastComment);
+					fromDate = Math.max(comment.getCreationDate(), fromDate);
+					if (isInterestingComment(comment)) {
+						chatBot.postMessage(params, comment.getLink());
+					}
+					float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
+					
+					if (programmersCertainty >= CommentClassification.REAL) {
+						chatBot.postMessage(programmers, comment.getLink());
+					}
+					if (programmersCertainty >= CommentClassification.DEBUG) {
+						chatBot.postMessage(debug, "Certainty level " + programmersCertainty);
+						chatBot.postMessage(debug, comment.getLink());
+					}
+					
+					float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
+					
+					if (softwareCertainty >= CommentClassification.REAL) {
+						chatBot.postMessage(softwareRecs, comment.getLink());
+					}
+				}
+				items.clear();
+			}
+			if (comments.getBackoff() != 0) {
+				nextFetch = Instant.now().plusSeconds(comments.getBackoff() + 10);
+				chatBot.postMessage(debug, Instant.now() + " Next fetch: " + nextFetch + " because of backoff " + comments.getBackoff());
+			}
+		} catch (Exception e) {
+			logger.error("Error retrieving comments", e);
+			chatBot.postMessage(debug, Instant.now() + " Exception in comment task " + e);
+			return;
+		}
+	}
 
 }
