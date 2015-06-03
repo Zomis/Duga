@@ -1,6 +1,8 @@
 import java.util.regex.*;
 import java.util.*;
 
+import static org.junit.Assert.*;
+
 public class CommentsScanTaskTest {
 	private static Pattern interestingComment = Pattern.compile("[\\*`_]{0,3}code[\\*`_]{0,3}\\s*[\\*`_]{0,3}review[\\*`_]{0,3}");
 	
