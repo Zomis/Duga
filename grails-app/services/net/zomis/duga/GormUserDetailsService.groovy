@@ -35,7 +35,7 @@ class GormUserDetailsService implements UserDetailsService {
 
         Collection<?> userAuthorities = user.authorities
         def authorities = userAuthorities.collect { new SimpleGrantedAuthority(it.authority) }
-        return authorities ?: [NO_ROLE]
+        return authorities ?: []
     }
 
     protected UserDetails createUserDetails(user, Collection<GrantedAuthority> authorities) {

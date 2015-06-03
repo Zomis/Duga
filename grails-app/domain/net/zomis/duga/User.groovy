@@ -1,11 +1,9 @@
 package net.zomis.duga
 
-//unnecessary if passwordEncoder is defined `def passwordEncoder`
 import org.springframework.security.crypto.password.PasswordEncoder
 
 class User {
 
-    //This could be defined as `def passwordEncoder` as well and the import would be unnecessary
     PasswordEncoder passwordEncoder
 
     String username
@@ -21,6 +19,7 @@ class User {
     }
 
     static mapping = {
+        table 'duga_users'
         password column: '`password`'
     }
 
