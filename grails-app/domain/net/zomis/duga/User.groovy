@@ -12,6 +12,9 @@ class User {
     boolean accountExpired
     boolean accountLocked
     boolean credentialsExpired
+    String apiKey
+    String githubName
+    String chatName
 
     static constraints = {
         username blank: false, unique: true
