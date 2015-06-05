@@ -22,3 +22,5 @@ gradle-app.setting
 !gradle-wrapper.jar
 .idea/
 *.iml
+stacktrace.log
+grails-app/conf/duga.groovy
