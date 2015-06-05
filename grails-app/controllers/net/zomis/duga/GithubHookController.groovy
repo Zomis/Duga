@@ -1,13 +1,26 @@
 package net.zomis.duga
 
-import org.grails.web.json.JSONObject
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 
 class GithubHookController {
 
     static allowedMethods = [hook:'POST']
 
+    @Autowired
+    DugaBot bot
+
+    @Autowired
+    Environment environment
+
     def test() {
         render 'Hello World'
+    }
+
+    def message() {
+        def value = environment.getProperty('botName')
+        bot.postChat('This is a test, ' + value)
+        render 'Posted'
     }
 
     def hook() {

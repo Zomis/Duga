@@ -1,3 +1,4 @@
+import net.zomis.duga.DugaBot
 import net.zomis.duga.DugaData
 import net.zomis.duga.DugaInit
 import net.zomis.duga.GormUserDetailsService
@@ -10,4 +11,5 @@ beans = {
     userDetailsService(GormUserDetailsService)
     dugaData(DugaData)
     dugaTest(DugaInit)
+    dugaBot(DugaBot)
 }

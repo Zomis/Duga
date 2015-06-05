@@ -58,6 +58,9 @@ dependencies {
     compile "org.grails:grails-dependencies"
     compile "org.grails:grails-web-boot"
 
+    compile 'org.apache.httpcomponents:httpclient:4.3.5'
+    compile 'com.gistlabs:mechanize:2.0.0-RC1'
+
     compile "org.grails.plugins:hibernate"
     compile "org.grails.plugins:cache"
     compile "org.hibernate:hibernate-ehcache"

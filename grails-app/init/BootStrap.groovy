@@ -1,4 +1,3 @@
-import example.*
 import grails.util.Environment
 import net.zomis.duga.Authority
 import net.zomis.duga.User
