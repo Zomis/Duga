@@ -10,10 +10,10 @@ appender('STDOUT', ConsoleAppender) {
 }
 
 logger('org.springframework.boot.autoconfigure.security', INFO)
-root(ERROR, ['STDOUT'])
+root(INFO, ['STDOUT'])
 
 if(Environment.current == Environment.DEVELOPMENT) {
-    def targetDir = BuildSettings.TARGET_DIR
+    def targetDir = '.'
     if(targetDir) {
 
         appender("FULL_STACKTRACE", FileAppender) {
