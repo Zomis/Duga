@@ -20,9 +20,9 @@ spring {
 }
 
 hibernate {
-    naming_strategy = 'org.hibernate.cfg.DefaultNamingStrategy'
+//    naming_strategy = 'org.hibernate.cfg.DefaultNamingStrategy'
     cache {
-        use_second_level_cache = false
+//        use_second_level_cache = false
         queries = false
     }
 }
