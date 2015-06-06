@@ -131,7 +131,7 @@ class StackExchangeChatBot {
         loginRoot();
         loginChat();
 
-        String fkey = getFKey();
+        String fkey = retrieveFKey();
         this.chatFKey = fkey;
         LOGGER.info("Found fkey: " + fkey);
     }
@@ -166,7 +166,7 @@ class StackExchangeChatBot {
 		LOGGER.info("Chat login attempted.");
 	}
 
-	String getFKey() {
+	private String retrieveFKey() {
 		HtmlDocument joinFavoritesPage = agent.get(configuration.getChatUrl() + "/chats/join/favorite");
 		Form joinForm = joinFavoritesPage.forms().getAll().get(joinFavoritesPage.forms().getAll().size() - 1);
 		return joinForm.get("fkey").getValue();
@@ -357,4 +357,6 @@ class StackExchangeChatBot {
 	}
 
     MechanizeAgent getAgent() { agent }
+
+    String getFKey() { chatFKey }
 }
