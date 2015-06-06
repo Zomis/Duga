@@ -1,9 +1,3 @@
-grails {
-    profile = 'web'
-    codegen {
-        defaultPackage = 'net.zomis.duga'
-    }
-}
 
 info {
     app {
@@ -13,11 +7,7 @@ info {
     }
 }
 
-spring {
-    groovy {
-        template['check-template-location'] = false
-    }
-}
+spring.groovy.template['check-template-location'] = false
 
 hibernate {
     naming_strategy = 'org.hibernate.cfg.DefaultNamingStrategy'
@@ -28,49 +18,39 @@ hibernate {
 }
 
 grails {
+    profile = 'web'
+    codegen.defaultPackage = 'net.zomis.duga'
     mime {
-        disable {
-            accept {
-                header {
-                    userAgents = ['Gecko', 'WebKit', 'Presto', 'Trident']
-                }
-            }
-        }
+        types = [ // the first one is the default format
+                  all          : '*/*', // 'all' maps to '*' or the first available format in withFormat
+                  atom         : 'application/atom+xml',
+                  css          : 'text/css',
+                  csv          : 'text/csv',
+                  form         : 'application/x-www-form-urlencoded',
+                  html         : ['text/html', 'application/xhtml+xml'],
+                  js           : 'text/javascript',
+                  json         : ['application/json', 'text/json'],
+                  multipartForm: 'multipart/form-data',
+                  rss          : 'application/rss+xml',
+                  text         : 'text/plain',
+                  hal          : ['application/hal+json', 'application/hal+xml'],
+                  xml          : ['text/xml', 'application/xml']
+        ]
+        disable.accept.header.userAgents = ['Gecko', 'WebKit', 'Presto', 'Trident']
+    }
 
-        types {
-            all = '*/*'
-            atom = 'application/atom+xml'
-            css = 'text/css'
-            csv = 'text/csv'
-            form = 'application/x-www-form-urlencoded'
-            html = ['text/html', 'application/xhtml+xml']
-            js = 'text/javascript'
-            json = ['application/json', 'text/json']
-            multipartForm = 'multipart/form-data'
-            rss = 'application/rss+xml'
-            text = 'text/plain'
-            hal = ['application/hal+json', 'application/hal+xml']
-            xml = ['text/xml', 'application/xml']
-        }
-    }
-    urlmapping {
-        cache {
-            maxsize = 1000
-        }
-    }
-    controllers {
-        defaultScope = 'singleton'
-    }
-    converters {
-        encoding = 'UTF-8'
-    }
+    urlmapping.cache.maxsize = 1000
+    controllers.defaultScope = 'singleton'
+    converters.encoding = 'UTF-8'
+    views.default.codec = "html"
     views {
-        'default' { codec = 'html' }
+//        'default' { codec = 'html' }
         gsp {
             encoding = 'UTF-8'
             htmlcodec = 'xml'
             codecs {
                 expression = 'html'
+                scriptlet = 'html'
                 scriptlets = 'html'
                 taglib = 'none'
                 staticparts = 'none'
@@ -83,7 +63,6 @@ dataSource {
     pooled = true
     jmxExport = true
     driverClassName = 'org.postgresql.Driver'
-    dbCreate = ''
     username = 'railer'
     password = 'broom'
 }
@@ -91,7 +70,7 @@ dataSource {
 environments {
     development {
         dataSource {
-            dbCreate 'update'
+            dbCreate = 'update'
             url = 'jdbc:postgresql://localhost:5432/grails'
         }
     }
