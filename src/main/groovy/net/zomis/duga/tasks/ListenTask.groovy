@@ -14,6 +14,7 @@ class ListenTask implements Runnable {
     private final String room
     private final WebhookParameters params
     private long lastHandledId
+    private long lastMessageTime
 
     public ListenTask(DugaBot bot, String room) {
         this.bot = bot
@@ -30,6 +31,7 @@ class ListenTask implements Runnable {
         parameters.put("msgCount", String.valueOf(1));
         Resource response = agent.post("http://chat.stackexchange.com/chats/" + room + "/events", parameters)
         if (response instanceof JsonDocument) {
+            println 'Checking for events in room ' + room
             def jsonDocument = response as JsonDocument
             JsonNode node = jsonDocument.root
             def json = new JsonSlurper().parseText(node.toString())
@@ -62,7 +64,8 @@ class ListenTask implements Runnable {
                         }
                     }
                 }
-                lastHandledId = event.message_id
+                lastHandledId = Math.max(lastHandledId, event.message_id as long)
+                lastMessageTime = Math.max(lastMessageTime, event.time_stamp as long)
             }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
                 [{"room_id":16134,"event_type":1,"time_stamp":1433547911,"user_id":125580,"user_name":"Duga","message_id":22039309,"content":"Loki Astari vs. Simon Andr&#233; Forsberg: 4383 diff. Year: -1368. Quarter: -69. Month: -5. Week: +60. Day: -25."}
