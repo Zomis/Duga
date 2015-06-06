@@ -30,43 +30,48 @@ class ListenTask implements Runnable {
         parameters.put("mode", "messages");
         parameters.put("msgCount", String.valueOf(1));
         Resource response = agent.post("http://chat.stackexchange.com/chats/" + room + "/events", parameters)
-        if (response instanceof JsonDocument) {
-            println 'Checking for events in room ' + room
-            def jsonDocument = response as JsonDocument
-            JsonNode node = jsonDocument.root
-            def json = new JsonSlurper().parseText(node.toString())
-            def events = json.events
-            for (def event in events) {
-                if (event.message_id <= lastHandledId) {
-                    continue
-                }
-                if (event.user_id == 98071) {
-                    def content = event.content
-                    if (content.startsWith('@Duga')) {
-                        println "possible command: $content"
-                        if (content.contains('create task')) {
-                            TaskData.withNewSession { status ->
-                                println 'Transaction ' + status
-                                def task = new TaskData()
-                                task.taskValue = 'no task defined'
-                                task.cronStr = '0 0 * * * *'
-                                if (!task.save(failOnError: true, flush: true)) {
-                                    bot.postSingle(params, ":$event.message_id Failed")
-                                    task.errors.each {
-                                        println it
-                                    }
-                                } else {
-                                    bot.postSingle(params, ":$event.message_id OK")
+
+        if (!(response instanceof JsonDocument)) {
+            println 'Unexpected response: ' + response
+            return
+        }
+
+        println 'Checking for events in room ' + room
+        def jsonDocument = response as JsonDocument
+        JsonNode node = jsonDocument.root
+        def json = new JsonSlurper().parseText(node.toString())
+        def events = json.events
+        for (def event in events) {
+            if (event.message_id <= lastHandledId) {
+                continue
+            }
+            if (event.user_id == 98071) {
+                def content = event.content
+                if (content.startsWith('@Duga')) {
+                    println "possible command: $content"
+                    if (content.contains('create task')) {
+                        TaskData.withNewSession { status ->
+                            println 'Transaction ' + status
+                            def task = new TaskData()
+                            task.taskValue = 'no task defined'
+                            task.cronStr = '0 0 * * * *'
+                            if (!task.save(failOnError: true, flush: true)) {
+                                bot.postSingle(params, ":$event.message_id Failed")
+                                task.errors.each {
+                                    println it
                                 }
-                                println 'Posted OK'
+                            } else {
+                                bot.postSingle(params, ":$event.message_id OK")
                             }
-                            println 'Done'
+                            println 'Posted OK'
                         }
+                        println 'Done'
                     }
                 }
-                lastHandledId = Math.max(lastHandledId, event.message_id as long)
-                lastMessageTime = Math.max(lastMessageTime, event.time_stamp as long)
             }
+            lastHandledId = Math.max(lastHandledId, event.message_id as long)
+            lastMessageTime = Math.max(lastMessageTime, event.time_stamp as long)
+        }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
                 [{"room_id":16134,"event_type":1,"time_stamp":1433547911,"user_id":125580,"user_name":"Duga","message_id":22039309,"content":"Loki Astari vs. Simon Andr&#233; Forsberg: 4383 diff. Year: -1368. Quarter: -69. Month: -5. Week: +60. Day: -25."}
                  ,{"room_id":16134,"event_type":1,"time_stamp":1433548817,"user_id":125580,"user_name":"Duga","message_id":22039366,"content":"<b><i>RELOAD!<\/i><\/b>"}
@@ -75,7 +80,6 @@ class ListenTask implements Runnable {
 
         Success: {"id":22039802,"time":1433552063}
 */
-        }
     }
 
     @Override
