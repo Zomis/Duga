@@ -33,7 +33,7 @@ class DugaInit {
 
     @PostConstruct
     public void startup() {
-        scheduler.scheduleAtFixedRate(runnable(duga), 2000)
+        scheduler.scheduleAtFixedRate(runnable(duga), 10000)
     }
 
 }

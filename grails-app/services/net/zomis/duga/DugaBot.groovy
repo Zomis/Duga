@@ -16,7 +16,7 @@ class DugaBot implements InitializingBean {
     private StackExchangeChatBot bot
 
     def postChat(String message) {
-        bot.postMessages(WebhookParameters.toRoom('16134'), ['Hello World! ' + message])
+        this.postChat(WebhookParameters.toRoom('16134'), [message])
     }
 
     def postChat(WebhookParameters params, List<String> messages) {
