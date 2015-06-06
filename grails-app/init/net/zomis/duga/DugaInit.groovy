@@ -11,14 +11,6 @@ import javax.annotation.PostConstruct
 @Configuration
 class DugaInit {
 
-    @Bean
-    public TaskScheduler executor() {
-        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(3);
-        scheduler.setThreadNamePrefix("beanscheduler-");
-        return scheduler;
-    }
-
     @Autowired
     private TaskScheduler scheduler;
 

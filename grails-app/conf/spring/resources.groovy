@@ -1,6 +1,8 @@
 import net.zomis.duga.DugaBot
 import net.zomis.duga.DugaData
 import net.zomis.duga.DugaInit
+import net.zomis.duga.DugaStats
+import net.zomis.duga.DugaTasks
 import net.zomis.duga.GormUserDetailsService
 import net.zomis.duga.HookStringification
 import net.zomis.duga.SecurityConfiguration
@@ -14,4 +16,6 @@ beans = {
     dugaTest(DugaInit)
     dugaBot(DugaBot)
     stringification(HookStringification)
+    stats(DugaStats)
+    tasks(DugaTasks)
 }

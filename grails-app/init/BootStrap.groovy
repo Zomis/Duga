@@ -1,9 +1,12 @@
 import grails.util.Environment
 import net.zomis.duga.Authority
+import net.zomis.duga.TaskData
 import net.zomis.duga.User
 import net.zomis.duga.UserAuthority
 
 class BootStrap {
+
+    def tasks
 
     def init = { servletContext ->
 
@@ -25,6 +28,8 @@ class BootStrap {
 
                 break
         }
+
+        tasks.reloadAll()
     }
     def destroy = {
     }
