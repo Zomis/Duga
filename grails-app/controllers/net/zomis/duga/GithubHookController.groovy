@@ -23,7 +23,15 @@ class GithubHookController {
         render 'Posted'
     }
 
-    def hook() {
+    def hookText() {
+        println 'JSON Data: ' + params
+        println 'Request: ' + request
+        println 'Request Text: ' + request.reader.text
+        println 'Github Event: ' + request.getHeader('X-GitHub-Event')
+        render 'OK'
+    }
+
+    def hookJson() {
         println 'JSON Data: ' + params
         println 'JSON Request: ' + request.JSON
         println 'Request: ' + request
