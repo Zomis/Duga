@@ -2,7 +2,7 @@ package net.zomis.duga;
 
 class TaskData {
 	
-	String cron
+	String cronStr
 	String taskValue
 
 }
