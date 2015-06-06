@@ -2,7 +2,6 @@ package net.zomis.duga
 
 import com.gistlabs.mechanize.Resource
 import com.gistlabs.mechanize.document.json.JsonDocument
-import com.gistlabs.mechanize.impl.MechanizeAgent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 

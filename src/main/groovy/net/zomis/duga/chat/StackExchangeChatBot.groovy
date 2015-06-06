@@ -239,27 +239,6 @@ class StackExchangeChatBot {
 		parameters.put("fkey", this.chatFKey);
         println 'Okay, here we go!'
         try {
-
-
-/*            Real message post: net.zomis.duga.chat.ChatMessage@2b812f9d
-            Okay, here we go!
-                    INFO StackExchangeChatBot - Request to /chats/16134/messages/new
-                    Response: null
-            Exception: java.lang.NullPointerException
-            WARN StackExchangeChatBot - Error in drainMessagesQueue: java.lang.NullPointerException
-            Attempting to post
-            Sleeping for -1433464090828
-            INFO StackExchangeChatBot - Sleeping for -1433464090828 milliseconds
-            Real message post: net.zomis.duga.chat.ChatMessage@3010f33c
-            Okay, here we go!
-                    INFO StackExchangeChatBot - Request to /chats/20298/messages/new
-                    Test 17
-            Response: null
-            Posting drained messages...*/
-
-
-
-
             Resource response =  agent.post("http://chat.stackexchange.com/chats/" + message.getRoom() + "/messages/new", parameters);
             println 'Response: ' + response.title
 			LOGGER.info(response.getTitle());
