@@ -33,7 +33,7 @@ class DugaTasks {
             tasks.add(future)
             System.out.println("Added task: $task.taskValue - $run")
         }
-        scheduler.schedule(new ListenTask(chatBot, '20298'), new CronTrigger('*/3 * * * * *'))
+        scheduler.scheduleWithFixedDelay(new ListenTask(chatBot, '20298'), 3000) //new CronTrigger('*/3 * * * * *')
     }
 
 
