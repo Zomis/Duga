@@ -4,6 +4,7 @@ import com.gistlabs.mechanize.Resource
 import com.gistlabs.mechanize.document.json.JsonDocument
 import com.gistlabs.mechanize.document.json.node.JsonNode
 import groovy.json.JsonSlurper
+import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBot
 import net.zomis.duga.TaskData
 import net.zomis.duga.chat.WebhookParameters
@@ -13,13 +14,15 @@ class ListenTask implements Runnable {
     private final DugaBot bot
     private final String room
     private final WebhookParameters params
+    private final ChatCommands handler
     private long lastHandledId
     private long lastMessageTime
 
-    public ListenTask(DugaBot bot, String room) {
+    public ListenTask(DugaBot bot, String room, ChatCommands commandHandler) {
         this.bot = bot
         this.room = room
         this.params = WebhookParameters.toRoom(room)
+        this.handler = commandHandler
     }
 
     synchronized void latestMessages() {
@@ -55,24 +58,7 @@ class ListenTask implements Runnable {
                 continue
             }
             println "possible command: $content"
-            if (content.contains('create task')) {
-                TaskData.withNewSession { status ->
-                    println 'Transaction ' + status
-                    def task = new TaskData()
-                    task.taskValue = 'no task defined'
-                    task.cronStr = '0 0 * * * *'
-                    if (!task.save(failOnError: true, flush: true)) {
-                        bot.postSingle(params, ":$event.message_id Failed")
-                        task.errors.each {
-                            println it
-                        }
-                    } else {
-                        bot.postSingle(params, ":$event.message_id OK")
-                    }
-                    println 'Posted OK'
-                }
-                println 'Done'
-            }
+            handler.botCommand(event)
         }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
                 [{"room_id":16134,"event_type":1,"time_stamp":1433547911,"user_id":125580,"user_name":"Duga","message_id":22039309,"content":"Loki Astari vs. Simon Andr&#233; Forsberg: 4383 diff. Year: -1368. Quarter: -69. Month: -5. Week: +60. Day: -25."}

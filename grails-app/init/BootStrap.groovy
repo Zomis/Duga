@@ -30,7 +30,7 @@ class BootStrap {
                 break
         }
 
-        tasks.reloadAll()
+        tasks.initOnce()
     }
     def destroy = {
     }
