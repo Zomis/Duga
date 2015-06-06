@@ -1,5 +1,6 @@
 package net.zomis.duga
 
+import com.gistlabs.mechanize.impl.MechanizeAgent
 import net.zomis.duga.chat.BotConfiguration
 import net.zomis.duga.chat.StackExchangeChatBot
 import net.zomis.duga.chat.WebhookParameters
@@ -21,5 +22,13 @@ class DugaBot implements InitializingBean {
     @Override
     void afterPropertiesSet() throws Exception {
         bot = new StackExchangeChatBot(new BotConfiguration().init(environment))
+    }
+
+    String fkey() {
+        bot.getFKey()
+    }
+
+    MechanizeAgent agent() {
+        bot.agent
     }
 }

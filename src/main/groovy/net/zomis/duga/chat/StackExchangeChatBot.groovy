@@ -166,7 +166,7 @@ class StackExchangeChatBot {
 		LOGGER.info("Chat login attempted.");
 	}
 
-	private String getFKey() {
+	String getFKey() {
 		HtmlDocument joinFavoritesPage = agent.get(configuration.getChatUrl() + "/chats/join/favorite");
 		Form joinForm = joinFavoritesPage.forms().getAll().get(joinFavoritesPage.forms().getAll().size() - 1);
 		return joinForm.get("fkey").getValue();
@@ -264,8 +264,9 @@ class StackExchangeChatBot {
             println 'Response: ' + response.title
 			LOGGER.info(response.getTitle());
 			if (response instanceof JsonDocument) {
-                println 'Success'
-				//success
+                println response
+                def json = (response as JsonDocument)
+                println 'Success: ' + json.root
 				message.onSuccess((JsonDocument) response);
 			}
 			else if (response instanceof HtmlDocument) {
@@ -375,4 +376,6 @@ class StackExchangeChatBot {
 		});
 		lastPostedTime = System.currentTimeMillis();
 	}
+
+    MechanizeAgent getAgent() { agent }
 }
