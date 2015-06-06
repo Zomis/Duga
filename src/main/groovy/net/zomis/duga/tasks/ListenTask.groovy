@@ -45,7 +45,7 @@ class ListenTask implements Runnable {
             if (event.message_id <= lastHandledId) {
                 continue
             }
-            if (event.user_id == 98071) {
+            if (authorizedCommander(event)) {
                 def content = event.content
                 if (content.startsWith('@Duga')) {
                     println "possible command: $content"
@@ -80,6 +80,10 @@ class ListenTask implements Runnable {
 
         Success: {"id":22039802,"time":1433552063}
 */
+    }
+
+    boolean authorizedCommander(event) {
+        event.user_id == 98071
     }
 
     @Override
