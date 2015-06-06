@@ -35,7 +35,7 @@ class ListenTask implements Runnable {
             def json = new JsonSlurper().parseText(node.toString())
             def events = json.events
             for (def event in events) {
-                if (event.message_id < lastHandledId) {
+                if (event.message_id <= lastHandledId) {
                     continue
                 }
                 if (event.user_id == 98071) {
