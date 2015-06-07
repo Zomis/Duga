@@ -3,6 +3,9 @@ package net.zomis.duga
 import grails.transaction.Transactional
 import net.zomis.duga.tasks.CommentsScanTask
 import net.zomis.duga.tasks.ListenTask
+import net.zomis.duga.tasks.MessageTask
+import net.zomis.duga.tasks.UnansweredTask
+import net.zomis.duga.tasks.UserRepDiffTask
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.TaskScheduler
@@ -81,12 +84,12 @@ class DugaTasks {
                 return new GithubTask(githubService, githubBean, eventFilter, controller)*/
             case "comments":
                 return new CommentsScanTask(stackAPI, chatBot)
-/*            case "mess":
+            case "mess":
                 return new MessageTask(chatBot, taskInfo[1], taskInfo[2])
             case "ratingdiff":
                 return new UserRepDiffTask(stackAPI, taskInfo[1], chatBot, taskInfo[2], taskInfo[3])
             case "unanswered":
-                return new UnansweredTask(stackAPI, taskInfo[1], chatBot, taskInfo[2], taskInfo[3])*/
+                return new UnansweredTask(stackAPI, taskInfo[1], chatBot, taskInfo[2], taskInfo[3])
             default:
                 return { println "Unknown task: $taskData" }
         }
