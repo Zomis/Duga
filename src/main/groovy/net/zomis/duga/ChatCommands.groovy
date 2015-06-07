@@ -15,6 +15,11 @@ class ChatCommands {
         this.tasks = tasks
         this.bot = bot
         consumers << {ChatMessageIncoming event ->
+            if (event.content.contains('ping')) {
+                event.reply('pong')
+            }
+        }
+        consumers << {ChatMessageIncoming event ->
             String str = event.content
             String room = event.room_id
             if (str.contains('create task')) {
