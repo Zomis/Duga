@@ -45,20 +45,23 @@ class ListenTask implements Runnable {
         def json = new JsonSlurper().parseText(node.toString())
         def events = json.events
         for (def event in events) {
-            if (event.message_id <= lastHandledId) {
+            ChatMessageIncoming message = new ChatMessageIncoming(event as Map)
+            message.bot = bot
+            message.params = params
+            if (message.message_id <= lastHandledId) {
                 continue
             }
-            lastHandledId = Math.max(lastHandledId, event.message_id as long)
-            lastMessageTime = Math.max(lastMessageTime, event.time_stamp as long)
-            if (!authorizedCommander(event)) {
+            lastHandledId = Math.max(lastHandledId, message.message_id)
+            lastMessageTime = Math.max(lastMessageTime, message.time_stamp)
+            if (!authorizedCommander(message)) {
                 continue
             }
-            def content = event.content
+            def content = message.content
             if (!content.startsWith('@Duga')) {
                 continue
             }
             println "possible command: $content"
-            handler.botCommand(event)
+            handler.botCommand(message)
         }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
                 [{"room_id":16134,"event_type":1,"time_stamp":1433547911,"user_id":125580,"user_name":"Duga","message_id":22039309,"content":"Loki Astari vs. Simon Andr&#233; Forsberg: 4383 diff. Year: -1368. Quarter: -69. Month: -5. Week: +60. Day: -25."}
@@ -70,8 +73,8 @@ class ListenTask implements Runnable {
 */
     }
 
-    boolean authorizedCommander(event) {
-        event.user_id == 98071
+    boolean authorizedCommander(ChatMessageIncoming message) {
+        message.user_id == 98071
     }
 
     @Override

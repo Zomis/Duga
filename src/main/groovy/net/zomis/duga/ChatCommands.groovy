@@ -1,19 +1,20 @@
 package net.zomis.duga
 
 import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.tasks.ChatMessageIncoming
 
 import java.util.function.Consumer
 
 class ChatCommands {
 
-    private final List<Consumer<Object>> consumers = new ArrayList<>()
+    private final List<Consumer<ChatMessageIncoming>> consumers = new ArrayList<>()
     private final DugaTasks tasks
     private final DugaBot bot
 
     ChatCommands(DugaTasks tasks, DugaBot bot) {
         this.tasks = tasks
         this.bot = bot
-        consumers << {Object event ->
+        consumers << {ChatMessageIncoming event ->
             String str = event.content
             String room = event.room_id
             if (str.contains('create task')) {
@@ -23,12 +24,12 @@ class ChatCommands {
                     task.taskValue = 'no task defined'
                     task.cronStr = '0 0 * * * *'
                     if (!task.save(failOnError: true, flush: true)) {
-                        bot.postSingle(WebhookParameters.toRoom(room), ":$event.message_id Failed")
+                        event.reply('Failed')
                         task.errors.each {
                             println it
                         }
                     } else {
-                        bot.postSingle(WebhookParameters.toRoom(room), ":$event.message_id OK")
+                        event.reply('OK')
                     }
                     println 'Posted OK'
                 }
@@ -37,7 +38,7 @@ class ChatCommands {
         }
     }
 
-    def botCommand(def messageEvent) {
+    def botCommand(ChatMessageIncoming messageEvent) {
         for (Consumer consumer : consumers) {
             consumer.accept(messageEvent)
         }
