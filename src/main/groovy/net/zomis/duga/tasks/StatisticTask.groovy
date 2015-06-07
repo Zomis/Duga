@@ -27,41 +27,46 @@ public class StatisticTask implements Runnable {
     @Override
 	public void run() {
 		logger.info("time!");
+        DailyInfo.withNewSession {
+            List<DailyInfo> results = DailyInfo.list()
 
-        List<DailyInfo> results = DailyInfo.list()
+            results.sort(Comparator.comparing({DailyInfo ee -> ee.getName().toLowerCase()}));
 
-//		List<DailyInfo> results = new ArrayList<>(dailyService.getAndReset());
-    	results.sort(Comparator.comparing({DailyInfo ee -> ee.getName().toLowerCase()}));
-    	
-		for (WebhookParameters params : rooms) {
+            for (WebhookParameters params : rooms) {
 
-   			chatBot.postSingle(params, "***RELOAD!***");
-    		
-   			for (DailyInfo stat : results) {
-   				StringBuilder str = new StringBuilder(MessageFormat.format("\\[[**{0}**]({1})\\]",
-					stat.getName(), stat.getUrl()));
-   				int startLength = str.length();
-   				
-   				addStat(str, stat.getCommits(), "commit");
-   				addStat(str, stat.getIssuesOpened(), "opened issue");
-   				addStat(str, stat.getIssuesClosed(), "closed issue");
-   				
-   				addStat(str, stat.getComments(), "issue comment");
-   				addStat(str, stat.getAdditions(), "addition");
-   				addStat(str, stat.getDeletions(), "deletion");
-   				if (str.length() > startLength) {
-   	       			chatBot.postSingle(params, str.toString());
-   				}
-   			}
-    	}
-        for (DailyInfo result : results) {
-            result.issuesOpened = 0
-            result.issuesClosed = 0
-            result.commits = 0
-            result.deletions = 0
-            result.additions = 0
-            result.comments = 0
-            result.save()
+                chatBot.postSingle(params, "***RELOAD!***");
+
+                for (DailyInfo stat : results) {
+                    StringBuilder str = new StringBuilder(MessageFormat.format("\\[[**{0}**]({1})\\]",
+                            stat.getName(), stat.getUrl()));
+                    int startLength = str.length();
+
+                    addStat(str, stat.getCommits(), "commit");
+                    addStat(str, stat.getIssuesOpened(), "opened issue");
+                    addStat(str, stat.getIssuesClosed(), "closed issue");
+
+                    addStat(str, stat.getComments(), "issue comment");
+                    addStat(str, stat.getAdditions(), "addition");
+                    addStat(str, stat.getDeletions(), "deletion");
+                    if (str.length() > startLength) {
+                        chatBot.postSingle(params, str.toString());
+                    }
+                }
+            }
+            if (!rooms.isEmpty()) {
+                WebhookParameters debug = rooms.get(0)
+                for (DailyInfo result : results) {
+                    result.reset()
+                    if (!result.save(failOnError: true, flush: true)) {
+                        chatBot.postSingle(debug, 'Failed saving ' + result.name)
+                        result.errors.each {
+                            println it
+                        }
+                    } else {
+                        chatBot.postSingle(debug, 'Saved ' + result.name)
+                    }
+                }
+            }
         }
 	}
 

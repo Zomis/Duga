@@ -23,5 +23,14 @@ class DailyInfo {
 		this.additions += additions;
 		this.deletions += deletions;
 	}
+
+    void reset() {
+        this.issuesOpened = 0
+        this.issuesClosed = 0
+        this.commits = 0
+        this.deletions = 0
+        this.additions = 0
+        this.comments = 0
+    }
 	
 }
