@@ -1,6 +1,4 @@
 import net.zomis.duga.DugaBot
-import net.zomis.duga.DugaData
-import net.zomis.duga.DugaInit
 import net.zomis.duga.DugaStats
 import net.zomis.duga.DugaTasks
 import net.zomis.duga.GormUserDetailsService
@@ -13,8 +11,6 @@ beans = {
     webSecurityConfiguration(SecurityConfiguration)
     passwordEncoder(BCryptPasswordEncoder)
     userDetailsService(GormUserDetailsService)
-    dugaData(DugaData) // TODO: Remove
-    dugaTest(DugaInit) // TODO: Remove
     dugaBot(DugaBot)
     stringification(HookStringification)
     stats(DugaStats)
