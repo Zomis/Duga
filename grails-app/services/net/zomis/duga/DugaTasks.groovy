@@ -4,6 +4,7 @@ import grails.transaction.Transactional
 import net.zomis.duga.tasks.CommentsScanTask
 import net.zomis.duga.tasks.ListenTask
 import net.zomis.duga.tasks.MessageTask
+import net.zomis.duga.tasks.StatisticTask
 import net.zomis.duga.tasks.UnansweredTask
 import net.zomis.duga.tasks.UserRepDiffTask
 import org.apache.log4j.Logger
@@ -78,10 +79,10 @@ class DugaTasks {
     Runnable createTask(String taskData) {
         String[] taskInfo = taskData.split(";")
         switch (taskInfo[0]) {
-/*            case "dailyStats":
-                return new StatisticTask(dailyService, configService, chatBot)
-            case "github":
-                return new GithubTask(githubService, githubBean, eventFilter, controller)*/
+            case "dailyStats":
+                return new StatisticTask(chatBot, taskInfo[1])
+//            case "github":
+//                return new GithubTask(githubService, githubBean, eventFilter, controller)
             case "comments":
                 return new CommentsScanTask(stackAPI, chatBot)
             case "mess":
