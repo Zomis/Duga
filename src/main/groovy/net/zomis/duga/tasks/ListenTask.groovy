@@ -11,6 +11,8 @@ import net.zomis.duga.chat.WebhookParameters
 
 class ListenTask implements Runnable {
 
+    private static final int NUM_MESSAGES = 10
+
     private final DugaBot bot
     private final String room
     private final WebhookParameters params
@@ -31,7 +33,7 @@ class ListenTask implements Runnable {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("fkey", bot.fkey());
         parameters.put("mode", "messages");
-        parameters.put("msgCount", String.valueOf(1));
+        parameters.put("msgCount", String.valueOf(NUM_MESSAGES));
         Resource response = agent.post("http://chat.stackexchange.com/chats/" + room + "/events", parameters)
 
         if (!(response instanceof JsonDocument)) {
