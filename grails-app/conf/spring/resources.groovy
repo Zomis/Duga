@@ -1,6 +1,7 @@
 import net.zomis.duga.DugaBot
 import net.zomis.duga.DugaStats
 import net.zomis.duga.DugaTasks
+import net.zomis.duga.GithubBean
 import net.zomis.duga.GormUserDetailsService
 import net.zomis.duga.HookStringification
 import net.zomis.duga.SecurityConfiguration
@@ -16,4 +17,5 @@ beans = {
     stats(DugaStats)
     tasks(DugaTasks)
     stackAPI(StackExchangeAPI)
+    githubAPI(GithubBean)
 }

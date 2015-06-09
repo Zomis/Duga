@@ -2,6 +2,7 @@ package net.zomis.duga
 
 import grails.transaction.Transactional
 import net.zomis.duga.tasks.CommentsScanTask
+import net.zomis.duga.tasks.GithubTask
 import net.zomis.duga.tasks.ListenTask
 import net.zomis.duga.tasks.MessageTask
 import net.zomis.duga.tasks.StatisticTask
@@ -48,11 +49,10 @@ class DugaTasks {
     }
 
 
-//    private final GithubEventFilter eventFilter = new GithubEventFilter();
     @Autowired private DugaBot chatBot;
-//    @Autowired private GithubBean githubBean;
+    @Autowired private GithubBean githubBean;
     @Autowired private StackExchangeAPI stackAPI;
-    @Autowired private GithubHookController controller;
+    @Autowired private HookStringification stringification;
 
     private class TaskRunner implements Runnable {
 
@@ -81,8 +81,8 @@ class DugaTasks {
         switch (taskInfo[0]) {
             case "dailyStats":
                 return new StatisticTask(chatBot, taskInfo[1])
-//            case "github":
-//                return new GithubTask(githubService, githubBean, eventFilter, controller)
+            case "github":
+                return new GithubTask(githubBean, stringification, chatBot)
             case "comments":
                 return new CommentsScanTask(stackAPI, chatBot)
             case "mess":
