@@ -44,6 +44,7 @@ class ListenTask implements Runnable {
         JsonNode node = jsonDocument.root
         def json = new JsonSlurper().parseText(node.toString())
         def events = json.events
+        long previousId = lastHandledId
         for (def event in events) {
             ChatMessageIncoming message = new ChatMessageIncoming(event as Map)
             message.bot = bot
@@ -53,6 +54,10 @@ class ListenTask implements Runnable {
             }
             lastHandledId = Math.max(lastHandledId, message.message_id)
             lastMessageTime = Math.max(lastMessageTime, message.time_stamp)
+            if (previousId <= 0) {
+                println 'Previous id 0, skipping ' + message.content
+                continue
+            }
             if (!authorizedCommander(message)) {
                 continue
             }
