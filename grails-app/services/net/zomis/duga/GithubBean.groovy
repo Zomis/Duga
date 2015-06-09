@@ -1,7 +1,6 @@
 package net.zomis.duga
 
 import groovy.json.JsonSlurper
-import net.zomis.duga.Followed;
 
 public class GithubBean {
 	
@@ -24,7 +23,7 @@ public class GithubBean {
 		List<Object> list = new ArrayList<Object>(Arrays.asList(data));
 
 		if (lastEvent >= 0) {
-			boolean foundEvent = list.stream().anyMatch({ev -> ev.id >= lastEvent});
+			boolean foundEvent = list.stream().anyMatch({ev -> Long.parseLong(ev.id) >= lastEvent});
 			while (!foundEvent) {
 				data = fetchEventsByPage(user, name, page);
 				if (data == null) {
@@ -33,7 +32,7 @@ public class GithubBean {
 				list.addAll(Arrays.asList(data));
 			}
 		}
-		list.sort(Comparator.comparingLong({event -> event.id}));
+		list.sort(Comparator.comparingLong({event -> Long.parseLong(event.id)}));
 		return list;
 	}
 

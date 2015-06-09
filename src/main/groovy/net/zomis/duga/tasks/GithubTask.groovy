@@ -66,7 +66,7 @@ public class GithubTask implements Runnable {
 	}
     
 	private void post(event, long lastEventId, WebhookParameters params) {
-	    if (event.id > lastEventId) {
+	    if (Long.parseLong(event.id) > lastEventId) {
 			System.out.println("POST: " + event);
             List<String> list = new ArrayList<>()
             String type = (event.type as String)
