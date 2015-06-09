@@ -33,5 +33,10 @@ class WebhookParameters {
 		params.setRoomId(roomId);
 		return params;
 	}
+
+    @Override
+    String toString() {
+        return 'Room ' + roomId
+    }
 	
 }
