@@ -7,6 +7,7 @@ import net.zomis.duga.GithubBean
 import net.zomis.duga.github.GithubEventFilter;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import net.zomis.duga.Followed;
@@ -29,6 +30,7 @@ public class GithubTask implements Runnable {
     	try {
             Followed.withNewSession {data ->
                 List<Followed> followed = Followed.list()
+                println 'followed: ' + followed
                 followed.sort(Comparator.comparingLong({follow -> follow.getLastChecked()}));
                 followed.stream()
                         .limit(API_LIMIT)
@@ -36,7 +38,8 @@ public class GithubTask implements Runnable {
             }
     	}
     	catch (Exception ex) {
-    		ex.printStackTrace();
+            println 'Error: ' + ex
+    		ex.printStackTrace(System.out);
     	}
     }
 
@@ -44,8 +47,11 @@ public class GithubTask implements Runnable {
     	long update = Instant.now().getEpochSecond();
     	List<Object> events;
 		try {
+            println 'Before scan: ' + follow
 			events = githubBean.fetchEvents(follow);
+            println 'events: ' + events.size()
 		} catch (IOException e) {
+            println 'exc: ' + e
     		return;
     	}
 
@@ -55,10 +61,12 @@ public class GithubTask implements Runnable {
 
     	Stream<Object> stream = events.stream();
     	stream = GithubEventFilter.filter(stream, follow.getInterestingEvents());
+        def postEvents = stream.collect(Collectors.toList())
+        println 'filtered events: ' + postEvents.size()
+
+    	postEvents.forEach({ev -> post(ev, follow.getLastEventId(), params)});
     	
-    	stream.forEach({ev -> post(ev, follow.getLastEventId(), params)});
-    	
-    	long eventId = events.stream().mapToLong({ev -> ev.id}).max().orElse(follow.getLastEventId());
+    	long eventId = events.stream().mapToLong({ev -> Long.parseLong(ev.id)}).max().orElse(follow.getLastEventId());
     	System.out.println("Update : " + eventId);
         follow.lastChecked = update
         follow.lastEventId = eventId
@@ -77,8 +85,8 @@ public class GithubTask implements Runnable {
             try {
                 stringify."$type"(list, event.payload)
                 bot.postChat(params, list);
-            } catch (MissingMethodException ex) {
-                bot.postSingle(params, 'Missing method: ' + event + '. Exception was ' + ex);
+            } catch (Exception ex) {
+                bot.postSingle(params, "Exception $ex when processing event $event");
             }
 		} else {
     		System.out.println(event);
