@@ -13,6 +13,7 @@ class User {
     boolean accountLocked
     boolean credentialsExpired
     String apiKey = ''
+    String pingExpect = '' // used during signup process
     String githubName = ''
     String chatName = ''
 
