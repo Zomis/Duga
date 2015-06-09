@@ -27,7 +27,7 @@ class HookStringification {
         return "[**$json.login**]($json.html_url)"
     }
 
-    void ping(List<String> result, JSONObject json) {
+    void ping(List<String> result, def json) {
         result << format(json, "%repository% Ping: $json.zen")
     }
 
@@ -35,7 +35,7 @@ class HookStringification {
         "[**$json.sender.login**]($json.sender.html_url)"
     }
 
-    void commit_comment(List<String> result, JSONObject json) {
+    void commit_comment(List<String> result, def json) {
         String path = json.comment.path
         String commitId = json.comment_commit_id.substring(0, 8)
         String commitLink = "[$commitId]($json.repository.html_url/commit/$json.comment.commit_id)"
@@ -46,7 +46,7 @@ class HookStringification {
         }
     }
 
-    void create(List<String> result, JSONObject json) {
+    void create(List<String> result, def json) {
         String refUrl = null;
         switch (json.ref_type) {
             case "branch":
@@ -62,11 +62,11 @@ class HookStringification {
         result << format(json, "%repository% %sender% created $json.ref_type [**$json.ref**]($refUrl)")
     }
 
-    void delete(List<String> result, JSONObject json) {
+    void delete(List<String> result, def json) {
         result << format(json, "%repository% %sender% deleted $json.ref_type **$json.ref**")
     }
 
-    void fork(List<String> result, JSONObject json) {
+    void fork(List<String> result, def json) {
         result << format(json, "%repository% %sender% forked us into [**$json.forkee.full_name**]($json.forkee.html_url)")
     }
 
@@ -74,7 +74,7 @@ class HookStringification {
         result << format(json, "%repository% %sender% $wikiPage.action wiki page [**${wikiPage.title.trim()}**]($wikiPage.html_url)")
     }
 
-    void issues(List<String> result, JSONObject json) {
+    void issues(List<String> result, def json) {
         String issue = "[**#$json.issue.number: ${json.issue.title.trim()}**]($json.issue.html_url)"
         String extra = ''
         if (json.assignee) {
@@ -111,21 +111,21 @@ class HookStringification {
         }
     }
 
-    void issue_comment(List<String> result, JSONObject json) {
+    void issue_comment(List<String> result, def json) {
         String issue = issue(json.issue)
         String commentTarget = (json.issue.pull_request == null) ? "issue" : "pull request";
         result << format(json, "%repository% %sender% [commented]($json.comment.html_url) on $commentTarget $issue");
     }
 
-    void member(List<String> result, JSONObject json) {
+    void member(List<String> result, def json) {
         result << format(json, "%repository% %sender% $json.action [**$json.member.login**]($json.member.html_url)");
     }
 
-    void pull_request_review_comment(List<String> result, JSONObject json) {
+    void pull_request_review_comment(List<String> result, def json) {
         result << format(json, "%repository% %sender% [commented on **$json.comment.path**]($json.comment.html_url) of pull request ${issue(json.pull_request)}");
     }
 
-    void pull_request(List<String> result, JSONObject json) {
+    void pull_request(List<String> result, def json) {
         def head = json.pull_request.head
         def base = json.pull_request.base
         String headText;
@@ -181,12 +181,12 @@ class HookStringification {
         }
     }
 
-    void watch(List<String> result, JSONObject json) {
+    void watch(List<String> result, def json) {
         String action = json.action == 'started' ? 'starred' : json.action;
         result << format(json, "%repository% %sender% $action us")
     }
 
-    void team_add(List<String> result, JSONObject json) {
+    void team_add(List<String> result, def json) {
         String team = "[**$json.team.name**]($json.sender.html_url/$json.team.name)"
         if (json.user == null) {
             result << format(json, "%repository% %sender% added us to team $team")
@@ -196,7 +196,7 @@ class HookStringification {
         }
     }
 
-    public String commit(JSONObject json, commit) {
+    public String commit(def json, commit) {
         String branch = json.ref.replace("refs/heads/", "");
         String committer;
         if (commit.committer != null) {
@@ -214,13 +214,13 @@ class HookStringification {
         }
     }
 
-    public String pushEventSize(JSONObject json, int size) {
+    public String pushEventSize(def json, int size) {
         String commitText = (size == 1 ? "commit" : "commits");
         String branch = json.ref.replace("refs/heads/", "");
         return format(json, "%repository% [**$json.pusher.name**](https://github.com/$json.pusher.name) pushed $size $commitText to [**$branch**]($json.repository.url/tree/$branch)")
     }
 
-    List<String> postGithub(String type, JSONObject json) {
+    List<String> postGithub(String type, def json) {
         List<String> result = new ArrayList<>()
         result << 'Github event: ' + type
         this."$type"(result, json)
