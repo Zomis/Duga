@@ -74,8 +74,12 @@ public class GithubTask implements Runnable {
                     .replaceAll('([A-Z])', '_$1')
                     .substring(1)
                     .toLowerCase()
-            stringify."$type"(list, event.payload)
-    		bot.postChat(params, list);
+            try {
+                stringify."$type"(list, event.payload)
+                bot.postChat(params, list);
+            } catch (MissingMethodException ex) {
+                bot.postSingle(params, 'Missing method: ' + event + '. Exception was ' + ex);
+            }
 		} else {
     		System.out.println(event);
 		}
