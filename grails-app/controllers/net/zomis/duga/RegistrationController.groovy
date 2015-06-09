@@ -29,8 +29,8 @@ class RegistrationController {
         user.apiKey = apiKey
         user.pingExpect = responseKey
         user.chatName = ''
-        user.username = 'ABC' + Math.random()
-        user.githubName = ''
+        user.githubName = user.github('user').login
+        user.username = user.githubName
         user.password = apiKey
         user.accountExpired = false
         user.accountLocked = true

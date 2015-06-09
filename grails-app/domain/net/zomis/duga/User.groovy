@@ -1,6 +1,10 @@
 package net.zomis.duga
 
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import org.springframework.security.crypto.password.PasswordEncoder
+
+import java.nio.charset.StandardCharsets
 
 class User {
 
@@ -16,6 +20,7 @@ class User {
     String pingExpect = '' // used during signup process
     String githubName = ''
     String chatName = ''
+    long chatId = 0
 
     static constraints = {
         username blank: false, unique: true
@@ -45,6 +50,51 @@ class User {
 
     protected void encodePassword() {
         password = passwordEncoder.encode(password)
+    }
+
+    def github(String apiPath) {
+        URL url = new URL("https://api.github.com/$apiPath?access_token=$apiKey")
+        URLConnection conn = url.openConnection()
+//        String encoding = Base64.getEncoder().encodeToString("$githubName:$apiKey".getBytes());
+//        conn.setRequestProperty("Authorization", "Basic " + encoding);
+        headerFields(conn)
+
+        def is = conn.getInputStream();
+        return new JsonSlurper().parse(is)
+    }
+
+    static def headerFields(URLConnection conn) {
+        Map<String, List<String>> map = conn.getHeaderFields();
+
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+    }
+
+    def githubPost(String apiPath, obj) {
+        URL url = new URL("https://api.github.com/$apiPath")
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection()
+        String encoding = Base64.getEncoder().encodeToString("$githubName:$apiKey".getBytes());
+        conn.setRequestProperty("Authorization", "Basic " + encoding);
+
+        def json = new JsonBuilder(obj).toPrettyString()
+        byte[] postData       = json.getBytes( StandardCharsets.UTF_8 );
+        int    postDataLength = postData.length;
+        conn.setDoOutput( true );
+        conn.setInstanceFollowRedirects( false );
+        conn.setRequestMethod( "POST" );
+        conn.setRequestProperty( "Content-Type", "application/json");
+        conn.setRequestProperty( "charset", "utf-8");
+        conn.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
+        conn.setUseCaches( false );
+        new DataOutputStream(conn.getOutputStream()).withCloseable {
+            it.write(postData, 0, postData.length);
+            it.flush()
+        }
+        headerFields(conn)
+
+        def is = conn.getInputStream();
+        return new JsonSlurper().parse(is)
     }
 
 }
