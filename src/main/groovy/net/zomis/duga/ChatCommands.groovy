@@ -1,6 +1,5 @@
 package net.zomis.duga
 
-import net.zomis.duga.chat.WebhookParameters
 import net.zomis.duga.tasks.ChatMessageIncoming
 
 import java.util.function.Consumer
@@ -11,18 +10,64 @@ class ChatCommands {
     private final DugaTasks tasks
     private final DugaBot bot
 
-    ChatCommands(DugaTasks tasks, DugaBot bot) {
-        this.tasks = tasks
-        this.bot = bot
+    ChatCommands(DugaChatListener bean) {
+        this.tasks = bean.tasks
+        this.bot = bean.chatBot
         consumers << {ChatMessageIncoming event ->
             if (event.content.contains('ping')) {
                 event.reply('pong')
             }
         }
         consumers << {ChatMessageIncoming event ->
-            String str = event.content
-            String room = event.room_id
-            if (str.contains('create task')) {
+            if (event.content.contains('add stats')) {
+                DailyInfo.withNewSession { status ->
+                    def info = new DailyInfo()
+                    info.comment = 'Created on command'
+                    info.name = 'ABC' + Math.random()
+                    info.url = 'http://www.example.com'
+                    if (!info.save(failOnError: true, flush: true)) {
+                        event.reply('Failed')
+                        info.errors.each {
+                            println it
+                        }
+                    } else {
+                        event.reply('OK')
+                    }
+                }
+            }
+        }
+        consumers << {ChatMessageIncoming event ->
+            if (event.content.contains('add follow')) {
+                Followed.withNewSession { status ->
+                    def info = new Followed()
+                    info.lastEventId = 0
+                    info.name = 'ABC' + Math.random()
+                    info.interestingEvents = '*'
+                    info.lastChecked = 0
+                    info.followType = 1
+                    info.roomIds = '20298'
+                    if (!info.save(failOnError: true, flush: true)) {
+                        event.reply('Failed')
+                        info.errors.each {
+                            println it
+                        }
+                    } else {
+                        event.reply('OK')
+                    }
+                }
+            }
+        }
+        consumers << {ChatMessageIncoming message ->
+            def command = 'task do'
+            int index = message.content.indexOf(command)
+            if (index != -1) {
+                String str = message.content.substring(index + command.length() + 1)
+                tasks.createTask(str).run()
+                message.reply('OK')
+            }
+        }
+        consumers << {ChatMessageIncoming event ->
+            if (event.content.contains('create task')) {
                 TaskData.withNewSession { status ->
                     println 'Transaction ' + status
                     def task = new TaskData()

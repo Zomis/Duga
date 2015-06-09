@@ -22,13 +22,10 @@ class DugaTasks {
 
     private final List<ScheduledFuture<?>> tasks = new ArrayList<>()
     private final List<TaskData> taskData = new ArrayList<TaskData>();
-    private ChatCommands commands
 
     @Autowired TaskScheduler scheduler
 
     def initOnce() {
-        assert !commands
-        commands = new ChatCommands(this, chatBot)
         reloadAll()
     }
 
@@ -45,7 +42,6 @@ class DugaTasks {
             tasks.add(future)
             System.out.println("Added task: $task.taskValue - $run")
         }
-        scheduler.scheduleWithFixedDelay(new ListenTask(chatBot, '20298', commands), 3000) //new CronTrigger('*/3 * * * * *')
     }
 
 
