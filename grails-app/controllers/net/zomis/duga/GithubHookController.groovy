@@ -26,7 +26,7 @@ class GithubHookController {
 
         List<String> strings = stringification.postGithub(eventType, json)
         strings.forEach({ println it })
-//        bot.postChat(WebhookParameters.toRoom(room), strings)
+        bot.postChat(WebhookParameters.toRoom(room), strings)
         render 'OK'
     }
 
