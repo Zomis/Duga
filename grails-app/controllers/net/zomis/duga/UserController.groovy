@@ -21,6 +21,40 @@ class UserController {
         respond new User(params)
     }
 
+    def signup() {
+        respond new User(params)
+    }
+
+    @Transactional
+    def signupSave(User user) {
+        if (user == null) {
+            transactionStatus.setRollbackOnly()
+            notFound()
+            return
+        }
+        user.accountExpired = false
+        user.accountLocked = false
+        user.credentialsExpired = false
+        user.enabled = true
+
+        if (user.hasErrors()) {
+            transactionStatus.setRollbackOnly()
+            respond user.errors, view:'create'
+            return
+        }
+
+        user.save flush:true, failOnError: true
+        UserAuthority.create(user, Authority.findByAuthority('ROLE_USER'), true)
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.id])
+                redirect user
+            }
+            '*' { respond user, [status: CREATED] }
+        }
+    }
+
     @Transactional
     def save(User user) {
         if (user == null) {

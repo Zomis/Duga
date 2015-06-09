@@ -19,6 +19,11 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
                 .antMatchers('/admin/**').hasAnyRole('ADMIN')
+                .antMatchers('/taskData/**').hasAnyRole('ADMIN')
+                .antMatchers('/user/signup').permitAll()
+                .antMatchers('/user/signupSave').permitAll()
+                .antMatchers('/user/**').hasAnyRole('ADMIN')
+                .antMatchers('/userAuthority/**').hasAnyRole('ADMIN')
                 .antMatchers('/home/**').hasAnyRole('USER', 'ADMIN')
                 .antMatchers('/').permitAll()
                 .and()
