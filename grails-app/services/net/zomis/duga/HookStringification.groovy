@@ -1,8 +1,42 @@
 package net.zomis.duga
 
-import org.grails.web.json.JSONObject
+import java.util.stream.Collectors
 
 class HookStringification {
+
+    public static String substr(final String str, int index, int length) {
+        if (index < 0) {
+            index = str.length() + index;
+        }
+
+        if (length < 0) {
+            length = str.length() + length;
+        }
+        else {
+            length = index + length;
+        }
+
+        if (index > str.length()) {
+            return "";
+        }
+        length = Math.min(length, str.length());
+
+        return str.substring(index, length);
+    }
+
+    public static String substr(final String str, final int index) {
+        if (index >= 0) {
+            return substr(str, index, str.length() - index);
+        }
+        else {
+            return substr(str, index, -index);
+        }
+    }
+    private static final int TRUNCATE_TARGET = 498; // max chars in a message is 500, there's two chars in the front of the truncated string
+
+    private static String truncate(String string) {
+        return substr(string, 0, TRUNCATE_TARGET)
+    }
 
     static String repository(json) {
         if (!json.repository) {
@@ -212,6 +246,32 @@ class HookStringification {
         } else {
             return format(json, "%repository% [**$committer**](http://github.com/$committer) pushed commit $commitStr to $branchStr")
         }
+    }
+
+    void push(List<String> result, def json) {
+        List<Object> distinctCommits = new ArrayList<>();
+        List<Object> nonDistinctCommits = new ArrayList<>();
+
+        for (Object obj : json.commits) {
+            println 'commit: ' + obj
+            boolean distinct = obj.distinct
+            List<Object> addTo = distinct ? distinctCommits : nonDistinctCommits
+            addTo.add(obj)
+        }
+
+        if (!nonDistinctCommits.isEmpty()) {
+            result.add(pushEventSize(json, nonDistinctCommits.size()));
+        }
+
+        distinctCommits.forEach({commitObj ->
+            if (commitObj.message.indexOf('\n') > 0) {
+                result.add(commit(json, commitObj))
+                result.add(truncate(commitObj.message));
+            } else {
+                result.add(truncate(commit(json, commitObj) + ": " + commitObj.message));
+            }
+//            statistics.add(pushEvent.getRepository(), commit);
+        });
     }
 
     public String pushEventSize(def json, int size) {
