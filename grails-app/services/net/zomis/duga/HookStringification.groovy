@@ -46,7 +46,7 @@ class HookStringification {
         if (!json.repository) {
             return ''
         }
-        return "\\[[$json.repository.full_name]($json.repository.html_url)\\]"
+        return "**\\[[$json.repository.full_name]($json.repository.html_url)\\]**"
     }
 
     String format(obj, String str) {
@@ -82,6 +82,7 @@ class HookStringification {
         } else {
             result << format(json, "%repository% %sender% [commented on $json.comment.path]($json.comment.html_url) of commit $commitLink")
         }
+        result << '> ' + truncate(json.comment.body)
     }
 
     void create(List<String> result, def json) {
@@ -156,6 +157,7 @@ class HookStringification {
         String issue = issue(json.issue)
         String commentTarget = (json.issue.pull_request == null) ? "issue" : "pull request";
         result << format(json, "%repository% %sender% [commented]($json.comment.html_url) on $commentTarget $issue");
+        result.add('> ' + truncate(json.comment.body))
         stats.addIssueComment(json.repository)
     }
 
