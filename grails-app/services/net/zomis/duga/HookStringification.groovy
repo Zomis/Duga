@@ -292,7 +292,6 @@ class HookStringification {
 
     List<String> postGithub(String type, def json) {
         List<String> result = new ArrayList<>()
-        result << 'Github event: ' + type
         this."$type"(result, json)
         return result
     }
