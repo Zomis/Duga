@@ -1,8 +1,12 @@
 package net.zomis.duga
 
-import java.util.stream.Collectors
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 
 class HookStringification {
+
+    @Autowired
+    DugaStats stats
 
     public static String substr(final String str, int index, int length) {
         if (index < 0) {
@@ -132,12 +136,15 @@ class HookStringification {
                 break;
             case "opened":
                 result << format(json, "%repository% %sender% opened issue $issue")
+                stats.addIssue(json.repository, 1)
                 break;
             case "closed":
                 result << format(json, "%repository% %sender% closed issue $issue")
+                stats.addIssue(json.repository, -1)
                 break;
             case "reopened":
                 result << format(json, "%repository% %sender% reopened issue $issue")
+                stats.addIssue(json.repository, 1)
                 break;
             default:
                 result << format(json, "%repository% %sender% $json.action issue $issue")
@@ -149,6 +156,7 @@ class HookStringification {
         String issue = issue(json.issue)
         String commentTarget = (json.issue.pull_request == null) ? "issue" : "pull request";
         result << format(json, "%repository% %sender% [commented]($json.comment.html_url) on $commentTarget $issue");
+        stats.addIssueComment(json.repository)
     }
 
     void member(List<String> result, def json) {
@@ -234,7 +242,7 @@ class HookStringification {
         String branch = json.ref.replace("refs/heads/", "");
         String committer;
         if (commit.committer != null) {
-            committer = commit.committer.user_name;
+            committer = commit.committer.username;
         }
         else {
             committer = json.pusher_login;
@@ -270,7 +278,7 @@ class HookStringification {
             } else {
                 result.add(truncate(commit(json, commitObj) + ": " + commitObj.message));
             }
-//            statistics.add(pushEvent.getRepository(), commit);
+            stats.addCommit(json.repository, commitObj);
         });
     }
 
