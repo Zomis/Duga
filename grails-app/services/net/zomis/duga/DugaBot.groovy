@@ -36,7 +36,4 @@ class DugaBot implements InitializingBean {
         bot.getFKey()
     }
 
-    MechanizeAgent agent() {
-        bot.agent
-    }
 }

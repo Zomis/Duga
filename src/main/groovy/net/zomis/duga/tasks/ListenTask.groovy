@@ -3,6 +3,7 @@ package net.zomis.duga.tasks
 import com.gistlabs.mechanize.Resource
 import com.gistlabs.mechanize.document.json.JsonDocument
 import com.gistlabs.mechanize.document.json.node.JsonNode
+import com.gistlabs.mechanize.impl.MechanizeAgent
 import groovy.json.JsonSlurper
 import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBot
@@ -19,19 +20,23 @@ class ListenTask implements Runnable {
     private final ChatCommands handler
     private long lastHandledId
     private long lastMessageTime
+    private MechanizeAgent agent
 
     public ListenTask(DugaBot bot, String room, ChatCommands commandHandler) {
         this.bot = bot
         this.room = room
         this.params = WebhookParameters.toRoom(room)
         this.handler = commandHandler
+        this.agent = new MechanizeAgent()
     }
 
     synchronized void latestMessages() {
-        def agent = bot.agent()
-
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("fkey", bot.fkey());
+        String fkey = bot.fkey()
+        if (fkey == null) {
+            return
+        }
+        parameters.put("fkey", fkey);
         parameters.put("mode", "messages");
         parameters.put("msgCount", String.valueOf(NUM_MESSAGES));
         Resource response = agent.post("http://chat.stackexchange.com/chats/" + room + "/events", parameters)

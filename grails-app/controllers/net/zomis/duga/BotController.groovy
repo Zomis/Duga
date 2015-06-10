@@ -53,21 +53,4 @@ class BotController {
         render 'Saved: ' + daily + saved
     }
 
-    def latestMessages() {
-        def agent = bot.agent()
-
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("fkey", bot.fkey());
-        parameters.put("mode", "messages");
-        parameters.put("msgCount", String.valueOf(10));
-        Resource response = agent.post("http://chat.stackexchange.com/chats/" + 16134 + "/events", parameters)
-        println 'Response: ' + response.title
-        println 'Response: ' + response
-        if (response instanceof JsonDocument) {
-            def json = response as JsonDocument
-            println 'Root node: ' + json.root
-        }
-        render 'Something happened at least'
-    }
-
 }
