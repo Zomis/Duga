@@ -241,7 +241,6 @@ class StackExchangeChatBot {
         try {
             Resource response =  agent.post("http://chat.stackexchange.com/chats/" + message.getRoom() + "/messages/new", parameters);
             println 'Response: ' + response.title
-			LOGGER.info(response.getTitle());
 			if (response instanceof JsonDocument) {
                 println response
                 def json = (response as JsonDocument)
@@ -249,9 +248,9 @@ class StackExchangeChatBot {
 				message.onSuccess((JsonDocument) response);
 			}
 			else if (response instanceof HtmlDocument) {
-                println 'Failure: ' + htmlDocument
 				//failure
 				HtmlDocument htmlDocument = (HtmlDocument) response;
+                println 'Failure: ' + htmlDocument
 				HtmlElement body = htmlDocument.find("body");
 				if (body.getInnerHtml().contains("You can perform this action again in")) {
 					int timing =
@@ -298,7 +297,7 @@ class StackExchangeChatBot {
 				}
 				catch (RuntimeException ex) {
                     println 'Exception: ' + ex
-                    ex.printStackTrace()
+                    ex.printStackTrace(System.out)
 					try {
 						LOGGER.warning("Error in drainMessagesQueue: " + ex.toString());
 						List<ChatMessage> messages = new ArrayList<ChatMessage>();
@@ -355,8 +354,6 @@ class StackExchangeChatBot {
 		});
 		lastPostedTime = System.currentTimeMillis();
 	}
-
-    MechanizeAgent getAgent() { agent }
 
     String getFKey() { chatFKey }
 }
