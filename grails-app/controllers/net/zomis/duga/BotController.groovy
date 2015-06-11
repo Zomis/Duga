@@ -3,6 +3,7 @@ package net.zomis.duga
 import com.gistlabs.mechanize.Resource
 import com.gistlabs.mechanize.document.json.JsonDocument
 import grails.transaction.Transactional
+import net.zomis.duga.chat.WebhookParameters
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 
@@ -29,13 +30,15 @@ class BotController {
             render 'No text found'
             return
         }
+        String roomId = params.roomId
+        WebhookParameters roomParams = WebhookParameters.toRoom(roomId)
 
         User user = User.findByPingExpect(params.apiKey)
         if (user) {
             for (Authority auth : user.authorities) {
                 if (auth.authority == 'ROLE_ADMIN') {
                     println 'Request Text: ' + text
-                    bot.postChat(text)
+                    bot.postSingle(roomParams, text)
                     render 'OK'
                     return
                 }
