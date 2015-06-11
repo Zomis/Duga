@@ -16,11 +16,34 @@ class BotController {
     @Autowired
     Environment environment
 
+    @Transactional(readOnly = true)
     def post() {
-        String text = request.reader.text
-        println 'Request Text: ' + text
-        bot.postChat(text)
-        render 'OK'
+        Map parameters = request.getParameterMap();
+        if (parameters.size() != 3) {
+            render 'Expected three parameters: Room, apiKey, and text'
+            return
+        }
+        def pars = new ArrayList<>(parameters.entrySet())
+        String text = pars[2].key
+        if (!value) {
+            render 'No text found'
+            return
+        }
+
+        User user = User.findByPingExpect(params.apiKey)
+        if (user) {
+            for (Authority auth : user.authorities) {
+                if (auth.authority == 'ROLE_ADMIN') {
+                    println 'Request Text: ' + text
+                    bot.postChat(text)
+                    render 'OK'
+                    return
+                }
+            }
+            render 'Unauthorized'
+        } else {
+            render 'User not found'
+        }
     }
 
     def test() {
