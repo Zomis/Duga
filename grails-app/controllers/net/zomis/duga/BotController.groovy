@@ -33,7 +33,7 @@ class BotController {
         String roomId = params.roomId
         WebhookParameters roomParams = WebhookParameters.toRoom(roomId)
 
-        User user = User.findByPingExpect(params.apiKey)
+        User user = User.findByApiKey(params.apiKey)
         if (user) {
             for (Authority auth : user.authorities) {
                 if (auth.authority == 'ROLE_ADMIN') {
