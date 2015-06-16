@@ -1,7 +1,5 @@
 package net.zomis.duga
 
-import com.gistlabs.mechanize.Resource
-import com.gistlabs.mechanize.document.json.JsonDocument
 import grails.transaction.Transactional
 import net.zomis.duga.chat.WebhookParameters
 import org.springframework.beans.factory.annotation.Autowired

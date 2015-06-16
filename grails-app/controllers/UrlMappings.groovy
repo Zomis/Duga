@@ -7,6 +7,7 @@ class UrlMappings {
             }
         }
         "/hook"(controller: "githubHook", action: "hook")
+        "/hooks/appveyor"(controller: "appveyorHook", action: "build")
         "/"(view:"/index")
         "500"(view:'/error')
         "404"(view:'/notFound')

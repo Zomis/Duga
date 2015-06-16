@@ -1,6 +1,5 @@
 package net.zomis.duga
 
-import com.gistlabs.mechanize.impl.MechanizeAgent
 import net.zomis.duga.chat.BotConfiguration
 import net.zomis.duga.chat.StackExchangeChatBot
 import net.zomis.duga.chat.WebhookParameters
