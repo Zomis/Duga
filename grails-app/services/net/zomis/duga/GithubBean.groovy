@@ -1,8 +1,26 @@
 package net.zomis.duga
 
 import groovy.json.JsonSlurper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 
 public class GithubBean {
+
+    @Autowired
+    Environment environment
+
+    Object githubAPI(String path) {
+        def apiKey = environment.getProperty('githubAPI', '')
+        if (apiKey == '') {
+            return false
+        } else {
+            def user = new User()
+            user.apiKey = apiKey
+            user.github(path)
+            def json = user.github(path)
+            return json
+        }
+    }
 	
 	public List fetchEvents(Followed follow) throws IOException {
 		return fetchEvents(follow.getFollowType() == 1, follow.getName(), follow.getLastEventId());
