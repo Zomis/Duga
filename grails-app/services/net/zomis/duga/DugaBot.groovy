@@ -23,6 +23,9 @@ class DugaBot implements InitializingBean {
     }
 
     def postChat(WebhookParameters params, List<String> messages) {
+        messages.each {
+            println "postChat $params: $it"
+        }
         bot.postMessages(params, messages)
     }
 
