@@ -63,8 +63,7 @@ dataSource {
     pooled = true
     jmxExport = true
     driverClassName = 'org.postgresql.Driver'
-    username = 'railer'
-    password = 'broom'
+    // username and password should be specified in duga.groovy
 }
 
 environments {
@@ -72,6 +71,12 @@ environments {
         dataSource {
             dbCreate = 'update'
             url = 'jdbc:postgresql://localhost:5432/grails'
+        }
+    }
+    production {
+        dataSource {
+            dbCreate = 'update'
+            url = 'jdbc:postgresql://localhost:5432/duga'
         }
     }
 }
