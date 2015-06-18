@@ -274,13 +274,24 @@ class HookStringification {
         }
 
         distinctCommits.forEach({commitObj ->
+            // All commits should be stored in stats
+            stats.addCommit(json.repository, commitObj);
+        })
+
+        final int MAX_DISTINCT_COMMITS = 10;
+        if (distinctCommits.size() > MAX_DISTINCT_COMMITS) {
+            // if there's too many commits, not all should be informed about
+            result.add(pushEventSize(json, distinctCommits.size()) + ' (only showing some of them below)');
+            distinctCommits = distinctCommits.subList(distinctCommits.size() - MAX_DISTINCT_COMMITS, distinctCommits.size())
+        }
+
+        distinctCommits.forEach({commitObj ->
             if (commitObj.message.indexOf('\n') > 0) {
                 result.add(commit(json, commitObj))
                 result.add(truncate(commitObj.message));
             } else {
                 result.add(truncate(commit(json, commitObj) + ": " + commitObj.message));
             }
-            stats.addCommit(json.repository, commitObj);
         });
     }
 
