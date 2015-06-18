@@ -24,7 +24,7 @@ class BotController {
         }
         def pars = new ArrayList<>(parameters.entrySet())
         String text = pars[2].key
-        if (!value) {
+        if (!text) {
             render 'No text found'
             return
         }
