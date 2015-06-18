@@ -137,6 +137,9 @@ class HookStringification {
                 break;
             case "opened":
                 result << format(json, "%repository% %sender% opened issue $issue")
+                if (json.issue.body != null && !json.issue.body.isEmpty()) {
+                    result << "> " + truncate(json.issue.body as String)
+                }
                 stats.addIssue(json.repository, 1)
                 break;
             case "closed":
