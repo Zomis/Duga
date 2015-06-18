@@ -29,7 +29,7 @@ class DugaTasks {
         reloadAll()
     }
 
-    def reloadAll() {
+    List<TaskData> reloadAll() {
         List<TaskData> allTasks = TaskData.list()
         println 'Reloading tasks, contains ' + allTasks
         tasks.forEach({ScheduledFuture<?> task -> task.cancel(false) })
@@ -42,6 +42,7 @@ class DugaTasks {
             tasks.add(future)
             System.out.println("Added task: $task.taskValue - $run")
         }
+        return allTasks
     }
 
 

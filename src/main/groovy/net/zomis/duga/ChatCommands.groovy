@@ -121,6 +121,23 @@ class ChatCommands {
             }
         }
         consumers << {ChatMessageIncoming event ->
+            if (event.content.contains('add config')) {
+                DailyInfo.withNewSession { status ->
+                    def config = new DugaConfig()
+                    config.key = 'ABC' + Math.random()
+                    config.value = 'Created on command'
+                    if (!config.save(failOnError: true, flush: true)) {
+                        event.reply('Failed')
+                        config.errors.each {
+                            println it
+                        }
+                    } else {
+                        event.reply('OK')
+                    }
+                }
+            }
+        }
+        consumers << {ChatMessageIncoming event ->
             if (event.content.contains('add follow')) {
                 Followed.withNewSession { status ->
                     def info = new Followed()
@@ -148,6 +165,14 @@ class ChatCommands {
                 String str = message.content.substring(index + command.length() + 1)
                 tasks.createTask(str).run()
                 message.reply('OK')
+            }
+        }
+        consumers << {ChatMessageIncoming message ->
+            def command = 'task reload'
+            int index = message.content.indexOf(command)
+            if (index != -1) {
+                def loadedTasks = tasks.reloadAll()
+                message.reply(loadedTasks.size() + ' reloaded')
             }
         }
         consumers << {ChatMessageIncoming event ->
