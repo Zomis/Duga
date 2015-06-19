@@ -33,7 +33,7 @@ public class UnansweredTask implements Runnable {
 			int total = result.items[0].total_questions as int;
 			String message = this.message;
 			double percentageAnswered = (double) (total - unanswered) / total;
-			String percentageStr = String.format("%.4d", percentageAnswered);
+			String percentageStr = String.format("%.4f", percentageAnswered * 100);
 			message = message.replace("%unanswered%", String.valueOf(unanswered));
 			message = message.replace("%percentage%", String.valueOf(percentageStr));
 			bot.postSingle(room, message);
