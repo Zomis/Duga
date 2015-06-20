@@ -25,7 +25,7 @@ class UserRepDiffTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			def result = stackApi.apiCall("users/" + usersString, site, "!23IYXA.sS8.otifg5Aq.2", StackUsers.class);
+			def result = stackApi.apiCall("users/" + usersString, site, "!23IYXA.sS8.otifg5Aq.2");
 			List users = result.items
 			if (users.size() != 2) {
 				throw new UnsupportedOperationException("Cannot check diff for anything other than two users");
