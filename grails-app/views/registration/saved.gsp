@@ -18,9 +18,9 @@
             One more step remains, but don't worry, it is an easy step.<br>
             Go to the Stack Exchange chat room <a href="http://chat.stackexchange.com/rooms/20298/dugas-playground">Duga's Playground</a>
              and ping @Duga with a one-time token that has been generated for you:<br>
-            Write the following in chat: <pre>@Duga register ${key}</pre>
+            Write the following in chat: <pre>@Duga register '${key}'</pre>
             <br>
-            If successful, @Duga will respond to you.<br>
+            @Duga should respond to you with the result.<br>
         </div>
     </body>
 </html>

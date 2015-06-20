@@ -78,31 +78,6 @@ class ChatCommands {
             }
         }
         consumers << {ChatMessageIncoming event ->
-            def command = 'register'
-            int index = event.content.indexOf(command)
-            if (index != -1) {
-                String str = event.content.substring(index + command.length() + 1)
-                User.withNewSession { status ->
-                    User user = User.findByPingExpect(str)
-                    if (user == null) {
-                        event.reply('No such user found.')
-                    } else {
-                        user.setAccountLocked(false)
-                        user.setChatName(event.user_name)
-                        user.chatId = event.user_id
-                        if (!user.save(failOnError: true, flush: true)) {
-                            event.reply('Unable to save')
-                            info.errors.each {
-                                event.reply it
-                            }
-                        } else {
-                            event.reply('You have been registered!')
-                        }
-                    }
-                }
-            }
-        }
-        consumers << {ChatMessageIncoming event ->
             if (event.content.contains('add stats')) {
                 DailyInfo.withNewSession { status ->
                     def info = new DailyInfo()
