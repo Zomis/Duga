@@ -20,7 +20,7 @@ class DugaChatListener implements InitializingBean {
     void afterPropertiesSet() throws Exception {
         assert !commands
         commands = new ChatCommands(this)
-        scheduler.scheduleWithFixedDelay(new ListenTask(chatBot, '20298', commands), 3000)
+        scheduler.scheduleWithFixedDelay(new ListenTask(chatBot, '20298', commands, this), 3000)
     }
 
 }

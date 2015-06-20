@@ -7,10 +7,10 @@ import com.gistlabs.mechanize.impl.MechanizeAgent
 import groovy.json.JsonSlurper
 import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBot
+import net.zomis.duga.DugaChatListener
 import net.zomis.duga.chat.WebhookParameters
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
-import org.springframework.beans.factory.annotation.Autowired
 
 import static org.codehaus.groovy.syntax.Types.*
 
@@ -21,13 +21,15 @@ class ListenTask implements Runnable {
     private final DugaBot bot
     private final String room
     private final WebhookParameters params
+    private final DugaChatListener bean
     private final ChatCommands handler
     private final GroovyShell groovyShell
     private long lastHandledId
     private long lastMessageTime
     private MechanizeAgent agent
 
-    public ListenTask(DugaBot bot, String room, ChatCommands commandHandler) {
+    public ListenTask(DugaBot bot, String room, ChatCommands commandHandler, DugaChatListener bean) {
+        this.bean = bean
         this.bot = bot
         this.room = room
         this.params = WebhookParameters.toRoom(room)
@@ -141,7 +143,7 @@ class ListenTask implements Runnable {
     }
 
     def botCommand(ChatMessageIncoming chatMessageIncoming) {
-        def delegate = new ChatCommandDelegate(chatMessageIncoming, handler)
+        def delegate = new ChatCommandDelegate(chatMessageIncoming, bean)
 
         try {
             DelegatingScript script = (DelegatingScript) groovyShell.parse(chatMessageIncoming.content.substring('@Duga '.length()))

@@ -1,6 +1,7 @@
 package net.zomis.duga.tasks
 
-import net.zomis.duga.ChatCommands
+import net.zomis.duga.DugaChatListener
+import net.zomis.duga.chat.WebhookParameters
 
 /**
  * Delegate for running chat commands
@@ -8,11 +9,11 @@ import net.zomis.duga.ChatCommands
 class ChatCommandDelegate {
 
     private final ChatMessageIncoming message
-    private final ChatCommands handler
+    private final DugaChatListener bean
 
-    ChatCommandDelegate(ChatMessageIncoming chatMessageIncoming, ChatCommands chatCommands) {
+    ChatCommandDelegate(ChatMessageIncoming chatMessageIncoming, DugaChatListener bean) {
         this.message = chatMessageIncoming
-        this.handler = chatCommands
+        this.bean = bean
     }
 
     Closure ping = {
