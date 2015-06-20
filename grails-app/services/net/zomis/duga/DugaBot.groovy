@@ -12,10 +12,11 @@ class DugaBot implements InitializingBean {
     @Autowired
     Environment environment
 
+    static final WebhookParameters DEBUG_ROOM = WebhookParameters.toRoom('20298')
     private StackExchangeChatBot bot
 
-    def postChat(String message) {
-        this.postChat(WebhookParameters.toRoom('16134'), [message])
+    def postDebug(String message) {
+        this.postChat(DEBUG_ROOM, [message])
     }
 
     def postSingle(WebhookParameters params, String message) {

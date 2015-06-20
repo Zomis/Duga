@@ -47,12 +47,6 @@ class BotController {
         }
     }
 
-    def test() {
-        def value = environment.getProperty('botName')
-        bot.postChat('This is a test, ' + value)
-        render 'Posted'
-    }
-
     @Transactional
     def addTask() {
         def task = new TaskData()
