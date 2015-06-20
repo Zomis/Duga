@@ -17,7 +17,10 @@ class BotController {
 
     @Transactional(readOnly = true)
     def post() {
+        println 'post'
         Map parameters = request.getParameterMap();
+        println parameters
+        header 'Access-Control-Allow-Origin', '*'
         if (parameters.size() != 3) {
             render 'Expected three parameters: Room, apiKey, and text'
             return
@@ -37,8 +40,8 @@ class BotController {
                 if (auth.authority == 'ROLE_ADMIN') {
                     println 'Request Text: ' + text
                     bot.postSingle(roomParams, text)
-                    render 'OK'
-                    return
+                    def result = render 'OK'
+                    return result
                 }
             }
             render 'Unauthorized'
