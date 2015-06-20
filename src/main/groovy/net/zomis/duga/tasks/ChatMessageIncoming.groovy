@@ -17,6 +17,7 @@ class ChatMessageIncoming {
     int message_stars
     String room_name
     long target_user_id
+    boolean show_parent
 
     DugaBot bot
     WebhookParameters params
