@@ -164,6 +164,29 @@ class HookStringification {
         stats.addIssueComment(json.repository)
     }
 
+    void status(List<String> result, def json) {
+        def event = json
+        if (event.state == 'pending') {
+            println 'Status pending.'
+            return
+        }
+        String repoURL = "http://github.com/$event.name"
+        String commitId = event.sha.substring(0, 8)
+        String branch = '???'
+        if (event.branches.size() > 0) {
+            branch = event.branches[0].name
+        }
+
+        String mess = "\\[[**$event.name**]($repoURL)\\] " +
+                "[**build**]($event.target_url) for commit " +
+                "[**$commitId**]($repoURL/commit/$commitId) " +
+                "on [**$branch**]($repoURL/tree/$branch): $event.description"
+        result << mess
+        if (event.state != 'pending' && event.state != 'success') {
+            result << '**BUILD FAILURE!**'
+        }
+    }
+
     void member(List<String> result, def json) {
         result << format(json, "%repository% %sender% $json.action [**$json.member.login**]($json.member.html_url)");
     }
