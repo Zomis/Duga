@@ -7,8 +7,12 @@ import com.gistlabs.mechanize.impl.MechanizeAgent
 import groovy.json.JsonSlurper
 import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBot
-import net.zomis.duga.TaskData
 import net.zomis.duga.chat.WebhookParameters
+import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.customizers.SecureASTCustomizer
+import org.springframework.beans.factory.annotation.Autowired
+
+import static org.codehaus.groovy.syntax.Types.*
 
 class ListenTask implements Runnable {
 
@@ -18,6 +22,7 @@ class ListenTask implements Runnable {
     private final String room
     private final WebhookParameters params
     private final ChatCommands handler
+    private final GroovyShell groovyShell
     private long lastHandledId
     private long lastMessageTime
     private MechanizeAgent agent
@@ -28,6 +33,54 @@ class ListenTask implements Runnable {
         this.params = WebhookParameters.toRoom(room)
         this.handler = commandHandler
         this.agent = new MechanizeAgent()
+
+        Binding binding = new Binding()
+        CompilerConfiguration cc = new CompilerConfiguration()
+
+        def scz = new SecureASTCustomizer()
+        scz.with {
+            closuresAllowed = false // user will not be able to write closures
+            methodDefinitionAllowed = false // user will not be able to define methods
+            importsWhitelist = [ 'org.springframework.beans.factory.annotation.Autowired' ] // empty whitelist means imports are disallowed
+            staticImportsWhitelist = [] // same for static imports
+            staticStarImportsWhitelist = ['java.lang.Math'] // only java.lang.Math is allowed
+            // the list of tokens the user can find
+            // constants are defined in org.codehaus.groovy.syntax.Types
+            tokensWhitelist = [
+                    PLUS, MINUS, MULTIPLY, DIVIDE, MOD,
+                    POWER, PLUS_PLUS, MINUS_MINUS, COMPARE_EQUAL,
+                    COMPARE_NOT_EQUAL, COMPARE_LESS_THAN, COMPARE_LESS_THAN_EQUAL,
+                    COMPARE_GREATER_THAN, COMPARE_GREATER_THAN_EQUAL,
+            ].asImmutable()
+            // limit the types of constants that a user can define to number types only
+            constantTypesClassesWhiteList = [
+                    String,
+                    Object,
+                    Integer,
+                    Float,
+                    Long,
+                    Double,
+                    BigDecimal,
+                    Integer.TYPE,
+                    Long.TYPE,
+                    Float.TYPE,
+                    Double.TYPE
+            ].asImmutable()
+            // method calls are only allowed if the receiver is of one of those types
+            // be careful, it's not a runtime type!
+            receiversClassesWhiteList = [
+                    Object,
+                    Math,
+                    Integer,
+                    Float,
+                    Double,
+                    Long,
+                    BigDecimal
+            ].asImmutable()
+        }
+        cc.addCompilationCustomizers(scz)
+        cc.setScriptBaseClass(DelegatingScript.class.getName())
+        this.groovyShell = new GroovyShell(getClass().getClassLoader(), binding, cc)
     }
 
     synchronized void latestMessages() {
@@ -65,15 +118,17 @@ class ListenTask implements Runnable {
                 println 'Previous id 0, skipping ' + message.content
                 continue
             }
+            def content = message.content
+            if (!content.startsWith('@Duga ')) {
+                continue
+            }
             if (!authorizedCommander(message)) {
                 continue
             }
-            def content = message.content
-            if (!content.startsWith('@Duga')) {
-                continue
-            }
             println "possible command: $content"
-            handler.botCommand(message)
+            message.cleanHTML()
+            botCommand(message)
+//            handler.botCommand(message)
         }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
                 [{"room_id":16134,"event_type":1,"time_stamp":1433547911,"user_id":125580,"user_name":"Duga","message_id":22039309,"content":"Loki Astari vs. Simon Andr&#233; Forsberg: 4383 diff. Year: -1368. Quarter: -69. Month: -5. Week: +60. Day: -25."}
@@ -83,6 +138,27 @@ class ListenTask implements Runnable {
 
         Success: {"id":22039802,"time":1433552063}
 */
+    }
+
+    def botCommand(ChatMessageIncoming chatMessageIncoming) {
+        def delegate = new ChatCommandDelegate(chatMessageIncoming, handler)
+
+        try {
+            DelegatingScript script = (DelegatingScript) groovyShell.parse(chatMessageIncoming.content.substring('@Duga '.length()))
+            script.setDelegate(delegate)
+            def result = script.run()
+            println 'Script ' + chatMessageIncoming + ' returned ' + result
+            if (result instanceof Closure) {
+                result = result.call()
+                println 'Closure ' + chatMessageIncoming + ' returned ' + result
+            }
+            return result
+        } catch (Exception ex) {
+            println 'Script ' + chatMessageIncoming + ' caused exception: ' + ex
+//            bot.postDebug(chatMessageIncoming.toString() + ' caused exception: ' + ex)
+            ex.printStackTrace(System.out)
+            return ex
+        }
     }
 
     boolean authorizedCommander(ChatMessageIncoming message) {

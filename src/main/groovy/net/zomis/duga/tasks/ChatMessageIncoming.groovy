@@ -2,6 +2,7 @@ package net.zomis.duga.tasks
 
 import net.zomis.duga.DugaBot
 import net.zomis.duga.chat.WebhookParameters
+import org.apache.commons.lang.StringEscapeUtils
 
 class ChatMessageIncoming {
 
@@ -38,4 +39,12 @@ class ChatMessageIncoming {
         println 'Missing Property: ' + name + ' = ' + value
     }
 
+    @Override
+    String toString() {
+        return "Room $room_id: $user_name ($user_id) said $content"
+    }
+
+    void cleanHTML() {
+        content = StringEscapeUtils.unescapeHtml(content)
+    }
 }
