@@ -127,8 +127,8 @@ class ListenTask implements Runnable {
             if (!authorizedCommander(message)) {
                 continue
             }
-            println "possible command: $content"
             message.cleanHTML()
+            println "possible command: $message.content"
             botCommand(message)
 //            handler.botCommand(message)
         }
@@ -150,6 +150,14 @@ class ListenTask implements Runnable {
             script.setDelegate(delegate)
             def result = script.run()
             println 'Script ' + chatMessageIncoming + ' returned ' + result
+            if (result instanceof Map) {
+                Map res = (Map) result
+                Object obj = res.get('default')
+                if (obj != null) {
+                    println 'default key found in map, returned ' + obj
+                    result = obj
+                }
+            }
             if (result instanceof Closure) {
                 result = result.call()
                 println 'Closure ' + chatMessageIncoming + ' returned ' + result

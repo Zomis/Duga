@@ -20,8 +20,12 @@ class ChatCommandDelegate {
         message.reply('debug pong')
     }
 
-    void say(String text) {
-        message.reply(text)
+    def say(String text) {
+        [inRoom: {int id ->
+            bean.chatBot.postSingle(WebhookParameters.toRoom(Integer.toString(id)), text)
+        }, default: {
+            message.reply(text)
+        }]
     }
 
 }
