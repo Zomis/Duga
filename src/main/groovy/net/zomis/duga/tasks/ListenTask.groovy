@@ -5,11 +5,14 @@ import com.gistlabs.mechanize.document.json.JsonDocument
 import com.gistlabs.mechanize.document.json.node.JsonNode
 import com.gistlabs.mechanize.impl.MechanizeAgent
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
+import groovy.transform.TimedInterrupt
 import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBot
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.chat.WebhookParameters
 import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 
 import static org.codehaus.groovy.syntax.Types.*
@@ -17,6 +20,7 @@ import static org.codehaus.groovy.syntax.Types.*
 class ListenTask implements Runnable {
 
     private static final int NUM_MESSAGES = 10
+    private static final String DUGA_COMMAND = '@Duga do '
 
     private final DugaBot bot
     private final String room
@@ -49,6 +53,7 @@ class ListenTask implements Runnable {
             // the list of tokens the user can find
             // constants are defined in org.codehaus.groovy.syntax.Types
             tokensWhitelist = [
+                    ASSIGN,
                     PLUS, MINUS, MULTIPLY, DIVIDE, MOD,
                     POWER, PLUS_PLUS, MINUS_MINUS, COMPARE_EQUAL,
                     COMPARE_NOT_EQUAL, COMPARE_LESS_THAN, COMPARE_LESS_THAN_EQUAL,
@@ -57,7 +62,7 @@ class ListenTask implements Runnable {
             // limit the types of constants that a user can define to number types only
             constantTypesClassesWhiteList = [
                     String,
-                    Object,
+                    Object, // simply typing `ping` to invoke ChatCommandDelegate.ping requires this
                     Integer,
                     Float,
                     Long,
@@ -71,7 +76,7 @@ class ListenTask implements Runnable {
             // method calls are only allowed if the receiver is of one of those types
             // be careful, it's not a runtime type!
             receiversClassesWhiteList = [
-                    Object,
+                    Object, // compiler believes that any method call is a call on Object, it is not aware of the delegate class
                     Math,
                     Integer,
                     Float,
@@ -81,7 +86,14 @@ class ListenTask implements Runnable {
             ].asImmutable()
         }
         cc.addCompilationCustomizers(scz)
-        cc.setScriptBaseClass(DelegatingScript.class.getName())
+        def compileStaticCustomizer = new ASTTransformationCustomizer(Collections.singletonMap('extensions',
+            Collections.singletonList('typecheck-extension.groovy')), CompileStatic.class)
+        cc.addCompilationCustomizers(compileStaticCustomizer)
+        Map timeoutOptions = new HashMap()
+        timeoutOptions.put('value', 5)
+        def timeoutCustomizer = new ASTTransformationCustomizer(timeoutOptions, TimedInterrupt.class)
+        cc.addCompilationCustomizers(timeoutCustomizer)
+        cc.setScriptBaseClass(ChatCommandDelegate.class.getName())
         this.groovyShell = new GroovyShell(getClass().getClassLoader(), binding, cc)
     }
 
@@ -121,7 +133,7 @@ class ListenTask implements Runnable {
                 continue
             }
             def content = message.content
-            if (!content.startsWith('@Duga ')) {
+            if (!content.startsWith(DUGA_COMMAND)) {
                 continue
             }
             if (!authorizedCommander(message)) {
@@ -129,7 +141,10 @@ class ListenTask implements Runnable {
             }
             message.cleanHTML()
             println "possible command: $message.content"
-            botCommand(message)
+            def commandResult = botCommand(message)
+            if (commandResult != null) {
+                message.reply('Result: ' + String.valueOf(commandResult))
+            }
 //            handler.botCommand(message)
         }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
@@ -143,11 +158,9 @@ class ListenTask implements Runnable {
     }
 
     def botCommand(ChatMessageIncoming chatMessageIncoming) {
-        def delegate = new ChatCommandDelegate(chatMessageIncoming, bean)
-
         try {
-            DelegatingScript script = (DelegatingScript) groovyShell.parse(chatMessageIncoming.content.substring('@Duga '.length()))
-            script.setDelegate(delegate)
+            ChatCommandDelegate script = (ChatCommandDelegate) groovyShell.parse(chatMessageIncoming.content.substring(DUGA_COMMAND.length()))
+            script.init(chatMessageIncoming, bean)
             def result = script.run()
             println 'Script ' + chatMessageIncoming + ' returned ' + result
             if (result instanceof Map) {
@@ -165,9 +178,11 @@ class ListenTask implements Runnable {
             return result
         } catch (Exception ex) {
             println 'Script ' + chatMessageIncoming + ' caused exception: ' + ex
+            String mess = ex.toString()
+            chatMessageIncoming.reply(mess.substring(0, Math.min(420, mess.length())))
 //            bot.postDebug(chatMessageIncoming.toString() + ' caused exception: ' + ex)
             ex.printStackTrace(System.out)
-            return ex
+            return null
         }
     }
 

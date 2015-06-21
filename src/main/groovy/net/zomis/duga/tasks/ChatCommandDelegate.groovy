@@ -1,19 +1,30 @@
 package net.zomis.duga.tasks
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.User
 import net.zomis.duga.chat.WebhookParameters
 
+import java.util.concurrent.Callable
+
 /**
  * Delegate for running chat commands
  */
-class ChatCommandDelegate {
+abstract class ChatCommandDelegate extends Script {
 
-    private final ChatMessageIncoming message
-    private final DugaChatListener bean
+    private ChatMessageIncoming message
+    private DugaChatListener bean
 
-    ChatCommandDelegate(ChatMessageIncoming chatMessageIncoming, DugaChatListener bean) {
-        this.message = chatMessageIncoming
+    ChatCommandDelegate() {
+        // this constructor intentionally left blank
+    }
+
+    void init(ChatMessageIncoming message, DugaChatListener bean) {
+        if (this.message || this.bean) {
+            throw new IllegalStateException('message and bean can only be initialized once')
+        }
+        this.message = message
         this.bean = bean
     }
 
@@ -21,12 +32,20 @@ class ChatCommandDelegate {
         message.reply('pong!')
     }
 
-    def say(String text) {
+    Map say(String text) {
         [inRoom: {int id ->
             bean.chatBot.postSingle(WebhookParameters.toRoom(Integer.toString(id)), text)
         }, default: {
             message.reply(text)
         }]
+    }
+
+    ChatMessageIncoming getMessage() {
+        message
+    }
+
+    DugaChatListener getBean() {
+        bean
     }
 
     def register(String githubKey) {
