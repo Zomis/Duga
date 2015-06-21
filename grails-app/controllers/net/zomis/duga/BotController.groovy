@@ -2,6 +2,7 @@ package net.zomis.duga
 
 import grails.transaction.Transactional
 import net.zomis.duga.chat.WebhookParameters
+import org.grails.web.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 
@@ -14,6 +15,39 @@ class BotController {
 
     @Autowired
     Environment environment
+
+    @Transactional(readOnly = true)
+    def jsonPost() {
+        println 'json post'
+        JSONObject json = request.JSON
+        println json
+        println request
+        println params
+
+        String text = json.text
+        header 'Access-Control-Allow-Origin', '*'
+        if (!text) {
+            render 'No text found'
+            return
+        }
+        String roomId = json.roomId
+        WebhookParameters roomParams = WebhookParameters.toRoom(roomId)
+
+        User user = User.findByApiKey(json.apiKey)
+        if (user) {
+            for (Authority auth : user.authorities) {
+                if (auth.authority == 'ROLE_ADMIN') {
+                    println 'Request Text: ' + text
+                    bot.postSingle(roomParams, text)
+                    def result = render 'OK'
+                    return result
+                }
+            }
+            render 'Unauthorized'
+        } else {
+            render 'User not found'
+        }
+    }
 
     @Transactional(readOnly = true)
     def post() {
