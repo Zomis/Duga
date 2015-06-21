@@ -109,8 +109,10 @@ class HookStringification {
         result << format(json, "%repository% %sender% forked us into [**$json.forkee.full_name**]($json.forkee.html_url)")
     }
 
-    public String stringify(json, wikiPage) {
-        result << format(json, "%repository% %sender% $wikiPage.action wiki page [**${wikiPage.title.trim()}**]($wikiPage.html_url)")
+    void gollum(List<String> result, def json) {
+        for (def page : json.pages) {
+            result << format(json, "%repository% %sender% $page.action wiki page [**${page.title.trim()}**]($page.html_url)")
+        }
     }
 
     void issues(List<String> result, def json) {
