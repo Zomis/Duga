@@ -21,6 +21,7 @@ In the directory `grails-app/conf`, create a file named `duga.groovy`
     // API configuration
     stackAPI = 'xxxxxxxxx'
     githubAPI = 'xxxxxxxxx'
+    commandPrefix = '@Duga ' // chat messages that begins with this will be considered as commands
 
     // Database configuration
     adminDefaultPass = 'xxxxxxxxx' // default password for username 'admin'

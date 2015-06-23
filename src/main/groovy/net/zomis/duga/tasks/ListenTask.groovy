@@ -20,8 +20,8 @@ import static org.codehaus.groovy.syntax.Types.*
 class ListenTask implements Runnable {
 
     private static final int NUM_MESSAGES = 10
-    private static final String DUGA_COMMAND = '@Duga do '
 
+    private final String commandPrefix
     private final DugaBot bot
     private final String room
     private final WebhookParameters params
@@ -39,6 +39,7 @@ class ListenTask implements Runnable {
         this.params = WebhookParameters.toRoom(room)
         this.handler = commandHandler
         this.agent = new MechanizeAgent()
+        this.commandPrefix = bean.environment.getProperty('commandPrefix', '@Duga ')
 
         Binding binding = new Binding()
         CompilerConfiguration cc = new CompilerConfiguration()
@@ -133,7 +134,7 @@ class ListenTask implements Runnable {
                 continue
             }
             def content = message.content
-            if (!content.startsWith(DUGA_COMMAND)) {
+            if (!content.startsWith(commandPrefix)) {
                 continue
             }
             if (!authorizedCommander(message)) {
@@ -159,7 +160,7 @@ class ListenTask implements Runnable {
 
     def botCommand(ChatMessageIncoming chatMessageIncoming) {
         try {
-            ChatCommandDelegate script = (ChatCommandDelegate) groovyShell.parse(chatMessageIncoming.content.substring(DUGA_COMMAND.length()))
+            ChatCommandDelegate script = (ChatCommandDelegate) groovyShell.parse(chatMessageIncoming.content.substring(commandPrefix.length()))
             script.init(chatMessageIncoming, bean)
             def result = script.run()
             println 'Script ' + chatMessageIncoming + ' returned ' + result

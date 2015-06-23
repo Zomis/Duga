@@ -3,6 +3,7 @@ package net.zomis.duga
 import net.zomis.duga.tasks.ListenTask
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.scheduling.TaskScheduler
 
 /**
@@ -13,6 +14,7 @@ class DugaChatListener implements InitializingBean {
     @Autowired TaskScheduler scheduler
     @Autowired DugaBot chatBot
     @Autowired DugaTasks tasks
+    @Autowired Environment environment
 
     private ChatCommands commands
 
