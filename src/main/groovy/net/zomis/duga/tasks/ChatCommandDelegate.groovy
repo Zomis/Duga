@@ -53,7 +53,7 @@ abstract class ChatCommandDelegate extends Script {
             User user = User.findByPingExpect(githubKey)
             if (user == null) {
                 message.reply('No such user found.')
-            } else {
+            } else if (user.accountLocked) {
                 user.setAccountLocked(false)
                 user.setChatName(message.user_name)
                 user.chatId = message.user_id
@@ -65,6 +65,8 @@ abstract class ChatCommandDelegate extends Script {
                 } else {
                     message.reply('You have been registered!')
                 }
+            } else {
+                message.reply('Ping Expect is already taken.')
             }
         }
     }
