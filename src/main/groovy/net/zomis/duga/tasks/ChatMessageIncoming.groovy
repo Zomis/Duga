@@ -1,6 +1,7 @@
 package net.zomis.duga.tasks
 
 import net.zomis.duga.DugaBot
+import net.zomis.duga.User
 import net.zomis.duga.chat.WebhookParameters
 import org.apache.commons.lang.StringEscapeUtils
 
@@ -22,6 +23,18 @@ class ChatMessageIncoming {
 
     DugaBot bot
     WebhookParameters params
+    private User dugaUser
+
+    User fetchUser() {
+        if (dugaUser) {
+            return dugaUser
+        } else {
+            User.withNewSession {status ->
+                dugaUser = User.findByChatId(user_id)
+            }
+            return dugaUser
+        }
+    }
 
     void reply(String message) {
         bot.postSingle(params, ":$message_id $message")
