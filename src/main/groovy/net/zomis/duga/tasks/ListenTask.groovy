@@ -15,6 +15,8 @@ import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 
+import java.util.concurrent.ScheduledFuture
+
 import static org.codehaus.groovy.syntax.Types.*
 
 class ListenTask implements Runnable {
@@ -31,6 +33,7 @@ class ListenTask implements Runnable {
     private long lastHandledId
     private long lastMessageTime
     private MechanizeAgent agent
+    ScheduledFuture<?> future
 
     public ListenTask(DugaBot bot, String room, ChatCommands commandHandler, DugaChatListener bean) {
         this.bean = bean
@@ -147,6 +150,9 @@ class ListenTask implements Runnable {
                 message.reply('Result: ' + String.valueOf(commandResult))
             }
 //            handler.botCommand(message)
+        }
+        if (previousId <= 0) {
+            bot.postSingle(params, 'Monking! (Duga is now listening for commands)')
         }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
                 [{"room_id":16134,"event_type":1,"time_stamp":1433547911,"user_id":125580,"user_name":"Duga","message_id":22039309,"content":"Loki Astari vs. Simon Andr&#233; Forsberg: 4383 diff. Year: -1368. Quarter: -69. Month: -5. Week: +60. Day: -25."}

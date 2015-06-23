@@ -176,4 +176,20 @@ abstract class ChatCommandDelegate extends Script {
         message.reply(loadedTasks.size() + ' reloaded')
     }
 
+    void listen(int roomId) {
+        requireAdmin()
+        def listenTask = bean.listenStart(String.valueOf(roomId))
+        message.reply('Listening in room ' + roomId)
+    }
+
+    void stop() {
+        requireAdmin()
+        ListenTask task = bean.listenStop(message.room_id)
+        if (task) {
+            message.post('TTQW! (Stopped listening)')
+        } else {
+            message.reply('Did not find task in map. This is probably a bug.')
+        }
+    }
+
 }

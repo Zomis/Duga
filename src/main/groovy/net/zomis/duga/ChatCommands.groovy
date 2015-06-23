@@ -14,8 +14,6 @@ class ChatCommands {
         this.tasks = bean.tasks
         this.bot = bean.chatBot
         consumers << {ChatMessageIncoming event ->
-        }
-        consumers << {ChatMessageIncoming event ->
             if (event.content.contains('add stats')) {
                 DailyInfo.withNewSession { status ->
                     def info = new DailyInfo()

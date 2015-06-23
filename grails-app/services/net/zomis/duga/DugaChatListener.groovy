@@ -18,11 +18,33 @@ class DugaChatListener implements InitializingBean {
 
     private ChatCommands commands
 
+    private final Map<String, ListenTask> listenRooms = new HashMap<>()
+
     @Override
     void afterPropertiesSet() throws Exception {
         assert !commands
         commands = new ChatCommands(this)
-        scheduler.scheduleWithFixedDelay(new ListenTask(chatBot, '20298', commands, this), 3000)
+        listenStart('20298')
     }
 
+    ListenTask listenStart(String roomId) {
+        if (listenRooms.containsKey(roomId)) {
+            throw new IllegalStateException('Already listening in room ' + roomId)
+        }
+        ListenTask listenTask = new ListenTask(chatBot, roomId, commands, this)
+        def future = scheduler.scheduleWithFixedDelay(listenTask, 3000)
+        listenTask.future = future
+        listenRooms.put(roomId, listenTask)
+        return listenTask
+    }
+
+    ListenTask listenStop(long roomId) {
+        String roomKey = String.valueOf(roomId)
+        ListenTask task = listenRooms.get(roomKey)
+        if (task) {
+            task.future.cancel(true)
+            listenRooms.remove(roomKey)
+        }
+        return task
+    }
 }
