@@ -1,12 +1,8 @@
 package net.zomis.duga.tasks
 
-import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.User
 import net.zomis.duga.chat.WebhookParameters
-
-import java.util.concurrent.Callable
 
 /**
  * Delegate for running chat commands
@@ -31,6 +27,48 @@ abstract class ChatCommandDelegate extends Script {
     Closure ping = {
         allowAll()
         message.reply('pong!')
+    }
+
+    Closure webhooks = {
+        requireUser()
+        User user = message.fetchUser()
+
+        List<String> reposHooked = new ArrayList<>()
+        List<String> unhooked = new ArrayList<>()
+        def repos = user.github('user/repos')
+        for (def repo in repos) {
+            if (repo.owner.login == user.githubName) {
+                // make request for webhooks
+                def hooks = user.github('repos/' + repo.full_name + '/hooks')
+                boolean hooked = false
+                for (def hook in hooks) {
+                    def url = hook?.config?.url
+                    if (url?.contains('zomis')) {
+                        hooked = true
+                    }
+                }
+                if (hooked) {
+                    reposHooked.add(repo.full_name)
+                } else {
+                    unhooked.add(repo.full_name)
+                }
+            }
+        }
+        message.reply('Hooked repos: ' + reposHooked)
+        message.reply('Unhooked repos: ' + unhooked)
+    }
+
+    void addWebhook(String repo, int roomId) {
+        requireUser()
+        User user = message.fetchUser()
+        def request = [name: 'web', active: true, 'events': ['*'],
+            config: [
+                url: "http://stats.zomis.net/GithubHookSEChatService/hook?roomId=$roomId",
+                content_type: "json"
+            ]
+        ]
+        def repos = user.githubPost("repos/$user.githubName/$repo/hooks", request)
+        message.reply('Result: ' + repos)
     }
 
     void allowAll() {

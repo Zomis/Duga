@@ -14,68 +14,6 @@ class ChatCommands {
         this.tasks = bean.tasks
         this.bot = bean.chatBot
         consumers << {ChatMessageIncoming event ->
-            if (event.content.contains('ping')) {
-                event.reply('pong')
-            }
-        }
-        consumers << {ChatMessageIncoming event ->
-            if (event.content.contains('webhooks')) {
-                User.withNewSession { status ->
-                    User user = User.findByChatId(event.user_id)
-                    if (user) {
-                        List<String> reposHooked = new ArrayList<>()
-                        List<String> unhooked = new ArrayList<>()
-                        def repos = user.github('user/repos')
-                        for (def repo in repos) {
-                            if (repo.owner.login == user.githubName) {
-                                // make request for webhooks
-                                def hooks = user.github('repos/' + repo.full_name + '/hooks')
-                                boolean hooked = false
-                                for (def hook in hooks) {
-                                    def url = hook?.config?.url
-                                    if (url?.contains('zomis')) {
-                                        hooked = true
-                                    }
-                                }
-                                if (hooked) {
-                                    reposHooked.add(repo.full_name)
-                                } else {
-                                    unhooked.add(repo.full_name)
-                                }
-                            }
-                        }
-
-                        event.ping('Hooked repos: ' + reposHooked)
-                        event.ping('Unhooked repos: ' + unhooked)
-                    } else {
-                        event.reply('You are not a recognized user')
-                    }
-                }
-            }
-        }
-        consumers << {ChatMessageIncoming event ->
-            def command = 'add hook'
-            int index = event.content.indexOf(command)
-            if (index != -1) {
-                String str = event.content.substring(index + command.length() + 1)
-                User.withNewSession { status ->
-                    User user = User.findByChatId(event.user_id)
-                    if (user) {
-                        List<String> reposHooked = new ArrayList<>()
-                        List<String> unhooked = new ArrayList<>()
-                        def request = [name: 'web', active: true, 'events': ['*'],
-                            config: [
-                                url: "http://stats.zomis.net/GithubHookSEChatService/hook?roomId=$event.room_id",
-                                content_type: "json"
-                            ]
-                        ]
-                        def repos = user.githubPost("repos/$user.githubName/$str/hooks", request)
-                        event.ping('Result: ' + repos)
-                    } else {
-                        event.reply('You are not a recognized user')
-                    }
-                }
-            }
         }
         consumers << {ChatMessageIncoming event ->
             if (event.content.contains('add stats')) {
