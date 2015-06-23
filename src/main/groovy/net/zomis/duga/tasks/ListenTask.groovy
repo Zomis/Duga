@@ -53,7 +53,7 @@ class ListenTask implements Runnable {
             // the list of tokens the user can find
             // constants are defined in org.codehaus.groovy.syntax.Types
             tokensWhitelist = [
-                    ASSIGN,
+                    // ASSIGN,// Assignments is a security risk, as it allows `def abc = System; abc.exit(1);`
                     PLUS, MINUS, MULTIPLY, DIVIDE, MOD,
                     POWER, PLUS_PLUS, MINUS_MINUS, COMPARE_EQUAL,
                     COMPARE_NOT_EQUAL, COMPARE_LESS_THAN, COMPARE_LESS_THAN_EQUAL,
