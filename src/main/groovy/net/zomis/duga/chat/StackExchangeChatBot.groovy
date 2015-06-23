@@ -235,7 +235,9 @@ class StackExchangeChatBot {
 	private void postMessageToChat(final ChatMessage message) throws ChatThrottleException, ProbablyNotLoggedInException {
 		Objects.requireNonNull(message, "message");
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("text", message.getMessage());
+        String text = message.getMessage()
+        text = text.replaceAll('access_token=([0-9a-f]+)', 'access_token=xxxxxxxxxxxxxx')
+        parameters.put("text", text);
 		parameters.put("fkey", this.chatFKey);
         println 'Okay, here we go!'
         try {
