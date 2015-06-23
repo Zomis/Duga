@@ -10,6 +10,7 @@ import net.zomis.duga.chat.WebhookParameters
  */
 abstract class ChatCommandDelegate extends Script {
 
+    // DO NOT RENAME THESE FIELDS. Their names are denied through hardcoding
     private ChatMessageIncoming message
     private DugaChatListener bean
 

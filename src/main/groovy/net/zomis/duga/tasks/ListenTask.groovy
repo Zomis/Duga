@@ -11,6 +11,8 @@ import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBot
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.chat.WebhookParameters
+import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
@@ -89,6 +91,17 @@ class ListenTask implements Runnable {
                     BigDecimal
             ].asImmutable()
         }
+        scz.addExpressionCheckers(new SecureASTCustomizer.ExpressionChecker() {
+            @Override
+            boolean isAuthorized(Expression expression) {
+                if (expression instanceof VariableExpression) {
+                    VariableExpression expr = (VariableExpression) expression
+                    return expr.name != 'bean' && expr.name != 'message'
+                }
+                return true
+            }
+        })
+
         cc.addCompilationCustomizers(scz)
         def compileStaticCustomizer = new ASTTransformationCustomizer(Collections.singletonMap('extensions',
             Collections.singletonList('typecheck-extension.groovy')), CompileStatic.class)
