@@ -80,14 +80,6 @@ class ChatCommands {
                 message.reply('OK')
             }
         }
-        consumers << {ChatMessageIncoming message ->
-            def command = 'task reload'
-            int index = message.content.indexOf(command)
-            if (index != -1) {
-                def loadedTasks = tasks.reloadAll()
-                message.reply(loadedTasks.size() + ' reloaded')
-            }
-        }
         consumers << {ChatMessageIncoming event ->
             if (event.content.contains('create task')) {
                 TaskData.withNewSession { status ->

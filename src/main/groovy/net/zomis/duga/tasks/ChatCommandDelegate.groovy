@@ -142,4 +142,10 @@ abstract class ChatCommandDelegate extends Script {
         }
     }
 
+    void taskReload() {
+        requireAdmin()
+        def loadedTasks = bean.tasks.reloadAll()
+        message.reply(loadedTasks.size() + ' reloaded')
+    }
+
 }
