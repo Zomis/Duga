@@ -1,29 +1,36 @@
 GithubHookSEChatService
 =======================
 
-A Spring MVC web service implementation that posts Github post hook events to the StackExchange chat.
+[A bot named Duga](http://codereview.stackexchange.com/users/51786/duga) for chat rooms on the Stack Exchange network. Responsibilities include:
+
+- When used as a Github webhook, instantly informs a chatroom about the activity
+- Can make requests to Github's API every now and then to check for recent events, informs a chat room if there is activity
+- Uses the Stack Exchange API to check comments refering users to Code Review and Programmers. Posts these comments in The 2nd Monitor and The Whiteboard, respectively.
+- Listens for chat commands in Duga's Playground.
 
 Configuration
 -------------
 
-1. Create a githubhooksechatservice-environment.properties file in $CATALINA_HOME$/lib.
-2. Populate it with the following properties for example:
- - env.rootUrl = http://stackexchange.com
- - env.chatUrl = http://chat.stackexchange.com
- - env.botEmail = your@email.com
- - env.botPassword = yourpassword
- - env.roomId = 16134
- - env.chatThrottle = 10000 (the minimum time in milliseconds between each message)
- - env.chatMaxBurst = 2 (the maximum amount of message without being throttled)
- - env.chatMinimumDelay = 500 (the minimum delay in milliseconds between messages) 
- - env.deployGreetingEnabled = true (whether the bot will say something in the room when deployed)
- - env.deployGreetingText = Hello world!
- - env.undeployGoodbyeEnabled = true (whether the bot will say something in the room when undeployed)
- - env.undeployGoodbyeText = Bye world!
- - env.userMappings = githubusername1 -> sechatusername1, githubusername2 -> sechatusername2
-3. Add a post web hook to your Github project, and point the Payload URL to http://yourdomain.com/GithubHookSEChatService/hooks/github/payload
-4. Add a post web hook to your Travis CI project, you can read about it on http://docs.travis-ci.com/user/notifications/#Webhook-notification, and point it to http://yourdomain.com/GithubHookSEChatService/hooks/travis/payload
- - As the .travis.yml file is public, it would be best if you encrypt the url, this can be done by replacing the ```- yoururl``` with ```- secure: encryptedstring``` obtained via ```travis encrypt yoururl -r youruser/yourrepo``` with the Travis gem.
+In the directory `grails-app/conf`, create a file named `duga.groovy`
+
+    // Configurations for the bot's Stack Exchange account:
+    rootUrl = 'http://stackexchange.com'
+    email = 'your@email.com'
+    password = 'yourpassword'
+    
+    // API configuration
+    stackAPI = 'xxxxxxxxx'
+    githubAPI = 'xxxxxxxxx'
+
+    // Database configuration
+    adminDefaultPass = 'xxxxxxxxx' // default password for username 'admin'
+    
+    dataSource {
+        username = 'xxxxxxxxx'
+        password = 'xxxxxxxxx'
+    }
+
+Also see the bottom part of `grails-app/conf/application.groovy` for more database configuration options.
 
 Bot account setup
 -----------------
@@ -38,9 +45,3 @@ In order to run a StackExchange account as a bot, you need to follow the followi
 6. Earn 20 reputation, following the rules of the particular site.
 7. Log in to http://chat.stackexchange.com.
 8. Confirm that you can talk.
-
-Commands
---------
-
-- Test: The bot will say test in the appointed room if you call http://yourdomain.com/GithubHookSEChatService/bot/test
-- Say: The bot will say custom text in the appointed room if you call http://yourdomain.com/GithubHookSEChatService/bot/say/yourtest
