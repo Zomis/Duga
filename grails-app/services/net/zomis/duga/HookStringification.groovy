@@ -75,7 +75,7 @@ class HookStringification {
 
     void commit_comment(List<String> result, def json) {
         String path = json.comment.path
-        String commitId = json.comment_commit_id.substring(0, 8)
+        String commitId = json.comment.commit_id.substring(0, 8)
         String commitLink = "[$commitId]($json.repository.html_url/commit/$json.comment.commit_id)"
         if (path == null || path.isEmpty()) {
             result << format(json, "%repository% %sender% [commented]($json.comment.html_url) on commit $commitLink")
