@@ -53,7 +53,9 @@ class User {
     }
 
     def github(String apiPath) {
-        URL url = new URL("https://api.github.com/$apiPath?access_token=$apiKey")
+        char append = apiPath.contains('?') ? '&' : '?'
+        URL url = new URL("https://api.github.com/$apiPath${append}access_token=$apiKey")
+        println 'Github GET request: ' + url.toString()
         URLConnection conn = url.openConnection()
 //        String encoding = Base64.getEncoder().encodeToString("$githubName:$apiKey".getBytes());
 //        conn.setRequestProperty("Authorization", "Basic " + encoding);

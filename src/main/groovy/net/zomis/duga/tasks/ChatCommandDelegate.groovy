@@ -1,6 +1,7 @@
 package net.zomis.duga.tasks
 
 import net.zomis.duga.DugaChatListener
+import net.zomis.duga.HookStringification
 import net.zomis.duga.User
 import net.zomis.duga.chat.WebhookParameters
 
@@ -116,6 +117,33 @@ abstract class ChatCommandDelegate extends Script {
 
     DugaChatListener getBean() {
         bean
+    }
+
+    Map issue(String repo) {
+        requireUser()
+        [search: {String query ->
+            // https://api.github.com/search/issues?q=systems%20repo:Cardshifter/Cardshifter%20is:open
+            String q = query.replaceAll(' ', '+')
+            def issues = message.fetchUser().github("search/issues?q=repo:$repo+is:open+$q")
+            StringBuilder results = new StringBuilder(issues.total_count + ' results found. ' as String)
+            int count = 0
+            for (def json in issues.items) {
+                String next = HookStringification.issue(json)
+                if (results.length() + next.length() > 500) {
+                    message.reply(results.toString())
+                    results.setLength(0)
+                }
+                results.append(next)
+                results.append(' ')
+                if (++count >= 10) {
+                    break;
+                }
+            }
+            message.reply(results.toString())
+        }, id: {int id ->
+            def issue = message.fetchUser().github("repos/$repo/issues/$id")
+            message.reply(HookStringification.issue(issue))
+        }]
     }
 
     def register(String githubKey) {
