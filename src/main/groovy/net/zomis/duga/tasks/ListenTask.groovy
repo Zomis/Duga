@@ -187,7 +187,7 @@ class ListenTask implements Runnable {
     }
 
     boolean authorizedCommander(ChatMessageIncoming message) {
-        message.user_id == 98071
+        true
     }
 
     @Override
