@@ -41,47 +41,51 @@ public class CommentsScanTask implements Runnable {
     		return;
     	}
 
-    	try {
-    		def comments = stackAPI.fetchComments("stackoverflow", fromDate);
-    		int currentQuota = comments.quota_remaining
-    		if (currentQuota > remainingQuota && fromDate != 0) {
-				chatBot.postSingle(debug, Instant.now().toString() + " Quota has been reset. Was " + remainingQuota + " is now " + currentQuota);
-    		}
-    		remainingQuota = currentQuota;
-    		List items = comments.items;
-    		if (items) {
-    			if (items.size() >= 100) {
-    				chatBot.postSingle(debug, Instant.now().toString() + " Warning: Retrieved 100 comments. Might have missed some.");
-    			}
-    			
-    			long previousLastComment = lastComment;
-        		Collections.reverse(items);
-    			for (def comment in items) {
-                    scanComment(comment)
-    			}
+        scanComments('stackoverflow', {
+            checkCodeReview(it)
+            checkProgrammers(it)
+            checkSoftwareRecs(it)
+        })
+    }
+
+    void scanComments(String siteName, Closure<?> commentScanClosure) {
+        try {
+            def comments = stackAPI.fetchComments(siteName, fromDate);
+            int currentQuota = comments.quota_remaining
+            if (currentQuota > remainingQuota && fromDate != 0) {
+                chatBot.postSingle(debug, Instant.now().toString() + " Quota has been reset. Was " + remainingQuota + " is now " + currentQuota);
+            }
+            remainingQuota = currentQuota;
+            List items = comments.items;
+            if (items) {
+                if (items.size() >= 100) {
+                    chatBot.postSingle(debug, Instant.now().toString() + " Warning: Retrieved 100 comments. Might have missed some.");
+                }
+
+                long previousLastComment = lastComment;
+                Collections.reverse(items);
+                for (def comment in items) {
+                    if (comment.comment_id <= previousLastComment) {
+                        return;
+                    }
+                    lastComment = Math.max(comment.comment_id as long, lastComment);
+                    fromDate = Math.max(comment.creation_date as long, fromDate);
+                    commentScanClosure.call(comment)
+                }
                 items.clear();
             }
             if (comments.backoff) {
                 nextFetch = Instant.now().plusSeconds((int) comments.backoff + 10);
                 chatBot.postSingle(debug, Instant.now().toString() + " Next fetch: " + nextFetch + " because of backoff " + String.valueOf(comments.backoff));
             }
-    	} catch (Exception e) {
-    		logger.error("Error retrieving comments", e);
-    		chatBot.postSingle(debug, Instant.now().toString() + " Exception in comment task " + e);
-    	}
+        } catch (Exception e) {
+            logger.error("Error retrieving comments", e);
+            chatBot.postSingle(debug, Instant.now().toString() + " Exception in comment task " + e);
+        }
     }
 
-    void scanComment(Object comment) {
-        if (comment.comment_id <= previousLastComment) {
-            return;
-        }
-        lastComment = Math.max(comment.comment_id as long, lastComment);
-        fromDate = Math.max(comment.creation_date as long, fromDate);
-        if (isInterestingComment(comment)) {
-            chatBot.postSingle(params, comment.link as String);
-        }
+    void checkProgrammers(Object comment) {
         float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
-
         if (programmersCertainty >= CommentClassification.REAL) {
             chatBot.postSingle(programmers, comment.link as String);
         }
@@ -89,11 +93,20 @@ public class CommentsScanTask implements Runnable {
             chatBot.postSingle(debug, "Certainty level " + programmersCertainty);
             chatBot.postSingle(debug, comment.link as String);
         }
+    }
 
+    void checkSoftwareRecs(Object comment) {
         float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
 
         if (softwareCertainty >= CommentClassification.REAL) {
             chatBot.postSingle(softwareRecs, comment.link as String);
         }
     }
+
+    void checkCodeReview(Object comment) {
+        if (isInterestingComment(comment)) {
+            chatBot.postSingle(params, comment.link as String);
+        }
+    }
+
 }
