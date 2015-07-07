@@ -57,29 +57,7 @@ public class CommentsScanTask implements Runnable {
     			long previousLastComment = lastComment;
         		Collections.reverse(items);
     			for (def comment in items) {
-    				if (comment.comment_id <= previousLastComment) {
-    					continue;
-    				}
-    				lastComment = Math.max(comment.comment_id as long, lastComment);
-    				fromDate = Math.max(comment.creation_date as long, fromDate);
-    				if (isInterestingComment(comment)) {
-    					chatBot.postSingle(params, comment.link as String);
-    				}
-    				float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
-    				
-    				if (programmersCertainty >= CommentClassification.REAL) {
-    					chatBot.postSingle(programmers, comment.link as String);
-    				}
-    				if (programmersCertainty >= CommentClassification.DEBUG) {
-    					chatBot.postSingle(debug, "Certainty level " + programmersCertainty);
-    					chatBot.postSingle(debug, comment.link as String);
-    				}
-    				
-    				float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
-    				
-    				if (softwareCertainty >= CommentClassification.REAL) {
-    					chatBot.postSingle(softwareRecs, comment.link as String);
-    				}
+                    scanComment(comment)
     			}
                 items.clear();
             }
@@ -93,4 +71,29 @@ public class CommentsScanTask implements Runnable {
     	}
     }
 
+    void scanComment(Object comment) {
+        if (comment.comment_id <= previousLastComment) {
+            return;
+        }
+        lastComment = Math.max(comment.comment_id as long, lastComment);
+        fromDate = Math.max(comment.creation_date as long, fromDate);
+        if (isInterestingComment(comment)) {
+            chatBot.postSingle(params, comment.link as String);
+        }
+        float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
+
+        if (programmersCertainty >= CommentClassification.REAL) {
+            chatBot.postSingle(programmers, comment.link as String);
+        }
+        if (programmersCertainty >= CommentClassification.DEBUG) {
+            chatBot.postSingle(debug, "Certainty level " + programmersCertainty);
+            chatBot.postSingle(debug, comment.link as String);
+        }
+
+        float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
+
+        if (softwareCertainty >= CommentClassification.REAL) {
+            chatBot.postSingle(softwareRecs, comment.link as String);
+        }
+    }
 }
