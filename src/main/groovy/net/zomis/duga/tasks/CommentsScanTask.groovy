@@ -46,6 +46,20 @@ public class CommentsScanTask implements Runnable {
             checkProgrammers(it)
             checkSoftwareRecs(it)
         })
+        scanComments('codereview', {
+            checkProgrammers(it)
+            checkChatRoom(it, params)
+        })
+        scanComments('meta.codereview', {
+            checkChatRoom(it, params)
+        })
+    }
+
+    def checkChatRoom(Object comment, WebhookParameters webhookParameters) {
+        String roomId = webhookParameters.roomId
+        if (comment.body_markdown.contains('rooms/' + roomId)) {
+            chatBot.postSingle(webhookParameters, comment.link as String)
+        }
     }
 
     void scanComments(String siteName, Closure<?> commentScanClosure) {
