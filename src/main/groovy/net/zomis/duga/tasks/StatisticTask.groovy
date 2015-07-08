@@ -62,8 +62,6 @@ public class StatisticTask implements Runnable {
                         result.errors.each {
                             println it
                         }
-                    } else {
-                        chatBot.postSingle(debug, 'Saved ' + result.name)
                     }
                 }
             }
