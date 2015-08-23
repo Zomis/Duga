@@ -178,10 +178,11 @@ class HookStringification {
         if (event.branches.size() > 0) {
             branch = event.branches[0].name
         }
+        String build = event.target_url && !event.target_url.isEmpty() ? "[**build**]($event.target_url)" : 'build';
 
         branch = branch == null ? 'unknown branch' : "[**$branch**]($repoURL/tree/$branch)";
         String mess = "\\[[**$event.name**]($repoURL)\\] " +
-                "[**build**]($event.target_url) for commit " +
+                "$build for commit " +
                 "[**$commitId**]($repoURL/commit/$commitId) " +
                 "on $branch: $event.description"
         result << mess
