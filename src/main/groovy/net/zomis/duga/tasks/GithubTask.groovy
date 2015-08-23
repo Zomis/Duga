@@ -84,9 +84,9 @@ public class GithubTask implements Runnable {
                     .toLowerCase()
             event.payload.repository = event.repo
             event.payload.repository.full_name = event.repo.name
-            event.payload.repository.html_url = event.repo.url.replaceFirst('api.github.com', 'www.github.com')
+            event.payload.repository.html_url = event.repo.url.replaceFirst('api.github.com/repos', 'www.github.com')
             event.payload.sender = event.actor
-            event.payload.sender.html_url = event.actor.url.replaceFirst('api.github.com', 'www.github.com')
+            event.payload.sender.html_url = event.actor.url.replaceFirst('api.github.com/users', 'www.github.com')
             try {
                 stringify."$type"(list, event.payload)
                 bot.postChat(params, list);
