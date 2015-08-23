@@ -232,7 +232,8 @@ class HookStringification {
                     result << format(json, "%repository% %sender% created pull request $pr to merge $headStr into $baseStr")
                 } else {
                     format(json, "%repository% %sender% created pull request $pr to merge $headStr into $baseStr")
-                    list << json.pull_request.body
+                    String prBody = json.pull_request.body
+                    result << prBody
                 }
                 break;
             case "closed":
