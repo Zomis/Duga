@@ -174,15 +174,16 @@ class HookStringification {
         }
         String repoURL = "http://github.com/$event.name"
         String commitId = event.sha.substring(0, 8)
-        String branch = '???'
+        String branch = null
         if (event.branches.size() > 0) {
             branch = event.branches[0].name
         }
 
+        branch = branch == null ? 'unknown branch' : "[**$branch**]($repoURL/tree/$branch)";
         String mess = "\\[[**$event.name**]($repoURL)\\] " +
                 "[**build**]($event.target_url) for commit " +
                 "[**$commitId**]($repoURL/commit/$commitId) " +
-                "on [**$branch**]($repoURL/tree/$branch): $event.description"
+                "on $branch: $event.description"
         result << mess
         if (event.state != 'pending' && event.state != 'success') {
             result << '**BUILD FAILURE!**'
