@@ -4,9 +4,11 @@ import net.zomis.duga.ChatBot
 import net.zomis.duga.StackAPI
 import net.zomis.duga.chat.WebhookParameters
 
+import java.time.Instant
+
 class AnswerInvalidationCheck {
 
-    static void perform(def result, StackAPI stackExchangeAPI, ChatBot dugaBot, WebhookParameters params) {
+    static void perform(def result, Instant lastCheck, StackAPI stackExchangeAPI, ChatBot dugaBot, WebhookParameters params) {
         println 'Answer invalidation check'
         List questions = result.items
         questions.each {
@@ -14,7 +16,7 @@ class AnswerInvalidationCheck {
 //            def activity = it.creation_date
             def edited = it.last_edit_date
             def link = it.link
-            if (edited) {
+            if (edited >= lastCheck.epochSecond && it.answer_count > 0) {
                 println 'edited: ' + it.question_id
                 int id = it.question_id
                 def edits = stackExchangeAPI.apiCall(editCall(id), 'codereview', '!9YdnS7lAD')

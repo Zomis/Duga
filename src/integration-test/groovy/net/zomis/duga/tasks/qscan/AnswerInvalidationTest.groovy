@@ -7,6 +7,8 @@ import net.zomis.duga.chat.WebhookParameters
 import org.junit.Test
 import org.springframework.core.env.Environment
 
+import java.time.Instant
+
 class AnswerInvalidationTest {
     // https://grails.github.io/grails-doc/latest/guide/testing.html
 
@@ -30,6 +32,7 @@ class AnswerInvalidationTest {
         QuestionScanTask task = new QuestionScanTask(stackAPI, new GithubBean(),
                 new HookStringification(), bot,
                 'codereview', 'answerInvalidation', 'roomAnswerInvalidation')
+        task.lastCheck = Instant.ofEpochSecond(1428420748) // question was edited at 1428420749
         task.run()
         def messages = bot.messages.get(WebhookParameters.toRoom('roomAnswerInvalidation'))
 

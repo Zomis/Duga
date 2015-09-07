@@ -7,6 +7,8 @@ import net.zomis.duga.HookStringification
 import net.zomis.duga.StackAPI
 import net.zomis.duga.chat.WebhookParameters
 
+import java.time.Instant
+
 class QuestionScanTask implements Runnable {
 
     private static final FILTER = "!DEQ-Ts0KBm6n14zYUs8UZUsw.yj0rZkhsEKF2rI4kBp*yOHv4z4"
@@ -19,6 +21,7 @@ class QuestionScanTask implements Runnable {
     private final String site
     private final String actions
     private final WebhookParameters params
+    Instant lastCheck
 
     def QuestionScanTask(StackAPI stackExchangeAPI, GithubBean githubBean,
          HookStringification hookStringification, ChatBot dugaBot,
@@ -30,6 +33,7 @@ class QuestionScanTask implements Runnable {
         this.site = site
         this.actions = actions
         this.params = WebhookParameters.toRoom(room)
+        this.lastCheck = Instant.now()
     }
 
     @Override
@@ -37,7 +41,7 @@ class QuestionScanTask implements Runnable {
         def questions = stackAPI.apiCall(LATEST_QUESTIONS, site, FILTER)
 
         if (actions.contains('answerInvalidation')) {
-            AnswerInvalidationCheck.perform(questions, stackAPI, bot, params)
+            AnswerInvalidationCheck.perform(questions, lastCheck, stackAPI, bot, params)
         }
 
     }
