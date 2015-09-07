@@ -7,7 +7,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 
-class DugaBot implements InitializingBean {
+class DugaBot implements ChatBot, InitializingBean {
 
     @Autowired
     Environment environment
@@ -23,7 +23,8 @@ class DugaBot implements InitializingBean {
         this.postChat(params, [message])
     }
 
-    def postChat(WebhookParameters params, List<String> messages) {
+    @Override
+    void postChat(WebhookParameters params, List<String> messages) {
         messages.each {
             println "postChat $params: $it"
         }
