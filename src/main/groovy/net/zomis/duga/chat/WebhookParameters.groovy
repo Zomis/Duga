@@ -34,6 +34,25 @@ class WebhookParameters {
 		return params;
 	}
 
+    boolean equals(o) {
+        if (this.is(o)) return true
+        if (getClass() != o.class) return false
+
+        WebhookParameters that = (WebhookParameters) o
+
+        if (post != that.post) return false
+        if (roomId != that.roomId) return false
+
+        return true
+    }
+
+    int hashCode() {
+        int result
+        result = roomId.hashCode()
+        result = 31 * result + (post != null ? post.hashCode() : 0)
+        return result
+    }
+
     @Override
     String toString() {
         return 'Room ' + roomId
