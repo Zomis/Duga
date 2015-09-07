@@ -7,7 +7,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-class StackExchangeAPI {
+class StackExchangeAPI implements StackAPI {
 
 	@Autowired
 	private Environment config;
@@ -28,6 +28,7 @@ class StackExchangeAPI {
 					+ "&filter=" + filter + "&key=" + apiKey);
 	}
 
+    @Override
 	def apiCall(String apiCall, String site, String filter) throws IOException {
 		final String apiKey = config.getProperty('stackAPI');
 		URL url = buildURL(apiCall, site, filter, apiKey);
