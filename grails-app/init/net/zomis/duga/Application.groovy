@@ -2,14 +2,10 @@ package net.zomis.duga
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
-import org.springframework.beans.factory.config.PropertiesFactoryBean
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
 import org.springframework.context.EnvironmentAware
 import org.springframework.context.annotation.Bean
 import org.springframework.core.env.Environment
 import org.springframework.core.env.MapPropertySource
-import org.springframework.core.io.FileSystemResource
-import org.springframework.core.io.Resource
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 
