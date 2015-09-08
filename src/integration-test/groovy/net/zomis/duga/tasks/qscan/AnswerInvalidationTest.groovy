@@ -16,7 +16,7 @@ class AnswerInvalidationTest {
     Environment env
 
     @Test
-    public void test() {
+    public void testAnswersInvalidatedMultipleCodeBlocks() {
         def stackAPI = new StackMockAPI()
         def questions = new JsonSlurper().parseText('''
 {"items":[{"owner":{"reputation":38517,"user_id":31562,"user_type":"moderator","display_name":"Simon Forsberg","link":"http://codereview.stackexchange.com/users/31562/simon-forsberg"},"last_editor":{"reputation":38517,"user_id":31562,"user_type":"moderator","display_name":"Simon Forsberg","link":"http://codereview.stackexchange.com/users/31562/simon-forsberg"},"answer_count":1,"last_activity_date":1428425267,"creation_date":1428416878,"last_edit_date":1428420749,"question_id":86150,"link":"http://codereview.stackexchange.com/questions/86150/highest-pit-only-climbing-through-the-pit-once","body":"<p>For a problem description, see <a href=\\"http://codereview.stackexchange.com/questions/86139/highest-pit-algorithm/86142\\">other question</a>.</p>\\n\\n<p>Imagine I would write this code at an interview. What would you say?</p>\\n\\n<p>Time complexity: \\\\$O(n)\\\\$</p>\\n\\n<p>Space complexity: \\\\$O(n)\\\\$</p>\\n\\n<p>Auxiliary space complexity: \\\\$O(1)\\\\$</p>\\n\\n<pre><code>public class FindDeepestPit {\\n\\n    public static void main(String[] args) {\\n        int[] heights = { 0, 9, 6, -2, 7, 8, 0, -3, 2, 3 };\\n        int result = findDeepestPit(heights);\\n        System.out.println(result);\\n    }\\n\\n    private static int findDeepestPit(int[] heights) {\\n        int firstIndex = 0;\\n        int deepest = -1;\\n        int depth = 0;\\n        boolean climbingUp = false;\\n\\n        /*\\n        * mark current position as highest (firstIndex)\\n        * - go to next as long as we're going down\\n        * - when we're not going down anymore, switch to mark us going up\\n        * - go up until we can't go up anymore, then save the current depth of the pit, and mark the current position as highest\\n        * */\\n\\n        for (int i = 0; i &lt; heights.length - 1; i++) {\\n            int currentHeight = heights[i];\\n            int nextHeight = heights[i + 1];\\n            // find higher point\\n            if (!climbingUp) { // climbing down\\n                if (currentHeight &lt; nextHeight) {\\n                    // we can't go further down here\\n                    climbingUp = true;\\n                    deepest = i;\\n                }\\n            } else { // climbing up\\n                if (currentHeight &gt; nextHeight) {\\n                    // we can't get further up here.\\n                    int lastIndex = i;\\n                    int depthA = heights[firstIndex] - heights[deepest];\\n                    int depthB = heights[lastIndex] - heights[deepest];\\n                    int currDepth = Math.min(depthA, depthB);\\n                    depth = Math.max(depth, currDepth);\\n                    firstIndex = i;\\n                    climbingUp = false;\\n                }\\n            }\\n        }\\n\\n        int depthA = heights[firstIndex] - heights[deepest];\\n        int depthB = heights[heights.length - 1] - heights[deepest];\\n        int currDepth = Math.min(depthA, depthB);\\n        depth = Math.max(depth, currDepth);\\n\\n        return depth;\\n    }\\n}\\n</code></pre>\\n\\n<p>Primary concerns:</p>\\n\\n<ul>\\n<li>Is the approach clear?</li>\\n<li>Are there any edge cases I did not think about?</li>\\n<li>At an interview, would adding unit tests for this method be a good idea?</li>\\n</ul>\\n"}],"has_more":false,"quota_max":10000,"quota_remaining":8671}
@@ -228,6 +228,101 @@ class AnswerInvalidationTest {
         println bot.messages
 
         assert messages == ['*possible answer invalidation:* http://codereview.stackexchange.com/questions/86150/highest-pit-only-climbing-through-the-pit-once'] : bot.messages
+    }
+
+    @Test
+    public void testNoCodeChange() {
+        def edits = new JsonSlurper().parseText('''
+{
+  "items": [
+    {
+      "user": {
+        "reputation": 25565,
+        "user_id": 22222,
+        "user_type": "moderator",
+        "profile_image": "https://i.stack.imgur.com/LI1za.jpg?s=128&g=1",
+        "display_name": "Jamal",
+        "link": "http://codereview.stackexchange.com/users/22222/jamal"
+      },
+      "set_community_wiki": false,
+      "is_rollback": false,
+      "creation_date": 1441751307,
+      "post_id": 104074,
+      "post_type": "question",
+      "revision_type": "single_user",
+      "revision_number": 3,
+      "title": "Eulerian Tour in Python",
+      "body": "<p>This is a recursive algorithm implementation of Eulerian tour search.</p>\\n\\n<p>I guess there is no way to make it more efficient (except rewriting with loops instead of recursion). Any advice on style?</p>\\n\\n<pre><code>def sub(visited, _cur, graph):\\n    if not graph:\\n        return visited + [_cur]\\n    for i, edge in enumerate(graph):\\n        cur, nex = edge\\n        if _cur not in edge:\\n            continue\\n        _graph = graph[:]\\n        del _graph[i]\\n        if _cur == cur:\\n            res = sub(visited + [cur], nex, _graph)\\n        else:\\n            res = sub(visited + [nex], cur, _graph)\\n        if res:\\n            return res\\n\\n\\ndef find_eulerian_tour(graph):\\n    head, tail = graph[0], graph[1:]\\n    prev, nex = head\\n    return sub([prev], nex, tail)\\n\\nassert find_eulerian_tour([(1, 2), (2, 3), (3, 4), (4, 1)]) == [1, 2, 3, 4, 1]\\nassert find_eulerian_tour([\\n    (0, 1), (1, 5), (1, 7), (4, 5),\\n    (4, 8), (1, 6), (3, 7), (5, 9),\\n    (2, 4), (0, 4), (2, 5), (3, 6),\\n    (8, 9)\\n]) == [0, 1, 7, 3, 6, 1, 5, 4, 8, 9, 5, 2, 4, 0]\\n</code></pre>\\n",
+      "last_title": "Eulerian Tour in python",
+      "last_body": "<p>A recursive algorithm implementation of Eulerian tour search </p>\\n\\n<pre><code>def sub(visited, _cur, graph):\\n    if not graph:\\n        return visited + [_cur]\\n    for i, edge in enumerate(graph):\\n        cur, nex = edge\\n        if _cur not in edge:\\n            continue\\n        _graph = graph[:]\\n        del _graph[i]\\n        if _cur == cur:\\n            res = sub(visited + [cur], nex, _graph)\\n        else:\\n            res = sub(visited + [nex], cur, _graph)\\n        if res:\\n            return res\\n\\n\\ndef find_eulerian_tour(graph):\\n    head, tail = graph[0], graph[1:]\\n    prev, nex = head\\n    return sub([prev], nex, tail)\\n\\nassert find_eulerian_tour([(1, 2), (2, 3), (3, 4), (4, 1)]) == [1, 2, 3, 4, 1]\\nassert find_eulerian_tour([\\n    (0, 1), (1, 5), (1, 7), (4, 5),\\n    (4, 8), (1, 6), (3, 7), (5, 9),\\n    (2, 4), (0, 4), (2, 5), (3, 6),\\n    (8, 9)\\n]) == [0, 1, 7, 3, 6, 1, 5, 4, 8, 9, 5, 2, 4, 0]\\n</code></pre>\\n\\n<p>I guess there is no way to make it more efficient(except rewrite with loops instead of recursion). Any advice about style?</p>\\n",
+      "comment": "added 4 characters in body; edited title",
+      "revision_guid": "BF1DB730-67C9-45D1-A34E-A86C4CEB64A0"
+    },
+    {
+      "user": {
+        "reputation": 243,
+        "user_id": 46070,
+        "user_type": "registered",
+        "profile_image": "https://i.stack.imgur.com/KBU1u.jpg?s=128&g=1",
+        "display_name": "kharandziuk",
+        "link": "http://codereview.stackexchange.com/users/46070/kharandziuk"
+      },
+      "set_community_wiki": false,
+      "is_rollback": false,
+      "creation_date": 1441696908,
+      "post_id": 104074,
+      "post_type": "question",
+      "revision_type": "single_user",
+      "revision_number": 2,
+      "body": "<p>A recursive algorithm implementation of Eulerian tour search </p>\\n\\n<pre><code>def sub(visited, _cur, graph):\\n    if not graph:\\n        return visited + [_cur]\\n    for i, edge in enumerate(graph):\\n        cur, nex = edge\\n        if _cur not in edge:\\n            continue\\n        _graph = graph[:]\\n        del _graph[i]\\n        if _cur == cur:\\n            res = sub(visited + [cur], nex, _graph)\\n        else:\\n            res = sub(visited + [nex], cur, _graph)\\n        if res:\\n            return res\\n\\n\\ndef find_eulerian_tour(graph):\\n    head, tail = graph[0], graph[1:]\\n    prev, nex = head\\n    return sub([prev], nex, tail)\\n\\nassert find_eulerian_tour([(1, 2), (2, 3), (3, 4), (4, 1)]) == [1, 2, 3, 4, 1]\\nassert find_eulerian_tour([\\n    (0, 1), (1, 5), (1, 7), (4, 5),\\n    (4, 8), (1, 6), (3, 7), (5, 9),\\n    (2, 4), (0, 4), (2, 5), (3, 6),\\n    (8, 9)\\n]) == [0, 1, 7, 3, 6, 1, 5, 4, 8, 9, 5, 2, 4, 0]\\n</code></pre>\\n\\n<p>I guess there is no way to make it more efficient(except rewrite with loops instead of recursion). Any advice about style?</p>\\n",
+      "last_body": "<p>A recursive algorithm implementation of Eulerian tour search </p>\\n\\n<pre><code>def sub(visited, _cur, graph):\\n    if not graph:\\n        return visited + [_cur]\\n    for i, edge in enumerate(graph):\\n        cur, nex = edge\\n        if _cur not in edge:\\n            continue\\n        _graph = graph[:]\\n        del _graph[i]\\n        if _cur == cur:\\n            res = sub(visited + [cur], nex, _graph)\\n        else:\\n            res = sub(visited + [nex], cur, _graph)\\n        if res:\\n            return res\\n\\n\\ndef find_eulerian_tour(graph):\\n    head, tail = graph[0], graph[1:]\\n    prev, nex = head\\n    return sub([prev], nex, tail)\\n\\nassert find_eulerian_tour([(1, 2), (2, 3), (3, 4), (4, 1)]) == [1, 2, 3, 4, 1]\\nassert find_eulerian_tour([\\n    (0, 1), (1, 5), (1, 7), (4, 5),\\n    (4, 8), (1, 6), (3, 7), (5, 9),\\n    (2, 4), (0, 4), (2, 5), (3, 6),\\n    (8, 9)\\n]) == [0, 1, 7, 3, 6, 1, 5, 4, 8, 9, 5, 2, 4, 0]\\n</code></pre>\\n",
+      "comment": "added 130 characters in body",
+      "revision_guid": "A5C45E47-2A5F-46C8-AA03-B1D0A742D2FC"
+    },
+    {
+      "user": {
+        "reputation": 243,
+        "user_id": 46070,
+        "user_type": "registered",
+        "profile_image": "https://i.stack.imgur.com/KBU1u.jpg?s=128&g=1",
+        "display_name": "kharandziuk",
+        "link": "http://codereview.stackexchange.com/users/46070/kharandziuk"
+      },
+      "tags": [
+        "python",
+        "graph"
+      ],
+      "set_community_wiki": false,
+      "is_rollback": false,
+      "creation_date": 1441655382,
+      "post_id": 104074,
+      "post_type": "question",
+      "revision_type": "single_user",
+      "revision_number": 1,
+      "title": "Eulerian Tour in python",
+      "body": "<p>A recursive algorithm implementation of Eulerian tour search </p>\\n\\n<pre><code>def sub(visited, _cur, graph):\\n    if not graph:\\n        return visited + [_cur]\\n    for i, edge in enumerate(graph):\\n        cur, nex = edge\\n        if _cur not in edge:\\n            continue\\n        _graph = graph[:]\\n        del _graph[i]\\n        if _cur == cur:\\n            res = sub(visited + [cur], nex, _graph)\\n        else:\\n            res = sub(visited + [nex], cur, _graph)\\n        if res:\\n            return res\\n\\n\\ndef find_eulerian_tour(graph):\\n    head, tail = graph[0], graph[1:]\\n    prev, nex = head\\n    return sub([prev], nex, tail)\\n\\nassert find_eulerian_tour([(1, 2), (2, 3), (3, 4), (4, 1)]) == [1, 2, 3, 4, 1]\\nassert find_eulerian_tour([\\n    (0, 1), (1, 5), (1, 7), (4, 5),\\n    (4, 8), (1, 6), (3, 7), (5, 9),\\n    (2, 4), (0, 4), (2, 5), (3, 6),\\n    (8, 9)\\n]) == [0, 1, 7, 3, 6, 1, 5, 4, 8, 9, 5, 2, 4, 0]\\n</code></pre>\\n",
+      "revision_guid": "14C6A617-8E18-44E8-800C-F1D158A4C5C5"
+    }
+  ],
+  "has_more": false,
+  "quota_max": 10000,
+  "quota_remaining": 8686
+}''')
+
+        String b = edits.items[0].last_body
+        String a = edits.items[0].body
+
+        a = AnswerInvalidationCheck.stripNonCode(a)
+        b = AnswerInvalidationCheck.stripNonCode(b)
+
+        println a
+        println '---------------'
+        println b
+
+        assert a == b
+
+        boolean changed = AnswerInvalidationCheck.codeChanged(edits, Instant.ofEpochSecond(1441751300))
+        assert !changed
     }
 
 }

@@ -64,7 +64,7 @@ class AnswerInvalidationCheck {
             keepCount += code.length()
             index = post.indexOf('<code>')
         }
-        return post
+        return post.substring(0, keepCount)
     }
 
 }
