@@ -101,6 +101,14 @@ class HookStringification {
         result << format(json, "%repository% %sender% created $json.ref_type [**$json.ref**]($refUrl)")
     }
 
+    void release(List<String> result, def json) {
+        boolean prerelease = json.release.prerelease
+        String release = prerelease ? 'prerelease' : 'release'
+        release = (json.release.draft ? 'draft ' : '') + release
+        String refUrl = json.release.html_url
+        result << format(json, "%repository% %sender% $json.action $release [**$json.release.tag_name**]($refUrl)")
+    }
+
     void delete(List<String> result, def json) {
         result << format(json, "%repository% %sender% deleted $json.ref_type **$json.ref**")
     }
