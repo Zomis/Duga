@@ -30,12 +30,18 @@ class StackExchangeAPI implements StackAPI {
 
     @Override
 	def apiCall(String apiCall, String site, String filter) throws IOException {
-		final String apiKey = config.getProperty('stackAPI');
-		URL url = buildURL(apiCall, site, filter, apiKey);
-        URLConnection connection = url.openConnection();
-        connection.setRequestProperty("Accept-Encoding", "identity");
-        def stream = new GZIPInputStream(connection.getInputStream())
-        return new JsonSlurper().parse(stream)
+        final String apiKey = config.getProperty('stackAPI');
+        try {
+            URL url = buildURL(apiCall, site, filter, apiKey);
+            URLConnection connection = url.openConnection();
+            connection.setRequestProperty("Accept-Encoding", "identity");
+            def stream = new GZIPInputStream(connection.getInputStream())
+            return new JsonSlurper().parse(stream)
+        } catch (IOException ex) {
+            IOException copy = new IOException(ex.getMessage().replaceAll(apiKey, 'xxxxxxxxxxxxxxxx'), ex.getCause())
+            copy.setStackTrace(ex.getStackTrace())
+            throw copy
+        }
 	}
 	
 }
