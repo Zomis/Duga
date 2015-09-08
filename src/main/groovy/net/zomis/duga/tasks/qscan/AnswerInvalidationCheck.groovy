@@ -26,6 +26,9 @@ class AnswerInvalidationCheck {
                     if (!it.last_body) {
                         return;
                     }
+                    if (it.creation_date < lastCheck.epochSecond) {
+                        return;
+                    }
                     String code = stripNonCode(it.body)
                     String codeBefore = stripNonCode(it.last_body)
                     if (!code.equals(codeBefore)) {
