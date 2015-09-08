@@ -1,6 +1,5 @@
 package net.zomis.duga.tasks.qscan
 
-import groovy.json.JsonSlurper
 import net.zomis.duga.ChatBot
 import net.zomis.duga.GithubBean
 import net.zomis.duga.HookStringification
