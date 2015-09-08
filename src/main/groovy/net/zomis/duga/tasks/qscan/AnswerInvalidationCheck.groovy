@@ -21,26 +21,30 @@ class AnswerInvalidationCheck {
                 int id = it.question_id
                 def edits = stackExchangeAPI.apiCall(editCall(id), 'codereview', '!9YdnS7lAD')
                 dugaBot.postDebug("Edits fetched for $id: ${edits.items.size()}. quota remaining $edits.quota_remaining")
-
-                boolean answerInvalidation = false
-                edits.items.each {
-                    if (!it.last_body) {
-                        return;
-                    }
-                    if (it.creation_date < lastCheck.epochSecond) {
-                        return;
-                    }
-                    String code = stripNonCode(it.body)
-                    String codeBefore = stripNonCode(it.last_body)
-                    if (!code.equals(codeBefore)) {
-                        answerInvalidation = true
-                    }
-                }
+                def answerInvalidation = codeChanged(edits, lastCheck)
                 if (answerInvalidation) {
                     dugaBot.postChat(params, ['*possible answer invalidation:* ' + link])
                 }
             }
         }
+    }
+
+    static boolean codeChanged(def edits, Instant lastCheck) {
+        boolean answerInvalidation = false
+        edits.items.each {
+            if (!it.last_body) {
+                return;
+            }
+            if (it.creation_date < lastCheck.epochSecond) {
+                return;
+            }
+            String code = stripNonCode(it.body)
+            String codeBefore = stripNonCode(it.last_body)
+            if (!code.equals(codeBefore)) {
+                answerInvalidation = true
+            }
+        }
+        return answerInvalidation
     }
 
     static String editCall(int id) {
