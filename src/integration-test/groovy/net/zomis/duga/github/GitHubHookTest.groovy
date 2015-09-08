@@ -8,7 +8,7 @@ import net.zomis.duga.tasks.qscan.TestBot
 import org.junit.Test
 
 class GitHubHookTest {
-
+    // https://github.com/Zomis/Duga/issues/102
     static final String REQUEST = '''
 {
     "action": "published",

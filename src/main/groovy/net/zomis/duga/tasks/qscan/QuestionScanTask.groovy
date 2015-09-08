@@ -43,7 +43,7 @@ class QuestionScanTask implements Runnable {
         if (actions.contains('answerInvalidation')) {
             AnswerInvalidationCheck.perform(questions, lastCheck, stackAPI, bot, params)
         }
-
+        this.lastCheck = Instant.now()
     }
 
 }
