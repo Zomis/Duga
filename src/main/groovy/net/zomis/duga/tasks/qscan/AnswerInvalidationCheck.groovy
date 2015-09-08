@@ -20,6 +20,7 @@ class AnswerInvalidationCheck {
                 println 'edited: ' + it.question_id
                 int id = it.question_id
                 def edits = stackExchangeAPI.apiCall(editCall(id), 'codereview', '!9YdnS7lAD')
+                dugaBot.postDebug("Edits fetched for $id: ${edits.items.size()}. quota remaining $edits.quota_remaining")
 
                 edits.items.each {
                     if (!it.last_body) {
@@ -28,7 +29,7 @@ class AnswerInvalidationCheck {
                     String code = stripNonCode(it.body)
                     String codeBefore = stripNonCode(it.last_body)
                     if (!code.equals(codeBefore)) {
-                        dugaBot.postChat(params, ['possible answer invalidation: ' + link])
+                        dugaBot.postChat(params, ['*possible answer invalidation:* ' + link])
                     }
                 }
             }

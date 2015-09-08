@@ -15,7 +15,8 @@ class DugaBot implements ChatBot, InitializingBean {
     static final WebhookParameters DEBUG_ROOM = WebhookParameters.toRoom('20298')
     private StackExchangeChatBot bot
 
-    def postDebug(String message) {
+    @Override
+    void postDebug(String message) {
         this.postChat(DEBUG_ROOM, [message])
     }
 

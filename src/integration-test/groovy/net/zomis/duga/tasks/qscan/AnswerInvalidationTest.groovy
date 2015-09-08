@@ -35,8 +35,9 @@ class AnswerInvalidationTest {
         task.lastCheck = Instant.ofEpochSecond(1428420748) // question was edited at 1428420749
         task.run()
         def messages = bot.messages.get(WebhookParameters.toRoom('roomAnswerInvalidation'))
+        println bot.messages
 
-        assert messages == ['possible answer invalidation: http://codereview.stackexchange.com/questions/86150/highest-pit-only-climbing-through-the-pit-once'] : bot.messages
+        assert messages == ['*possible answer invalidation:* http://codereview.stackexchange.com/questions/86150/highest-pit-only-climbing-through-the-pit-once'] : bot.messages
     }
 
 }
