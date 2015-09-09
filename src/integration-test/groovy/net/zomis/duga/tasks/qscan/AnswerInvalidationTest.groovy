@@ -227,6 +227,8 @@ class AnswerInvalidationTest {
         def messages = bot.messages.get(WebhookParameters.toRoom('roomAnswerInvalidation'))
         println bot.messages
 
+        assert AnswerInvalidationCheck.codeChanged(edits, Instant.ofEpochSecond(1428420748))
+
         assert messages == ['*possible answer invalidation:* http://codereview.stackexchange.com/questions/86150/highest-pit-only-climbing-through-the-pit-once'] : bot.messages
     }
 
@@ -512,6 +514,15 @@ class AnswerInvalidationTest {
         boolean changed = AnswerInvalidationCheck.codeChanged(edits, Instant.ofEpochSecond(1428420748))
         println 'changed ' + changed
         assert !changed
+    }
+
+
+    @Test
+    public void testCodeBackticksChanged() {
+        String a = '''<code>0\\na\\nb\\nc\\nd</code>'''
+        String b = '''<code>0\\na\\nb\\nc\\nd</code> some text <code>backtick</code>'''
+
+        assert AnswerInvalidationCheck.stripNonCode(a) == AnswerInvalidationCheck.stripNonCode(b)
     }
 
 }

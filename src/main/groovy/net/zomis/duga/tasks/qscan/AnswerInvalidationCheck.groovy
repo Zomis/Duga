@@ -63,8 +63,12 @@ class AnswerInvalidationCheck {
             String before = post.substring(0, keepCount)
             String code = post.substring(index + '<code>'.length(), endIndex)
             String after = post.substring(endIndex + '</code>'.length())
-            post = before + code + after
-            keepCount += code.length()
+            if (code.contains('\\n') || code.contains('\n')) {
+                post = before + code + after
+                keepCount += code.length()
+            } else {
+                post = before + after
+            }
             index = post.indexOf('<code>')
         }
         return post.substring(0, keepCount)
