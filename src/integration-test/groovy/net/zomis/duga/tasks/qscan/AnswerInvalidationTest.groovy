@@ -516,6 +516,13 @@ class AnswerInvalidationTest {
         assert !changed
     }
 
+    @Test
+    public void testIndentationChange() {
+        String a = '''<code>0\\na\\nb\\nc\\nd</code>'''
+        String b = '''<code>0\\n    a\\n    b\\n    c\\nd</code>'''
+
+        assert AnswerInvalidationCheck.stripNonCode(a) == AnswerInvalidationCheck.stripNonCode(b)
+    }
 
     @Test
     public void testCodeBackticksChanged() {

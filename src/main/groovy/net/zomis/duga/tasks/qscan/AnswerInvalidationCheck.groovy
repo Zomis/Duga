@@ -55,6 +55,7 @@ class AnswerInvalidationCheck {
     }
 
     static String stripNonCode(String post) {
+        post = post.replaceAll('[\\t ]', '')
         int keepCount = 0
         int index = post.indexOf('<code>')
         while (index >= 0) {
