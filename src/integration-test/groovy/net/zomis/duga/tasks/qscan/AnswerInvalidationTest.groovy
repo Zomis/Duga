@@ -229,7 +229,7 @@ class AnswerInvalidationTest {
 
         assert AnswerInvalidationCheck.codeChanged(edits, Instant.ofEpochSecond(1428420748))
 
-        assert messages == ['*possible answer invalidation:* http://codereview.stackexchange.com/questions/86150/highest-pit-only-climbing-through-the-pit-once'] : bot.messages
+        assert messages == ['*possible answer invalidation by Jamal on question by Simon Forsberg:* http://codereview.stackexchange.com/posts/86150/revisions'] : bot.messages
     }
 
     @Test

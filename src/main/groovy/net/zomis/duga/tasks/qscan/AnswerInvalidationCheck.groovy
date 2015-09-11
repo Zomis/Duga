@@ -5,6 +5,7 @@ import net.zomis.duga.StackAPI
 import net.zomis.duga.chat.WebhookParameters
 
 import java.time.Instant
+import java.util.stream.Collectors
 
 class AnswerInvalidationCheck {
 
@@ -15,22 +16,32 @@ class AnswerInvalidationCheck {
 //            def created = it.creation_date
 //            def activity = it.creation_date
             def edited = it.last_edit_date
-            def link = it.link
+            String questionLink = it.link
+            String op = it.owner.display_name
+            int questionId = it.question_id
             if (edited >= lastCheck.epochSecond && it.answer_count > 0) {
                 println 'edited: ' + it.question_id
                 int id = it.question_id
                 def edits = stackExchangeAPI.apiCall(editCall(id), 'codereview', '!9YdnS7lAD')
                 dugaBot.postDebug("Edits fetched for $id: ${edits.items.size()}. quota remaining $edits.quota_remaining")
-                def answerInvalidation = codeChanged(edits, lastCheck)
-                if (answerInvalidation) {
-                    dugaBot.postChat(params, ['*possible answer invalidation:* ' + link])
+                def possibleInvalidations = codeChanges(edits, lastCheck)
+                if (!possibleInvalidations.isEmpty()) {
+                    String link = questionLink.replaceAll('/questions/.*', "/posts/$questionId/revisions")
+                    String editor = possibleInvalidations.stream()
+                        .map({it.user.display_name})
+                        .collect(Collectors.joining(', '))
+                    dugaBot.postChat(params, ["*possible answer invalidation by $editor on question by $op:* $link"])
                 }
             }
         }
     }
 
     static boolean codeChanged(def edits, Instant lastCheck) {
-        boolean answerInvalidation = false
+        return codeChanges(edits, lastCheck).size() > 0
+    }
+
+    static List<Object> codeChanges(def edits, Instant lastCheck) {
+        List<Object> result = []
         edits.items.each {
             if (!it.last_body) {
                 return;
@@ -44,10 +55,10 @@ class AnswerInvalidationCheck {
             String code = stripNonCode(it.body)
             String codeBefore = stripNonCode(it.last_body)
             if (!code.equals(codeBefore)) {
-                answerInvalidation = true
+                result.add(it)
             }
         }
-        return answerInvalidation
+        return result
     }
 
     static String editCall(int id) {
