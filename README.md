@@ -67,3 +67,10 @@ but actually everything worked fine.
 
 If you still experience problems, this page might help:
 https://github.com/libgdx/libgdx/wiki/Gradle-and-Intellij-IDEA
+
+Build and run tests
+-------------------
+
+To build the project and run all tests:
+
+    ./gradlew build
