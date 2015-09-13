@@ -46,3 +46,24 @@ In order to run a StackExchange account as a bot, you need to follow the followi
 6. Earn 20 reputation, following the rules of the particular site.
 7. Log in to http://chat.stackexchange.com.
 8. Confirm that you can talk.
+
+Import project into IntelliJ
+----------------------------
+
+On Mac OS X, you might get this error when trying to import the project from `build.gradle`:
+
+> Unsupported major.minor version 51.0
+> asset/pipeline/gradle/AssetPipelinePlugin : invalid plugin
+
+A workaround is to have Gradle generate IntelliJ's files:
+
+    ./gradlew idea
+
+Select **File / Open...**, and select the directory of the project.
+
+IntelliJ might still pop-up a window to import as a Gradle project,
+which may result in the same error. I had no choice to cancel that import,
+but actually everything worked fine.
+
+If you still experience problems, this page might help:
+https://github.com/libgdx/libgdx/wiki/Gradle-and-Intellij-IDEA
