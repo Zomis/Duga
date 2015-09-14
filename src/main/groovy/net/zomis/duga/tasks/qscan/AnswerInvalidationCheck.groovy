@@ -6,6 +6,7 @@ import net.zomis.duga.chat.WebhookParameters
 
 import java.time.Instant
 import java.util.stream.Collectors
+import static org.apache.commons.lang.StringEscapeUtils.unescapeHtml
 
 class AnswerInvalidationCheck {
 
@@ -28,12 +29,16 @@ class AnswerInvalidationCheck {
                 if (!possibleInvalidations.isEmpty()) {
                     String link = questionLink.replaceAll('/questions/.*', "/posts/$questionId/revisions")
                     String editor = possibleInvalidations.stream()
-                        .map({it.user.display_name})
+                        .map({formatDisplayName(it.user.display_name)})
                         .collect(Collectors.joining(', '))
                     dugaBot.postChat(params, ["*possible answer invalidation by $editor on question by $op:* $link"])
                 }
             }
         }
+    }
+
+    static String formatDisplayName(String displayName) {
+        return unescapeHtml(displayName)
     }
 
     static boolean codeChanged(def edits, Instant lastCheck) {
