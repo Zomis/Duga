@@ -37,12 +37,13 @@ class QuestionScanTask implements Runnable {
 
     @Override
     void run() {
+        Instant previousCheck = this.lastCheck
+        this.lastCheck = Instant.now()
         def questions = stackAPI.apiCall(LATEST_QUESTIONS, site, FILTER)
 
         if (actions.contains('answerInvalidation')) {
-            AnswerInvalidationCheck.perform(questions, lastCheck, stackAPI, bot, params)
+            AnswerInvalidationCheck.perform(questions, previousCheck, stackAPI, bot, params)
         }
-        this.lastCheck = Instant.now()
     }
 
 }
