@@ -6,9 +6,28 @@ import net.zomis.duga.HookStringification
 import net.zomis.duga.chat.WebhookParameters
 import net.zomis.duga.tasks.qscan.TestBot
 import org.junit.Before
-import org.junit.Test;
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 class GithubWebhookTest {
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        List<Object[]> data = []
+        data << ['pull_request', 'payload-pr-opened',
+            ['**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)\\]** ' +
+             '[**SirPython**](https://github.com/SirPython) created pull request ' +
+             '[**#98: Develop**](https://github.com/Cardshifter/HTML-Client/pull/98) to merge ' +
+             '[**develop**](https://github.com/Cardshifter/HTML-Client/tree/develop) into ' +
+             '[**deploy-script**](https://github.com/Cardshifter/HTML-Client/tree/deploy-script)',
+             '> updating deploy-script']]
+        return data;
+    }
+
+    @Parameterized.Parameter(0)
+    public List data
 
     private HookStringification stringer
 
@@ -24,19 +43,18 @@ class GithubWebhookTest {
 
     @Test
     void pullRequestOpen() {
-        def obj = new JsonSlurper().parseText(getClass().classLoader.getResourceAsStream('payload-pr-opened.json').text)
-        def result = stringer.postGithub('pull_request', obj)
+        assert data.size() == 3
+        String type = data.get(0)
+        String file = data.get(1) + '.json'
+        List<String> messages = data.get(2) as List<String>
+        def stream = getClass().classLoader.getResourceAsStream(file)
+        assert stream : "No stream found for '$file'"
+        def obj = new JsonSlurper().parseText(stream.text)
+        def result = stringer.postGithub(type, obj)
         def bot = new TestBot()
         def param = WebhookParameters.toRoom('hookTest')
         bot.postChat(param, result)
-
-        assert bot.messages[param] ==
-               ['**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)\\]** ' +
-                '[**SirPython**](https://github.com/SirPython) created pull request ' +
-                '[**#98: Develop**](https://github.com/Cardshifter/HTML-Client/pull/98) to merge ' +
-                '[**develop**](https://github.com/Cardshifter/HTML-Client/tree/develop) into ' +
-                '[**deploy-script**](https://github.com/Cardshifter/HTML-Client/tree/deploy-script)',
-           '> updating deploy-script']
+        assert bot.messages[param] == messages
     }
 
 }
