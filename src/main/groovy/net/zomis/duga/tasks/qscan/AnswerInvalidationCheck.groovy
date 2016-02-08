@@ -18,7 +18,7 @@ class AnswerInvalidationCheck {
 //            def activity = it.creation_date
             def edited = it.last_edit_date
             String questionLink = it.link
-            String op = it.owner.display_name
+            String op = formatDisplayName(it.owner.display_name)
             int questionId = it.question_id
             if (edited >= lastCheck.epochSecond && it.answer_count > 0) {
                 println 'edited: ' + it.question_id
