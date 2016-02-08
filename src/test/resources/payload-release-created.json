@@ -1,19 +1,7 @@
-package net.zomis.duga.github
-
-import groovy.json.JsonSlurper
-import net.zomis.duga.DugaStats
-import net.zomis.duga.HookStringification
-import net.zomis.duga.chat.WebhookParameters
-import net.zomis.duga.tasks.qscan.TestBot
-import org.junit.Test
-
-class GitHubHookTest {
-    // https://github.com/Zomis/Duga/issues/102
-    static final String REQUEST = '''
 {
-    "action": "published",
+  "action": "published",
   "release": {
-        "url": "https://api.github.com/repos/Vannevelj/RoslynTester/releases/1779350",
+    "url": "https://api.github.com/repos/Vannevelj/RoslynTester/releases/1779350",
     "assets_url": "https://api.github.com/repos/Vannevelj/RoslynTester/releases/1779350/assets",
     "upload_url": "https://uploads.github.com/repos/Vannevelj/RoslynTester/releases/1779350/assets{?name}",
     "html_url": "https://github.com/Vannevelj/RoslynTester/releases/tag/v1.5.0",
@@ -23,7 +11,7 @@ class GitHubHookTest {
     "name": "RoslynTester",
     "draft": false,
     "author": {
-            "login": "Vannevelj",
+      "login": "Vannevelj",
       "id": 2777107,
       "avatar_url": "https://avatars.githubusercontent.com/u/2777107?v=3",
       "gravatar_id": "",
@@ -80,14 +68,14 @@ class GitHubHookTest {
     ],
     "tarball_url": "https://api.github.com/repos/Vannevelj/RoslynTester/tarball/v1.5.0",
     "zipball_url": "https://api.github.com/repos/Vannevelj/RoslynTester/zipball/v1.5.0",
-    "body": "This release:\\r\\n\\r\\n* Fixed some issues we had with VB.NET code under test. \\r\\n* Allows you to specify what exact diagnostics are allowed to occur after a code-fix.\\r\\n* Removed the NUnit dependency altogether.\\r\\n\\r\\nFor an example with regards to no.2:\\r\\n\\r\\n    VerifyFix(original, result, allowedNewCompilerDiagnosticsId: \\"CS8019\\");\\r\\n\\r\\nThis will now allow the warning \\"CS8019\\" (*Unnecessary using directive*) to occur.\\r\\n\\r\\nAs always: if you encounter a problem, please let us know by creating an issue on Github."
+    "body": "This release:\r\n\r\n* Fixed some issues we had with VB.NET code under test. \r\n* Allows you to specify what exact diagnostics are allowed to occur after a code-fix.\r\n* Removed the NUnit dependency altogether.\r\n\r\nFor an example with regards to no.2:\r\n\r\n    VerifyFix(original, result, allowedNewCompilerDiagnosticsId: \"CS8019\");\r\n\r\nThis will now allow the warning \"CS8019\" (*Unnecessary using directive*) to occur.\r\n\r\nAs always: if you encounter a problem, please let us know by creating an issue on Github."
   },
   "repository": {
     "id": 36010519,
     "name": "RoslynTester",
     "full_name": "Vannevelj/RoslynTester",
     "owner": {
-        "login": "Vannevelj",
+      "login": "Vannevelj",
       "id": 2777107,
       "avatar_url": "https://avatars.githubusercontent.com/u/2777107?v=3",
       "gravatar_id": "",
@@ -188,25 +176,4 @@ class GitHubHookTest {
     "type": "User",
     "site_admin": false
   }
-}'''
-
-    @Test
-    public void testRelease() {
-        def stringer = new HookStringification()
-        stringer.stats = new DugaStats() {
-            @Override void addCommit(def repo, def commit) {}
-            @Override void addIssueComment(def Object repo) {}
-            @Override def addIssue(def Object repo, int delta) {}
-        }
-
-        def obj = new JsonSlurper().parseText(REQUEST)
-        def result = stringer.postGithub('release', obj)
-        def bot = new TestBot()
-        def param = WebhookParameters.toRoom('hookTest')
-        bot.postChat(param, result)
-
-        assert bot.messages[param] == ['**\\[[Vannevelj/RoslynTester](https://github.com/Vannevelj/RoslynTester)\\]** [**Vannevelj**](https://github.com/Vannevelj) published release [**v1.5.0**](https://github.com/Vannevelj/RoslynTester/releases/tag/v1.5.0)']
-
-    }
-
 }

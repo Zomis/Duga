@@ -23,6 +23,10 @@ class GithubWebhookTest {
              '[**develop**](https://github.com/Cardshifter/HTML-Client/tree/develop) into ' +
              '[**deploy-script**](https://github.com/Cardshifter/HTML-Client/tree/deploy-script)',
              '> updating deploy-script']]
+        data << ['release', 'payload-release-created',
+            ['**\\[[Vannevelj/RoslynTester](https://github.com/Vannevelj/RoslynTester)\\]** ' +
+             '[**Vannevelj**](https://github.com/Vannevelj) published release ' +
+             '[**v1.5.0**](https://github.com/Vannevelj/RoslynTester/releases/tag/v1.5.0)']]
         return data;
     }
 
