@@ -238,12 +238,10 @@ class HookStringification {
                 result << format(json, "%repository% %sender% removed label $label from pull request $pr")
                 break;
             case "opened":
-                if (json.pull_request.body == null || json.pull_request.body.isEmpty()) {
-                    result << format(json, "%repository% %sender% created pull request $pr to merge $headStr into $baseStr")
-                } else {
-                    format(json, "%repository% %sender% created pull request $pr to merge $headStr into $baseStr")
+                result << format(json, "%repository% %sender% created pull request $pr to merge $headStr into $baseStr")
+                if (json.pull_request.body != null && !json.pull_request.body.isEmpty()) {
                     String prBody = json.pull_request.body
-                    result << prBody
+                    result << '> ' + prBody
                 }
                 break;
             case "closed":
