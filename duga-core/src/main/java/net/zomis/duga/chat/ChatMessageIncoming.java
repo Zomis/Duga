@@ -1,9 +1,8 @@
-package net.zomis.duga.tasks
+package net.zomis.duga.chat;
 
-import net.zomis.duga.DugaBot
-import net.zomis.duga.User
-import net.zomis.duga.chat.WebhookParameters
-import org.apache.commons.lang.StringEscapeUtils
+import net.zomis.duga.DugaBot;
+import net.zomis.duga.chat.WebhookParameters;
+import org.apache.commons.lang.StringEscapeUtils;
 
 class ChatMessageIncoming {
 
@@ -19,22 +18,10 @@ class ChatMessageIncoming {
     int message_stars
     String room_name
     long target_user_id
-    boolean show_parent
+    boolean show_parent;
 
-    DugaBot bot
-    WebhookParameters params
-    private User dugaUser
-
-    User fetchUser() {
-        if (dugaUser) {
-            return dugaUser
-        } else {
-            User.withNewSession {status ->
-                dugaUser = User.findByChatId(user_id)
-            }
-            return dugaUser
-        }
-    }
+    DugaBot bot;
+    WebhookParameters params;
 
     void reply(String message) {
         bot.postSingle(params, ":$message_id $message")

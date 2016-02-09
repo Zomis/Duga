@@ -1,8 +1,8 @@
-package net.zomis.duga
+package net.zomis.duga.chat;
 
-import net.zomis.duga.chat.WebhookParameters
+import java.util.List;
 
-interface ChatBot {
+public interface ChatBot {
 
     void postDebug(String message);
     void postChat(WebhookParameters params, List<String> messages);

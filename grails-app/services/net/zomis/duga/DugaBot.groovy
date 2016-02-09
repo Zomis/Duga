@@ -1,6 +1,7 @@
 package net.zomis.duga
 
 import net.zomis.duga.chat.BotConfiguration
+import net.zomis.duga.chat.ChatBot
 import net.zomis.duga.chat.StackExchangeChatBot
 import net.zomis.duga.chat.WebhookParameters
 import org.springframework.beans.factory.InitializingBean

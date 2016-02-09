@@ -10,6 +10,7 @@ import groovy.transform.TimedInterrupt
 import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBot
 import net.zomis.duga.DugaChatListener
+import net.zomis.duga.chat.ChatMessageIncoming
 import net.zomis.duga.chat.WebhookParameters
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.VariableExpression

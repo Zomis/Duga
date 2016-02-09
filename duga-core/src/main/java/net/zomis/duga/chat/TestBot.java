@@ -1,4 +1,4 @@
-package net.zomis.duga.tasks.qscan
+package net.zomis.duga.chat
 
 import net.zomis.duga.ChatBot
 import net.zomis.duga.chat.WebhookParameters

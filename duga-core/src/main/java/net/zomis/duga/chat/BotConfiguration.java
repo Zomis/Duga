@@ -11,20 +11,20 @@ import java.util.stream.Collectors;
 class BotConfiguration {
     private String rootUrl;
     private String chatUrl;
-    
+
     private String botEmail;
     private String botPassword;
-    
+
     private String roomId;
-    
+
     private String stackAPIKey;
-    
+
     private int chatThrottle;
     private int chatMaxBurst;
     private int chatMinimumDelay;
-	
-	private String userMappings;
-	private Map<String, String> userMappingsMap = new HashMap<>();
+
+    private String userMappings;
+    private Map<String, String> userMappingsMap = new HashMap<>();
 
     public String getRootUrl() {
         return rootUrl;
@@ -90,29 +90,29 @@ class BotConfiguration {
         this.chatMinimumDelay = chatMinimumDelay;
     }
 
-	public String getUserMappings() {
-		return userMappings;
-	}
+    public String getUserMappings() {
+        return userMappings;
+    }
 
-	public void setUserMappings(final String userMappings) {
-		this.userMappings = userMappings;
-		this.userMappingsMap = Arrays.stream(userMappings.split(","))
-			.filter({mapping -> mapping.contains("->")})
-			.map({mapping -> Arrays.asList(mapping.split("->"))})
-			.collect(Collectors.toMap({list -> list.get(0).trim()}, {list -> list.get(1).trim()}));
-	}
+    public void setUserMappings(final String userMappings) {
+        this.userMappings = userMappings;
+        this.userMappingsMap = Arrays.stream(userMappings.split(","))
+                .filter({mapping -> mapping.contains("->")})
+                .map({mapping -> Arrays.asList(mapping.split("->"))})
+                .collect(Collectors.toMap({list -> list.get(0).trim()}, {list -> list.get(1).trim()}));
+    }
 
-	public Map<String, String> getUserMappingsMap() {
-		return userMappingsMap;
-	}
-	
-	public String getStackAPIKey() {
-		return stackAPIKey;
-	}
-	
-	public void setStackAPIKey(String stackAPIKey) {
-		this.stackAPIKey = stackAPIKey;
-	}
+    public Map<String, String> getUserMappingsMap() {
+        return userMappingsMap;
+    }
+
+    public String getStackAPIKey() {
+        return stackAPIKey;
+    }
+
+    public void setStackAPIKey(String stackAPIKey) {
+        this.stackAPIKey = stackAPIKey;
+    }
 
     def init(Environment env) {
         rootUrl = env.getProperty('rootUrl')
@@ -127,5 +127,5 @@ class BotConfiguration {
         stackAPIKey = env.getProperty('stackAPI')
         return this
     }
-	
+
 }

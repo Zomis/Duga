@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 import net.zomis.duga.DugaStats
 import net.zomis.duga.HookStringification
 import net.zomis.duga.chat.WebhookParameters
-import net.zomis.duga.tasks.qscan.TestBot
+import TestBot
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
