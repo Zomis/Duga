@@ -1,6 +1,6 @@
 package net.zomis.duga.chat;
 
-class WebhookParameters {
+public class WebhookParameters {
 	
 	private String roomId;
 	private Boolean post;
@@ -34,28 +34,30 @@ class WebhookParameters {
 		return params;
 	}
 
-    boolean equals(o) {
-        if (this.is(o)) return true
-        if (getClass() != o.class) return false
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+		if (o == null) return false;
+        if (getClass() != o.getClass()) return false;
 
-        WebhookParameters that = (WebhookParameters) o
+        WebhookParameters that = (WebhookParameters) o;
 
-        if (post != that.post) return false
-        if (roomId != that.roomId) return false
+        if (post != that.post) return false;
+        if (!roomId.equals(that.roomId)) return false;
 
-        return true
-    }
-
-    int hashCode() {
-        int result
-        result = roomId.hashCode()
-        result = 31 * result + (post != null ? post.hashCode() : 0)
-        return result
+        return true;
     }
 
     @Override
-    String toString() {
-        return 'Room ' + roomId
+    public int hashCode() {
+        int result = roomId.hashCode();
+        result = 31 * result + (post != null ? post.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Room " + roomId;
     }
 	
 }

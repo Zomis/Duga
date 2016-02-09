@@ -1,5 +1,9 @@
 package net.zomis.duga.chat;
 
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,6 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
+import org.apache.http.client.RedirectHandler;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -29,7 +34,7 @@ import com.gistlabs.mechanize.impl.MechanizeAgent;
  * @author Frank van Heeswijk
  * @author Simon Forsberg
  */
-class StackExchangeChatBot {
+public class StackExchangeChatBot {
 
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
 	private static final WebhookParameters debugRoom = WebhookParameters.toRoom("20298");
@@ -42,7 +47,7 @@ class StackExchangeChatBot {
 
 	private final MechanizeAgent agent;
 
-	private final BotConfiguration configuration
+	private final BotConfiguration configuration;
 
 //	@Autowired
 //	private ConfigService configService;
@@ -52,53 +57,45 @@ class StackExchangeChatBot {
 	private String undeployGoodbyeText;
 
 	public StackExchangeChatBot(BotConfiguration config) {
-        this.configuration = config
+        this.configuration = config;
 		this.agent = new MechanizeAgent();
 
-		this.agent.getClient().setRedirectStrategy(new RedirectStrategy() {
+        this.agent.getClient().setRedirectStrategy(new RedirectStrategy() {
+            @Override
+            public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
+                return response.getStatusLine().getStatusCode() == 302;
+            }
 
-			@Override
-			public boolean isRedirected(
-				final HttpRequest httpRequest, final HttpResponse httpResponse, final HttpContext httpContext)
-				throws ProtocolException {
-				return (httpResponse.getStatusLine().getStatusCode() == 302);
-			}
-
-			@Override
-			public HttpUriRequest getRedirect(
-				final HttpRequest httpRequest, final HttpResponse httpResponse, final HttpContext httpContext)
-				throws ProtocolException {
-				String host = httpRequest.getFirstHeader("Host").getValue();
-				String location = httpResponse.getFirstHeader("Location").getValue();
-				String protocol = (httpRequest.getFirstHeader("Host").getValue().equals("openid.stackexchange.com")) ? "https" : "http";
+            @Override
+            public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
+                System.out.println(Arrays.toString(response.getAllHeaders()));
+                String host = request.getFirstHeader("Host").getValue();
+				String location = response.getFirstHeader("Location").getValue();
+				String protocol = host.equals("openid.stackexchange.com") ? "https" : "http";
 				if (location.startsWith("http://") || location.startsWith("https://")) {
 					LOGGER.info("Redirecting to " + location);
 					return new HttpGet(location);
-				}
-				else {
+				} else {
 					LOGGER.info("Redirecting to " + protocol + "://" + host + location);
 					return new HttpGet(protocol + "://" + host + location);
 				}
 			}
 		});
 
-		this.agent.getClient().addRequestInterceptor({request, context ->
+		this.agent.getClient().addRequestInterceptor((request, context) -> {
 			LOGGER.info("Request to " + request.getRequestLine().getUri());
 			if (request.getRequestLine().getUri().equals("/login/global-fallback")) {
 				request.addHeader("Referer", configuration.getRootUrl() + "/users/chat-login");
 			}
 		});
-        this.executorService.submit({
+        this.executorService.submit(() -> {
             try {
-                start()
-                println 'Start draining'
-                drainMessagesQueue()
-            } catch (emAll) {
-                println 'Error!! ' + emAll
-                emAll.getStackTrace().each {
-                    println it
-                }
-                emAll.printStackTrace()
+                start();
+				System.out.println("Start draining");
+                drainMessagesQueue();
+            } catch (Exception ex) {
+				System.out.println("Error!! " + ex);
+                ex.printStackTrace();
             }
         });
 
@@ -107,23 +104,23 @@ class StackExchangeChatBot {
 	public void start() {
         login();
 
-		String deployGreeting = ''; // TODO: configService.getConfig("deployGreeting", "");
-		if ( !deployGreeting.isEmpty()) {
-			String deployGreetingRooms = configService.getConfig("deployGreetingRooms", "");
+		String deployGreeting = ""; // TODO: configService.getConfig("deployGreeting", "");
+		if (!deployGreeting.isEmpty()) {
+            // String deployGreetingRooms = configService.getConfig("deployGreetingRooms", "");
+            String deployGreetingRooms = "16134";
 			for (String greetingRoom : deployGreetingRooms.split(",")) {
-				if (greetingRoom.matches('^\\d+$')) {
+				if (greetingRoom.matches("^\\d+$")) {
 					WebhookParameters params = new WebhookParameters();
 					params.setRoomId(greetingRoom);
 					params.setPost(true);
-					postMessage(params, deployGreeting);
-				}
-				else {
+					postMessages(params, Collections.singletonList(deployGreeting));
+				} else {
 					LOGGER.warning("Deploy, No valid room: " + greetingRoom);
 				}
 			}
 		}
 
-		this.undeployGoodbyeText = ''; // configService.getConfig("undeployGoodbyeText", "");
+		this.undeployGoodbyeText = ""; // configService.getConfig("undeployGoodbyeText", "");
 	}
 
     private void login() {
@@ -138,7 +135,9 @@ class StackExchangeChatBot {
 
 	private void loginOpenId() {
 		HtmlDocument openIdLoginPage = agent.get("https://openid.stackexchange.com/account/login");
-		Form loginForm = openIdLoginPage.forms().getAll().get(0);
+        System.out.println(openIdLoginPage);
+        System.out.println(openIdLoginPage.getRoot());
+        Form loginForm = openIdLoginPage.forms().getAll().get(0);
 		loginForm.get("email").setValue(configuration.getBotEmail());
 		loginForm.get("password").setValue(configuration.getBotPassword());
 		List<SubmitButton> submitButtons = loginForm.findAll("input[type=submit]", SubmitButton.class);
@@ -176,7 +175,7 @@ class StackExchangeChatBot {
 		if (params == null) {
 			params = new WebhookParameters();
 		}
-		params.useDefaultRoom(configuration.getRoomId());
+		// params.useDefaultRoom(configuration.getRoomId());
 		Objects.requireNonNull(messages, "messages");
 		List<ChatMessage> shortenedMessages = new ArrayList<>();
 		for (String message : messages) {
@@ -198,17 +197,17 @@ class StackExchangeChatBot {
 			return;
 		}
 
-        println 'Adding messages to queue: ' + shortenedMessages
+		System.out.println("Adding messages to queue: " + shortenedMessages);
 		messagesQueue.add(shortenedMessages);
 	}
 
 	private void attemptPostMessageToChat(final ChatMessage message) {
-        println 'Real message post: ' + message
+		System.out.println("Real message post: " + message);
         Objects.requireNonNull(message, "message");
 		try {
 			postMessageToChat(message);
 		} catch (ChatThrottleException ex) {
-            println 'Chat throttle'
+			System.out.println("Chat throttle");
             LOGGER.info("Sleeping for " + ex.getThrottleTiming() + " seconds, then reposting");
 			try {
 				TimeUnit.SECONDS.sleep(ex.getThrottleTiming());
@@ -221,7 +220,7 @@ class StackExchangeChatBot {
 				LOGGER.log(Level.INFO, "Failed to post message on retry", ex1);
 			}
 		} catch (ProbablyNotLoggedInException ex) {
-            println 'Probably not logged in'
+			System.out.println("Probably not logged in");
 			LOGGER.info("Not logged in, logging in and then reposting");
 			login();
 			try {
@@ -235,24 +234,23 @@ class StackExchangeChatBot {
 	private void postMessageToChat(final ChatMessage message) throws ChatThrottleException, ProbablyNotLoggedInException {
 		Objects.requireNonNull(message, "message");
 		Map<String, String> parameters = new HashMap<>();
-        String text = message.getMessage()
-        text = text.replaceAll('access_token=([0-9a-f]+)', 'access_token=xxxxxxxxxxxxxx')
+        String text = message.getMessage();
+        text = text.replaceAll("access_token=([0-9a-f]+)", "access_token=xxxxxxxxxxxxxx");
         parameters.put("text", text);
 		parameters.put("fkey", this.chatFKey);
-        println 'Okay, here we go!'
+		System.out.println("Okay, here we go!");
         try {
-            Resource response =  agent.post("http://chat.stackexchange.com/chats/" + message.getRoom() + "/messages/new", parameters);
-            println 'Response: ' + response.title
+            Resource response = agent.post("http://chat.stackexchange.com/chats/" + message.getRoom() + "/messages/new", parameters);
+			System.out.println("Response: " + response.getTitle());
 			if (response instanceof JsonDocument) {
-                println response
-                def json = (response as JsonDocument)
-                println 'Success: ' + json.root
+				System.out.println(response);
+                JsonDocument json = (JsonDocument) response;
+				System.out.println("Success: " + json.getRoot());
 				message.onSuccess((JsonDocument) response);
-			}
-			else if (response instanceof HtmlDocument) {
+			}  else if (response instanceof HtmlDocument) {
 				//failure
 				HtmlDocument htmlDocument = (HtmlDocument) response;
-                println 'Failure: ' + htmlDocument
+				System.out.println("Failure: " + htmlDocument);
 				HtmlElement body = htmlDocument.find("body");
 				if (body.getInnerHtml().contains("You can perform this action again in")) {
 					int timing =
@@ -266,19 +264,20 @@ class StackExchangeChatBot {
 				}
 			}
 			else {
-                println 'Uknown response: ' + response
+				System.out.println("Uknown response: " + response);
 				//even harder failure
 				throw new IllegalStateException("unexpected response, response.getClass() = " + response.getClass());
 			}
 		} catch(UnsupportedEncodingException ex) {
-            println 'Unsupported encoding: ' + ex
+			System.out.println("Unsupported encoding: " + ex);
 			throw new UncheckedIOException(ex);
 		}
 	}
 
 	public void stop() {
 		if (!this.undeployGoodbyeText.isEmpty()) {
-			postMessage(null, this.undeployGoodbyeText); // TODO: Use specific chat parameters
+			// TODO: Use specific chat parameters
+			postMessages(null, Collections.singletonList(this.undeployGoodbyeText));
 		}
 		this.executorService.shutdown();
 	}
@@ -290,28 +289,27 @@ class StackExchangeChatBot {
 	private void drainMessagesQueue() {
 		try {
 			while (true) {
-                println 'Posting drained messages...'
+				System.out.println("Posting drained messages...");
 				try {
-                    def mess = messagesQueue.take()
-                    println 'Retrieved: ' + mess
-					postDrainedMessages(mess)
-                    println 'Posted: ' + mess
+                    List<ChatMessage> mess = messagesQueue.take();
+					System.out.println("Retrieved: " + mess);
+					postDrainedMessages(mess);
+					System.out.println("Posted: " + mess);
 				}
 				catch (RuntimeException ex) {
-                    println 'Exception: ' + ex
-                    ex.printStackTrace(System.out)
+					System.out.println("Exception: " + ex);
+                    ex.printStackTrace(System.out);
 					try {
 						LOGGER.warning("Error in drainMessagesQueue: " + ex.toString());
 						List<ChatMessage> messages = new ArrayList<ChatMessage>();
 						messages.add(new ChatMessage(debugRoom, ex.toString()));
 						messages.addAll(Arrays.stream(ex.getStackTrace())
-								.map({trace -> trace.toString()})
-								.map({msg -> new ChatMessage(debugRoom, msg)})
+								.map(trace -> trace.toString())
+								.map(msg -> new ChatMessage(debugRoom, msg))
 								.limit(5)
 								.collect(Collectors.toList()));
 						postDrainedMessages(messages);
-					}
-					catch (RuntimeException ex2) {
+					} catch (RuntimeException ex2) {
 						// ignored
 					}
 				}
@@ -319,7 +317,7 @@ class StackExchangeChatBot {
 		} catch(InterruptedException ex) {
 			List<List<ChatMessage>> drainedMessages = new ArrayList<>();
 			messagesQueue.drainTo(drainedMessages);
-			drainedMessages.forEach({ postDrainedMessages(it) });
+			drainedMessages.forEach(it -> postDrainedMessages(it));
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -329,12 +327,12 @@ class StackExchangeChatBot {
 
 	private void postDrainedMessages(final List<ChatMessage> messages) {
 		Objects.requireNonNull(messages, "messages");
-        println 'Attempting to post'
+		System.out.println("Attempting to post");
 		LOGGER.fine("Attempting to post " + messages);
 		if (currentBurst + messages.size() >= configuration.getChatMaxBurst()
 			|| System.currentTimeMillis() < lastPostedTime + configuration.getChatThrottle()) {
 			long sleepTime = lastPostedTime + configuration.getChatThrottle() - System.currentTimeMillis();
-            println 'Sleeping for ' + sleepTime
+			System.out.println("Sleeping for " + sleepTime);
 			LOGGER.info("Sleeping for " + sleepTime + " milliseconds");
 			try {
 				TimeUnit.MILLISECONDS.sleep(sleepTime);
@@ -346,7 +344,7 @@ class StackExchangeChatBot {
 		else {
 			currentBurst += messages.size();
 		}
-		messages.forEach({message ->
+		messages.forEach(message -> {
 			try {
 				TimeUnit.MILLISECONDS.sleep(configuration.getChatMinimumDelay());
 			} catch(InterruptedException ex) {
@@ -357,5 +355,5 @@ class StackExchangeChatBot {
 		lastPostedTime = System.currentTimeMillis();
 	}
 
-    String getFKey() { chatFKey }
+    public String getFKey() { return chatFKey; }
 }

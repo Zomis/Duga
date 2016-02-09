@@ -7,4 +7,5 @@ public interface ChatBot {
     void postDebug(String message);
     void postChat(WebhookParameters params, List<String> messages);
 
+    void postSingle(WebhookParameters params, String message);
 }

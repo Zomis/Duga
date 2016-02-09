@@ -27,3 +27,4 @@ gradle-app.setting
 out/
 stacktrace.log
 grails-app/conf/duga.groovy
+duga.conf
