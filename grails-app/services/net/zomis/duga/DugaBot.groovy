@@ -21,7 +21,7 @@ class DugaBot implements ChatBot, InitializingBean {
         this.postChat(DEBUG_ROOM, [message])
     }
 
-    def postSingle(WebhookParameters params, String message) {
+    void postSingle(WebhookParameters params, String message) {
         this.postChat(params, [message])
     }
 

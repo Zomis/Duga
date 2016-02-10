@@ -1,6 +1,6 @@
 package net.zomis.duga;
 
-public class DugaBot {
+public class DugaBot2 {
 
 /*
 Room parameters
