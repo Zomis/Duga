@@ -3,8 +3,8 @@ package net.zomis.duga.github
 import groovy.json.JsonSlurper
 import net.zomis.duga.DugaStats
 import net.zomis.duga.HookStringification
+import net.zomis.duga.chat.TestBot
 import net.zomis.duga.chat.WebhookParameters
-import TestBot
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

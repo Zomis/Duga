@@ -3,6 +3,7 @@ package net.zomis.duga.tasks.qscan
 import groovy.json.JsonSlurper
 import net.zomis.duga.GithubBean
 import net.zomis.duga.HookStringification
+import net.zomis.duga.chat.TestBot
 import net.zomis.duga.chat.WebhookParameters
 import org.junit.Test
 import org.springframework.core.env.Environment

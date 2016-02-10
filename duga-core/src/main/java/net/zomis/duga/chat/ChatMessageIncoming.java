@@ -2,7 +2,7 @@ package net.zomis.duga.chat;
 
 //import org.apache.commons.lang.StringEscapeUtils;
 
-class ChatMessageIncoming {
+public class ChatMessageIncoming {
 
     String content;
     int event_type;
