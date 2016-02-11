@@ -3,7 +3,7 @@ package net.zomis.duga.tasks
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.HookStringification
 import net.zomis.duga.User
-import net.zomis.duga.chat.ChatMessageIncoming
+import net.zomis.duga.chat.listen.ChatMessageIncoming
 import net.zomis.duga.chat.WebhookParameters
 
 /**

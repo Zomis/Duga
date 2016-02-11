@@ -1,6 +1,9 @@
-package net.zomis.duga.chat;
+package net.zomis.duga.chat.listen;
 
 //import org.apache.commons.lang.StringEscapeUtils;
+
+import net.zomis.duga.chat.ChatBot;
+import net.zomis.duga.chat.WebhookParameters;
 
 public class ChatMessageIncoming {
 

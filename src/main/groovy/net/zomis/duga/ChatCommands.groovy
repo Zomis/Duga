@@ -1,6 +1,6 @@
 package net.zomis.duga
 
-import net.zomis.duga.chat.ChatMessageIncoming
+import net.zomis.duga.chat.listen.ChatMessageIncoming
 
 import java.util.function.Consumer
 
