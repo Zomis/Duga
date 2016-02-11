@@ -28,7 +28,8 @@ class GithubHookController {
         strings.forEach({ println it })
         String[] rooms = room.split(',')
         for (String postRoom : rooms) {
-            bot.postChat(WebhookParameters.toRoom(postRoom), strings)
+            WebhookParameters hookParams = WebhookParameters.toRoom(postRoom)
+            bot.postChat(hookParams.messages(strings))
         }
         render 'OK'
     }

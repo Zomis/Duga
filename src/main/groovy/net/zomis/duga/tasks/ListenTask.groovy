@@ -166,7 +166,7 @@ class ListenTask implements Runnable {
 //            handler.botCommand(message)
         }
         if (previousId <= 0) {
-            bot.postSingle(params, 'Monking! (Duga is now listening for commands)')
+            bot.postAsync(params.message('Monking! (Duga is now listening for commands)'))
         }
 /*            Root node: {"ms":4,"time":41194973,"sync":1433551091,"events":
                 [{"room_id":16134,"event_type":1,"time_stamp":1433547911,"user_id":125580,"user_name":"Duga","message_id":22039309,"content":"Loki Astari vs. Simon Andr&#233; Forsberg: 4383 diff. Year: -1368. Quarter: -69. Month: -5. Week: +60. Day: -25."}

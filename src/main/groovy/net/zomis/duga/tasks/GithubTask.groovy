@@ -56,7 +56,6 @@ public class GithubTask implements Runnable {
     	}
 
     	WebhookParameters params = new WebhookParameters();
-    	params.setPost(true);
     	params.setRoomId(follow.getRoomIds());
 
     	Stream<Object> stream = events.stream();
@@ -89,9 +88,9 @@ public class GithubTask implements Runnable {
             event.payload.sender.html_url = event.actor.url.replaceFirst('api.github.com/users', 'www.github.com')
             try {
                 stringify."$type"(list, event.payload)
-                bot.postChat(params, list);
+                bot.postChat(params.messages(list));
             } catch (Exception ex) {
-                bot.postSingle(params, "Exception $ex when processing event $event");
+                bot.postAsync(params.message("Exception $ex when processing event $event"));
             }
 		} else {
     		System.out.println(event);

@@ -31,7 +31,7 @@ class AnswerInvalidationCheck {
                     String editor = possibleInvalidations.stream()
                         .map({formatDisplayName(it.user.display_name)})
                         .collect(Collectors.joining(', '))
-                    dugaBot.postChat(params, ["*possible answer invalidation by $editor on question by $op:* $link"])
+                    dugaBot.postAsync(params.message("*possible answer invalidation by $editor on question by $op:* $link"))
                 }
             }
         }

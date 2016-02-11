@@ -21,8 +21,17 @@ class DugaBotService implements ChatBot, InitializingBean {
 
     private StackExchangeChatBot bot
 
+    @Deprecated
     void postSingle(WebhookParameters params, String message) {
-        this.postChat(params, [message])
+        this.postAsync(params.message(message))
+    }
+
+    @Override
+    Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages) {
+        messages.each {
+            println "postChat $it to $it.room"
+        }
+        return bot.postChat(messages)
     }
 
     @Override
@@ -53,14 +62,6 @@ class DugaBotService implements ChatBot, InitializingBean {
     @Override
     def <E extends DugaEvent> void registerListener(Class<E> eventClass, Consumer<E> handler) {
         bot.registerListener(eventClass, handler)
-    }
-
-    @Override
-    Future<List<ChatMessageResponse>> postChat(WebhookParameters params, List<String> messages) {
-        messages.each {
-            println "postChat $params: $it"
-        }
-        return bot.postMessages(params, messages)
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.zomis.duga.chat;
 
 import net.zomis.duga.chat.events.DugaEvent;
-import net.zomis.duga.chat.events.DugaStartedEvent;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -9,9 +8,7 @@ import java.util.function.Consumer;
 
 public interface ChatBot {
 
-    Future<List<ChatMessageResponse>> postChat(WebhookParameters params, List<String> messages);
-
-    void postSingle(WebhookParameters params, String message);
+    Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages);
 
     Future<ChatMessageResponse> postAsync(ChatMessage message);
 

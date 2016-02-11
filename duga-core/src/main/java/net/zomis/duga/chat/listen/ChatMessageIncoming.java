@@ -39,15 +39,15 @@ public class ChatMessageIncoming {
     WebhookParameters params;
 
     public void reply(String message) {
-        bot.postSingle(params, ":" + messageId + " " + message);
+        bot.postAsync(params.message(":" + messageId + " " + message));
     }
 
     public void post(String message) {
-        bot.postSingle(params, message);
+        bot.postAsync(params.message(message));
     }
 
     public void ping(String message) {
-        bot.postSingle(params, "@$user_name $message");
+        bot.postAsync(params.message("@$user_name $message"));
     }
 
     @Override

@@ -45,13 +45,15 @@ public class CommentsScanTask implements Runnable {
     		def comments = stackAPI.fetchComments("stackoverflow", fromDate);
     		int currentQuota = comments.quota_remaining
     		if (currentQuota > remainingQuota && fromDate != 0) {
-				chatBot.postSingle(debug, Instant.now().toString() + " Quota has been reset. Was " + remainingQuota + " is now " + currentQuota);
+				chatBot.postAsync(debug.message(Instant.now().toString() + " Quota has been reset. Was " +
+					remainingQuota + " is now " + currentQuota));
     		}
     		remainingQuota = currentQuota;
     		List items = comments.items;
     		if (items) {
     			if (items.size() >= 100) {
-    				chatBot.postSingle(debug, Instant.now().toString() + " Warning: Retrieved 100 comments. Might have missed some.");
+    				chatBot.postAsync(debug.message(Instant.now().toString() +
+                        " Warning: Retrieved 100 comments. Might have missed some."));
     			}
     			
     			long previousLastComment = lastComment;
@@ -63,33 +65,36 @@ public class CommentsScanTask implements Runnable {
     				lastComment = Math.max(comment.comment_id as long, lastComment);
     				fromDate = Math.max(comment.creation_date as long, fromDate);
     				if (isInterestingComment(comment)) {
-    					chatBot.postSingle(params, comment.link as String);
+    					chatBot.postAsync(params.message(comment.link as String));
     				}
     				float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
     				
     				if (programmersCertainty >= CommentClassification.REAL) {
-    					chatBot.postSingle(programmers, comment.link as String);
+    					chatBot.postAsync(programmers.message(comment.link as String));
     				}
     				if (programmersCertainty >= CommentClassification.DEBUG) {
-    					chatBot.postSingle(debug, "Certainty level " + programmersCertainty);
-    					chatBot.postSingle(debug, comment.link as String);
+    					chatBot.postChat(Arrays.asList(
+                                debug.message("Certainty level " + programmersCertainty),
+                                debug.message(comment.link as String)
+                        ));
     				}
     				
     				float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
     				
     				if (softwareCertainty >= CommentClassification.REAL) {
-    					chatBot.postSingle(softwareRecs, comment.link as String);
+    					chatBot.postAsync(softwareRecs.message(comment.link as String));
     				}
     			}
                 items.clear();
             }
             if (comments.backoff) {
                 nextFetch = Instant.now().plusSeconds((int) comments.backoff + 10);
-                chatBot.postSingle(debug, Instant.now().toString() + " Next fetch: " + nextFetch + " because of backoff " + String.valueOf(comments.backoff));
+                chatBot.postAsync(debug.message(Instant.now().toString() +
+                    " Next fetch: " + nextFetch + " because of backoff " + String.valueOf(comments.backoff)));
             }
     	} catch (Exception e) {
     		logger.error("Error retrieving comments", e);
-    		chatBot.postSingle(debug, Instant.now().toString() + " Exception in comment task " + e);
+    		chatBot.postAsync(debug.message(Instant.now().toString() + " Exception in comment task " + e));
     	}
     }
 

@@ -64,14 +64,16 @@ public class StackExchangeChatBot implements ChatBot {
         LOGGER.info("Found fkey: " + chatFKey);
     }
 
-	public Future<List<ChatMessageResponse>> postMessages(WebhookParameters params, final List<String> messages) {
-		if (params == null) {
-			throw new NullPointerException("Params cannot be null, unable to post " + messages);
-		}
-		// params.useDefaultRoom(configuration.getRoomId());
+    @Override
+    public Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages) {
 		Objects.requireNonNull(messages, "messages");
+        if (messages.isEmpty()) {
+            return null;
+        }
 		List<ChatMessage> shortenedMessages = new ArrayList<>();
-		for (String message : messages) {
+        WebhookParameters params = WebhookParameters.toRoom(messages.get(0).getRoom());
+		for (ChatMessage mess : messages) {
+            String message = mess.getMessage();
 			if (message.length() > MAX_MESSAGE_LENGTH) {
 				final List<String> messageTokens = ChatMessageHelper.splitToTokens(message);
 				for (final String reassembled : ChatMessageHelper.reassembleTokens(messageTokens, MAX_MESSAGE_LENGTH,
@@ -82,12 +84,6 @@ public class StackExchangeChatBot implements ChatBot {
 			else {
 				shortenedMessages.add(new ChatMessage(params, message));
 			}
-		}
-		if (!params.getPost()) {
-			for (ChatMessage message : shortenedMessages) {
-				LOGGER.info("Ignoring message for " + message.getRoom() + ": " + message.getMessage());
-			}
-			return null;
 		}
 
 		System.out.println("Adding messages to queue: " + shortenedMessages);
@@ -126,16 +122,6 @@ public class StackExchangeChatBot implements ChatBot {
 		}
         return response;
 	}
-
-    @Override
-    public Future<List<ChatMessageResponse>> postChat(WebhookParameters params, List<String> messages) {
-        return postMessages(params, messages);
-    }
-
-    @Override
-    public void postSingle(WebhookParameters params, String message) {
-        postChat(params, Collections.singletonList(message));
-    }
 
     @Override
     public Future<ChatMessageResponse> postAsync(ChatMessage message) {

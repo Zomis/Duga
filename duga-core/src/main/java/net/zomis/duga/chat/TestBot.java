@@ -5,28 +5,20 @@ import net.zomis.duga.chat.events.DugaEvent;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class TestBot implements ChatBot {
 
     Map<WebhookParameters, List<String>> messages = new HashMap<>();
 
-    WebhookParameters debug = WebhookParameters.toRoom("debug");
-
-    @Deprecated
-    public void postDebug(String message) {
-        this.postChat(debug, Collections.singletonList(message));
-    }
-
     @Override
-    public Future<List<ChatMessageResponse>> postChat(WebhookParameters params, List<String> messages) {
+    public Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages) {
+        WebhookParameters params = WebhookParameters.toRoom(messages.get(0).getRoom());
         this.messages.putIfAbsent(params, new ArrayList<>());
-        this.messages.get(params).addAll(messages);
+        this.messages.get(params).addAll(messages.stream()
+            .map(ChatMessage::getMessage)
+            .collect(Collectors.toList()));
         return null;
-    }
-
-    @Override
-    public void postSingle(WebhookParameters params, String message) {
-        this.postChat(params, Collections.singletonList(message));
     }
 
     @Override

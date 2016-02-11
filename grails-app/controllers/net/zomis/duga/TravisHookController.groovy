@@ -97,7 +97,7 @@ class TravisHookController {
 			default:
 				break;
 		}
-		chatBot.postChat(params, messages);
+		chatBot.postChat(params.messages(messages));
         render 'OK'
 	}
 	
