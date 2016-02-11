@@ -1,14 +1,8 @@
 package net.zomis.duga.chat;
 
-import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -16,7 +10,6 @@ import java.util.stream.Collectors;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
-import org.apache.http.client.RedirectHandler;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -30,13 +23,11 @@ import com.gistlabs.mechanize.document.html.form.SubmitButton;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
 
-/**
- * @author Frank van Heeswijk
- * @author Simon Forsberg
- */
-public class StackExchangeChatBot {
+public class StackExchangeChatBot implements ChatBot {
 
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
+
+    @Deprecated
 	private static final WebhookParameters debugRoom = WebhookParameters.toRoom("20298");
 
 	private static final int MAX_MESSAGE_LENGTH = 500;
@@ -48,9 +39,6 @@ public class StackExchangeChatBot {
 	private final MechanizeAgent agent;
 
 	private final BotConfiguration configuration;
-
-//	@Autowired
-//	private ConfigService configService;
 
 	private String chatFKey;
 
@@ -173,9 +161,9 @@ public class StackExchangeChatBot {
 		return joinForm.get("fkey").getValue();
 	}
 
-	public void postMessages(WebhookParameters params, final List<String> messages) {
+	public Future<List<ChatMessageResponse>> postMessages(WebhookParameters params, final List<String> messages) {
 		if (params == null) {
-			params = new WebhookParameters();
+			throw new NullPointerException("Params cannot be null, unable to post " + messages);
 		}
 		// params.useDefaultRoom(configuration.getRoomId());
 		Objects.requireNonNull(messages, "messages");
@@ -196,19 +184,20 @@ public class StackExchangeChatBot {
 			for (ChatMessage message : shortenedMessages) {
 				LOGGER.info("Ignoring message for " + message.getRoom() + ": " + message.getMessage());
 			}
-			return;
+			return null;
 		}
 
 		System.out.println("Adding messages to queue: " + shortenedMessages);
 		messagesQueue.add(shortenedMessages);
+        return null;
 	}
 
 	private void attemptPostMessageToChat(final ChatMessage message) {
 		System.out.println("Real message post: " + message);
         Objects.requireNonNull(message, "message");
-		try {
-			postMessageToChat(message);
-		} catch (ChatThrottleException ex) {
+        ChatMessageResponse response = postMessageToChat(message);
+        if (response.getException() instanceof ChatThrottleException) {
+            ChatThrottleException ex = (ChatThrottleException) response.getException();
 			System.out.println("Chat throttle");
             LOGGER.info("Sleeping for " + ex.getThrottleTiming() + " seconds, then reposting");
 			try {
@@ -216,24 +205,49 @@ public class StackExchangeChatBot {
 			} catch(InterruptedException ex1) {
 				Thread.currentThread().interrupt();
 			}
-			try {
-				postMessageToChat(message);
-			} catch (ChatThrottleException | ProbablyNotLoggedInException ex1) {
-				LOGGER.log(Level.INFO, "Failed to post message on retry", ex1);
-			}
-		} catch (ProbablyNotLoggedInException ex) {
+            ChatMessageResponse response2 = postMessageToChat(message);
+            if (response2.hasException()) {
+                LOGGER.log(Level.SEVERE, "Failed to post message on retry", response2.getException());
+            }
+		}
+        if (response.getException() instanceof ProbablyNotLoggedInException) {
 			System.out.println("Probably not logged in");
 			LOGGER.info("Not logged in, logging in and then reposting");
 			login();
-			try {
-				postMessageToChat(message);
-			} catch (ChatThrottleException | ProbablyNotLoggedInException ex1) {
-				LOGGER.log(Level.INFO, "Failed to post message on retry", ex1);
-			}
+            ChatMessageResponse response2 = postMessageToChat(message);
+            if (response2.hasException()) {
+                LOGGER.log(Level.SEVERE, "Failed to post message on retry", response2.getException());
+            }
 		}
 	}
 
-	private void postMessageToChat(final ChatMessage message) throws ChatThrottleException, ProbablyNotLoggedInException {
+    @Override
+    public Future<List<ChatMessageResponse>> postChat(WebhookParameters params, List<String> messages) {
+        return postMessages(params, messages);
+    }
+
+    @Override
+    public void postSingle(WebhookParameters params, String message) {
+        postChat(params, Collections.singletonList(message));
+    }
+
+    @Override
+    public Future<ChatMessageResponse> postAsync(ChatMessage message) {
+        this.messagesQueue.add(Collections.singletonList(message));
+        return null;
+    }
+
+    @Override
+    public ChatMessageResponse postNowOnce(ChatMessage message) {
+        return postMessageToChat(message);
+    }
+
+    @Override
+    public ChatMessageResponse postNow(ChatMessage message) {
+        return null;
+    }
+
+    private ChatMessageResponse postMessageToChat(final ChatMessage message) {
 		Objects.requireNonNull(message, "message");
 		Map<String, String> parameters = new HashMap<>();
         String text = message.getMessage();
@@ -241,39 +255,43 @@ public class StackExchangeChatBot {
         parameters.put("text", text);
 		parameters.put("fkey", this.chatFKey);
 		System.out.println("Okay, here we go!");
+        Resource response;
         try {
-            Resource response = agent.post("http://chat.stackexchange.com/chats/" + message.getRoom() + "/messages/new", parameters);
-			System.out.println("Response: " + response.getTitle());
-			if (response instanceof JsonDocument) {
-				System.out.println(response);
-                JsonDocument json = (JsonDocument) response;
-				System.out.println("Success: " + json.getRoot());
-				message.onSuccess((JsonDocument) response);
-			}  else if (response instanceof HtmlDocument) {
-				//failure
-				HtmlDocument htmlDocument = (HtmlDocument) response;
-				System.out.println("Failure: " + htmlDocument);
-				HtmlElement body = htmlDocument.find("body");
-				if (body.getInnerHtml().contains("You can perform this action again in")) {
-					int timing =
-							Integer.parseInt(body.getInnerHtml().replaceAll("You can perform this action again in", "")
-								.replaceAll("seconds", "").trim());
-					throw new ChatThrottleException(timing);
-				}
-				else {
-					System.out.println(body.getInnerHtml());
-					throw new ProbablyNotLoggedInException();
-				}
-			}
-			else {
-				System.out.println("Uknown response: " + response);
-				//even harder failure
-				throw new IllegalStateException("unexpected response, response.getClass() = " + response.getClass());
-			}
-		} catch(UnsupportedEncodingException ex) {
-			System.out.println("Unsupported encoding: " + ex);
-			throw new UncheckedIOException(ex);
-		}
+            response = agent.post("http://chat.stackexchange.com/chats/" +
+                    message.getRoom() + "/messages/new", parameters);
+        } catch (UnsupportedEncodingException e) {
+            return new ChatMessageResponse(e.toString(), e);
+        }
+
+        System.out.println("Response: " + response.getTitle());
+        if (response instanceof JsonDocument) {
+            System.out.println(response);
+            JsonDocument json = (JsonDocument) response;
+            System.out.println("Success: " + json.getRoot());
+            message.onSuccess(json);
+            return new ChatMessageResponse(Long.parseLong(json.getRoot().getChild("id").getValue()),
+                    Long.parseLong(json.getRoot().getChild("time").getValue()), json.getRoot().toString());
+        }
+
+        if (response instanceof HtmlDocument) {
+            //failure
+            HtmlDocument htmlDocument = (HtmlDocument) response;
+            System.out.println("Failure: " + htmlDocument);
+            HtmlElement body = htmlDocument.find("body");
+            if (body.getInnerHtml().contains("You can perform this action again in")) {
+                int timing =
+                        Integer.parseInt(body.getInnerHtml().replaceAll("You can perform this action again in", "")
+                            .replaceAll("seconds", "").trim());
+                return new ChatMessageResponse(body.getInnerHtml(), new ChatThrottleException(timing));
+            }
+
+            System.out.println(body.getInnerHtml());
+            return new ChatMessageResponse(body.getInnerHtml(), new ProbablyNotLoggedInException());
+        }
+
+        System.out.println("Unknown response: " + response);
+        //even harder failure
+        throw new IllegalStateException("unexpected response, response.getClass() = " + response.getClass());
 	}
 
 	public void stop() {

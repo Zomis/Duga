@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import com.gistlabs.mechanize.document.json.JsonDocument;
 
-class ChatMessage {
+public class ChatMessage {
 	
 	private final String room;
 	private final String message;

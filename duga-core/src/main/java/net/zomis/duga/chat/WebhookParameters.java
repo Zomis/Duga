@@ -3,6 +3,10 @@ package net.zomis.duga.chat;
 public class WebhookParameters {
 	
 	private String roomId;
+
+	/**
+	 * Used for webhooks that want to be in the statistics but not post to a room
+	 */
 	private Boolean post;
 	
 	public String getRoomId() {
@@ -13,12 +17,6 @@ public class WebhookParameters {
 		this.roomId = roomId;
 	}
 
-	public void useDefaultRoom(String defaultRoomId) {
-		if (roomId == null) {
-			roomId = defaultRoomId;
-		}
-	}
-	
 	public boolean getPost() {
 		return post == null ? true : post;
 	}
@@ -59,5 +57,8 @@ public class WebhookParameters {
     public String toString() {
         return "Room " + roomId;
     }
-	
+
+	public ChatMessage message(String input) {
+		return new ChatMessage(this, input);
+	}
 }

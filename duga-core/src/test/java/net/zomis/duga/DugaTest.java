@@ -1,6 +1,7 @@
 package net.zomis.duga;
 
 import net.zomis.duga.chat.BotConfiguration;
+import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.StackExchangeChatBot;
 import net.zomis.duga.chat.WebhookParameters;
 
@@ -37,17 +38,17 @@ public class DugaTest {
         config.setChatMaxBurst(2);
         config.setChatMinimumDelay(500);
         Scanner scanner = new Scanner(System.in);
-        StackExchangeChatBot bot = new StackExchangeChatBot(config);
+        ChatBot bot = new StackExchangeChatBot(config);
         System.out.println("Press enter to start bot");
         bot.start();
+        WebhookParameters room = WebhookParameters.toRoom("16134");
         while (true) {
             String input = scanner.nextLine();
             if (input.isEmpty()) {
                 break;
             }
             System.out.println("Input: " + input);
-            bot.postMessages(WebhookParameters.toRoom("16134"),
-                Collections.singletonList(input));
+            bot.postNow(room.message(input));
         }
         bot.stop();
         scanner.close();
