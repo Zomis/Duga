@@ -6,15 +6,21 @@ import net.zomis.duga.chat.StackExchangeChatBot;
 import net.zomis.duga.chat.WebhookParameters;
 import net.zomis.duga.chat.events.DugaStartedEvent;
 import net.zomis.duga.chat.events.DugaStopEvent;
+import net.zomis.duga.chat.listen.ChatMessageIncoming;
+import net.zomis.duga.chat.listen.ListenTask;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class DugaTest {
 
-    private static final WebhookParameters room = WebhookParameters.toRoom("16134");
+    private static final WebhookParameters room = WebhookParameters.toRoom("20298");
+    static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) {
 
@@ -37,13 +43,21 @@ public class DugaTest {
         config.setChatThrottle(10000);
         config.setChatMaxBurst(2);
         config.setChatMinimumDelay(500);
-        ChatBot bot = new StackExchangeChatBot(config);
+        StackExchangeChatBot bot = new StackExchangeChatBot(config);
         bot.registerListener(DugaStartedEvent.class,
             e -> new Thread(() -> interactive(e)).start());
         bot.registerListener(DugaStopEvent.class, DugaTest::shutdown);
         System.out.println("Starting bot...");
         bot.start();
         System.out.println("Bot started.");
+        scheduler.scheduleAtFixedRate(new ListenTask(bot, "20298", DugaTest::handle), 0, 3000, TimeUnit.MILLISECONDS);
+    }
+
+    private static void handle(ChatMessageIncoming chatMessageIncoming) {
+        System.out.println(chatMessageIncoming);
+        if (chatMessageIncoming.getContent().equals("Monking!")) {
+            chatMessageIncoming.reply("Monking!");
+        }
     }
 
     private static void shutdown(DugaStopEvent event) {
@@ -65,6 +79,7 @@ public class DugaTest {
         }
         bot.stop();
         scanner.close();
+        scheduler.shutdownNow();
     }
 
 }
