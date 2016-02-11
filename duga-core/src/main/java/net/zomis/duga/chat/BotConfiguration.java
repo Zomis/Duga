@@ -7,9 +7,9 @@ public class BotConfiguration {
     private String botEmail;
     private String botPassword;
 
-    private int chatThrottle;
-    private int chatMaxBurst;
-    private int chatMinimumDelay;
+    private int chatThrottle = 10000;
+    private int chatMaxBurst = 2;
+    private int chatMinimumDelay = 500;
 
     public String getRootUrl() {
         return rootUrl;
