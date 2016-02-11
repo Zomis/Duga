@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class TestBot implements ChatBot {
 
-    Map<WebhookParameters, List<String>> messages = new HashMap<>();
+    private Map<WebhookParameters, List<String>> messages = new HashMap<>();
 
     @Override
     public Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages) {
@@ -49,6 +49,10 @@ public class TestBot implements ChatBot {
     @Override
     public <E extends DugaEvent> void registerListener(Class<E> eventClass, Consumer<E> handler) {
 
+    }
+
+    public Map<WebhookParameters, List<String>> getMessages() {
+        return messages;
     }
 
 }

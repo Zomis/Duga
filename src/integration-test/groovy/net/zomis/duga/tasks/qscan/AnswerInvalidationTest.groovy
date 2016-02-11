@@ -14,7 +14,6 @@ class AnswerInvalidationTest {
     // https://grails.github.io/grails-doc/latest/guide/testing.html
 
     final TestBot bot = new TestBot()
-    Environment env
 
     @Test
     public void testAnswersInvalidatedMultipleCodeBlocks() {

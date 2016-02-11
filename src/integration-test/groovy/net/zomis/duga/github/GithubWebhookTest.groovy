@@ -57,7 +57,7 @@ class GithubWebhookTest {
         def result = stringer.postGithub(type, obj)
         def bot = new TestBot()
         def param = WebhookParameters.toRoom('hookTest')
-        bot.postChat(param, result)
+        bot.postChat(param.messages(result))
         assert bot.messages[param] == messages
     }
 
