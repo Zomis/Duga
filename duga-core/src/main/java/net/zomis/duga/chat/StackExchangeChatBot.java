@@ -85,7 +85,7 @@ public class StackExchangeChatBot implements ChatBot {
 	public void start() {
 		this.executorService.submit(() -> {
 			try {
-				startBackground();
+                login();
 				System.out.println("Start draining");
                 executeEvent(new DugaStartedEvent(this));
 				drainMessagesQueue();
@@ -94,26 +94,6 @@ public class StackExchangeChatBot implements ChatBot {
 				ex.printStackTrace();
 			}
 		});
-	}
-
-	private void startBackground() {
-        login();
-
-		String deployGreeting = ""; // TODO: configService.getConfig("deployGreeting", "");
-		if (!deployGreeting.isEmpty()) {
-            // String deployGreetingRooms = configService.getConfig("deployGreetingRooms", "");
-            String deployGreetingRooms = "16134";
-			for (String greetingRoom : deployGreetingRooms.split(",")) {
-				if (greetingRoom.matches("^\\d+$")) {
-					WebhookParameters params = new WebhookParameters();
-					params.setRoomId(greetingRoom);
-					params.setPost(true);
-					postMessages(params, Collections.singletonList(deployGreeting));
-				} else {
-					LOGGER.warning("Deploy, No valid room: " + greetingRoom);
-				}
-			}
-		}
 	}
 
     private void login() {
