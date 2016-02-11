@@ -19,7 +19,7 @@ class AppveyorHookController {
 	private final static Logger LOGGER = Logger.getLogger(AppveyorHookController.class.getSimpleName());
 	
 	@Autowired
-	DugaBot chatBot;
+	DugaBotService chatBot;
 	
 	def build() {
         println 'AppVeyor!'

@@ -1,6 +1,6 @@
 package net.zomis.duga.tasks
 
-import net.zomis.duga.DugaBot
+import net.zomis.duga.DugaBotService
 import net.zomis.duga.chat.WebhookParameters;
 
 import java.text.MessageFormat;
@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 
 public class StatisticTask implements Runnable {
     private static final Logger logger = LogManager.getLogger(StatisticTask.class);
-	private final DugaBot chatBot;
+	private final DugaBotService chatBot;
     private final List<WebhookParameters> rooms
 
-    public StatisticTask(DugaBot chatBot, String rooms) {
+    public StatisticTask(DugaBotService chatBot, String rooms) {
 		this.chatBot = chatBot;
         this.rooms = Arrays.stream(rooms.split(','))
                 .map({String str -> WebhookParameters.toRoom(str)})

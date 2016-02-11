@@ -46,7 +46,7 @@ class DugaTasks {
     }
 
 
-    @Autowired private DugaBot chatBot;
+    @Autowired private DugaBotService chatBot;
     @Autowired private GithubBean githubBean;
     @Autowired private StackExchangeAPI stackAPI;
     @Autowired private HookStringification stringification;

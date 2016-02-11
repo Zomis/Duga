@@ -8,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 
-class DugaBot implements ChatBot, InitializingBean {
+class DugaBotService implements ChatBot, InitializingBean {
 
     @Autowired
     Environment environment

@@ -1,6 +1,6 @@
 package net.zomis.duga.tasks
 
-import net.zomis.duga.DugaBot;
+import net.zomis.duga.DugaBotService;
 
 import net.zomis.duga.StackExchangeAPI;
 import net.zomis.duga.chat.WebhookParameters;
@@ -12,12 +12,12 @@ public class UnansweredTask implements Runnable {
 	
 	private final StackExchangeAPI api;
 	private final WebhookParameters room;
-	private final DugaBot bot;
+	private final DugaBotService bot;
 	private final String site;
 	private final String message;
 
 	public UnansweredTask(StackExchangeAPI stackAPI, String room,
-		DugaBot chatBot, String site, String message) {
+						  DugaBotService chatBot, String site, String message) {
 		this.api = stackAPI;
 		this.room = WebhookParameters.toRoom(room);
 		this.bot = chatBot;

@@ -1,6 +1,6 @@
 package net.zomis.duga.tasks
 
-import net.zomis.duga.DugaBot
+import net.zomis.duga.DugaBotService
 import net.zomis.duga.StackExchangeAPI
 import net.zomis.duga.chat.WebhookParameters;
 
@@ -9,12 +9,12 @@ import java.util.function.ToIntFunction;
 class UserRepDiffTask implements Runnable {
 
 	private final StackExchangeAPI stackApi;
-	private final DugaBot chatBot;
+	private final DugaBotService chatBot;
 	private final String usersString;
 	private final String site;
 	private final WebhookParameters room;
 
-	public UserRepDiffTask(StackExchangeAPI stackApi, String room, DugaBot chatBot, String users, String site) {
+	public UserRepDiffTask(StackExchangeAPI stackApi, String room, DugaBotService chatBot, String users, String site) {
 		this.stackApi = stackApi;
 		this.chatBot = chatBot;
 		this.usersString = users.replace(',', ';');

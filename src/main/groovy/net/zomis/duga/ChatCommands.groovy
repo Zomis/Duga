@@ -8,7 +8,7 @@ class ChatCommands {
 
     private final List<Consumer<ChatMessageIncoming>> consumers = new ArrayList<>()
     private final DugaTasks tasks
-    private final DugaBot bot
+    private final DugaBotService bot
 
     ChatCommands(DugaChatListener bean) {
         this.tasks = bean.tasks

@@ -8,7 +8,7 @@ import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.transform.TimedInterrupt
 import net.zomis.duga.ChatCommands
-import net.zomis.duga.DugaBot
+import net.zomis.duga.DugaBotService
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.chat.ChatMessageIncoming
 import net.zomis.duga.chat.WebhookParameters
@@ -27,7 +27,7 @@ class ListenTask implements Runnable {
     private static final int NUM_MESSAGES = 10
 
     private final String commandPrefix
-    private final DugaBot bot
+    private final DugaBotService bot
     private final String room
     private final WebhookParameters params
     private final DugaChatListener bean
@@ -38,7 +38,7 @@ class ListenTask implements Runnable {
     private MechanizeAgent agent
     ScheduledFuture<?> future
 
-    public ListenTask(DugaBot bot, String room, ChatCommands commandHandler, DugaChatListener bean) {
+    public ListenTask(DugaBotService bot, String room, ChatCommands commandHandler, DugaChatListener bean) {
         this.bean = bean
         this.bot = bot
         this.room = room

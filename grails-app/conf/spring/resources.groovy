@@ -1,4 +1,4 @@
-import net.zomis.duga.DugaBot
+import net.zomis.duga.DugaBotService
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.DugaStats
 import net.zomis.duga.DugaTasks
@@ -17,7 +17,7 @@ beans = {
     // Ordered by dependencies, thing A may be dependent on B if it is listed below B.
     // This ordering does not matter to Spring or Grails, only for personal convenience
     stackAPI(StackExchangeAPI)
-    dugaBot(DugaBot)
+    dugaBot(DugaBotService)
     stats(DugaStats)
     stringification(HookStringification)
     githubAPI(GithubBean)

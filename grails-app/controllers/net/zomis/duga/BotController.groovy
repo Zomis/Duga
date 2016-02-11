@@ -11,7 +11,7 @@ class BotController {
     static allowedMethods = [post:'POST']
 
     @Autowired
-    DugaBot bot
+    DugaBotService bot
 
     @Autowired
     Environment environment

@@ -1,6 +1,6 @@
 package net.zomis.duga.tasks
 
-import net.zomis.duga.DugaBot
+import net.zomis.duga.DugaBotService
 import net.zomis.duga.HookStringification
 import net.zomis.duga.chat.WebhookParameters
 import net.zomis.duga.GithubBean
@@ -16,9 +16,9 @@ public class GithubTask implements Runnable {
 	
 	private final GithubBean githubBean;
     private final HookStringification stringify;
-    private final DugaBot bot;
+    private final DugaBotService bot;
 
-	public GithubTask(GithubBean githubBean, HookStringification stringify, DugaBot bot) {
+	public GithubTask(GithubBean githubBean, HookStringification stringify, DugaBotService bot) {
 		this.githubBean = githubBean
         this.stringify = stringify
         this.bot = bot

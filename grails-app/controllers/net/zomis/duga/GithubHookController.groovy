@@ -9,7 +9,7 @@ class GithubHookController {
     static allowedMethods = [hook:'POST']
 
     @Autowired
-    DugaBot bot
+    DugaBotService bot
 
     @Autowired
     HookStringification stringification

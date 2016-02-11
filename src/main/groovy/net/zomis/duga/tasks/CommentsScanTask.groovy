@@ -2,7 +2,7 @@ package net.zomis.duga.tasks;
 
 import java.time.Instant;
 
-import net.zomis.duga.DugaBot;
+import net.zomis.duga.DugaBotService;
 import net.zomis.duga.StackExchangeAPI;
 import net.zomis.duga.chat.WebhookParameters;
 import org.apache.log4j.LogManager;
@@ -23,9 +23,9 @@ public class CommentsScanTask implements Runnable {
 
 	private StackExchangeAPI stackAPI;
 
-	private DugaBot chatBot;
+	private DugaBotService chatBot;
 	
-    public CommentsScanTask(StackExchangeAPI stackAPI, DugaBot chatBot) {
+    public CommentsScanTask(StackExchangeAPI stackAPI, DugaBotService chatBot) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
 	}

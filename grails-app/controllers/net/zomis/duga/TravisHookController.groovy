@@ -28,7 +28,7 @@ class TravisHookController {
 	private final static Logger LOGGER = Logger.getLogger(TravisHookController.class.getSimpleName());
 	
 	@Autowired
-	private DugaBot chatBot;
+	private DugaBotService chatBot;
 	
     @Autowired
     private GithubBean githubBean

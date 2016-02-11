@@ -12,7 +12,7 @@ import org.springframework.scheduling.TaskScheduler
 class DugaChatListener implements InitializingBean {
 
     @Autowired TaskScheduler scheduler
-    @Autowired DugaBot chatBot
+    @Autowired DugaBotService chatBot
     @Autowired DugaTasks tasks
     @Autowired Environment environment
 
