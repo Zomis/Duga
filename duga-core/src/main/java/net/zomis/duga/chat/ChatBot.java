@@ -31,5 +31,12 @@ public interface ChatBot {
 
     void stop();
 
+    /**
+     * Add an event listener. Note that all events are run synchronously.
+     *
+     * @param eventClass Event class
+     * @param handler Handler for the event class
+     * @param <E> Event class
+     */
     <E extends DugaEvent> void registerListener(Class<E> eventClass, Consumer<E> handler);
 }

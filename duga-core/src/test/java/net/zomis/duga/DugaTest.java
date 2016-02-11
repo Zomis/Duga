@@ -38,10 +38,12 @@ public class DugaTest {
         config.setChatMaxBurst(2);
         config.setChatMinimumDelay(500);
         ChatBot bot = new StackExchangeChatBot(config);
-        bot.registerListener(DugaStartedEvent.class, DugaTest::interactive);
+        bot.registerListener(DugaStartedEvent.class,
+            e -> new Thread(() -> interactive(e)).run());
         bot.registerListener(DugaStopEvent.class, DugaTest::shutdown);
         System.out.println("Starting bot...");
         bot.start();
+        System.out.println("Bot started.");
     }
 
     private static void shutdown(DugaStopEvent event) {
