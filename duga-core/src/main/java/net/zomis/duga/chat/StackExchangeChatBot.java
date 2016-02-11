@@ -202,7 +202,7 @@ public class StackExchangeChatBot implements ChatBot {
 
 	public void stop() {
         this.executeEvent(new DugaStopEvent(this));
-		this.executorService.shutdown();
+		this.executorService.shutdownNow();
 	}
 
     @Override
