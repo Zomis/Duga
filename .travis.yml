@@ -8,5 +8,7 @@ before_install:
 
 install:
     - cd duga-core
+    - chmod +x gradlew
     - ./gradlew install
+    - cd ..
 
