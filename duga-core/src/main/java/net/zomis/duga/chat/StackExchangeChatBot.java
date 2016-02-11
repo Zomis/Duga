@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -12,19 +11,10 @@ import java.util.stream.Collectors;
 import net.zomis.duga.chat.events.DugaEvent;
 import net.zomis.duga.chat.events.DugaStartedEvent;
 import net.zomis.duga.chat.events.DugaStopEvent;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolException;
-import org.apache.http.client.RedirectStrategy;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.protocol.HttpContext;
 
 import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.html.HtmlDocument;
 import com.gistlabs.mechanize.document.html.HtmlElement;
-import com.gistlabs.mechanize.document.html.form.Form;
-import com.gistlabs.mechanize.document.html.form.SubmitButton;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
 
