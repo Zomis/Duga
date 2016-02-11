@@ -16,11 +16,6 @@ public class DugaTest {
 
     public static void main(String[] args) {
 
-        if (true) {
-            System.out.println(new File("").getAbsolutePath());
-            // return;
-        }
-
         BotConfiguration config = new BotConfiguration();
 
         config.setRootUrl("http://stackexchange.com");
@@ -44,7 +39,7 @@ public class DugaTest {
         Scanner scanner = new Scanner(System.in);
         StackExchangeChatBot bot = new StackExchangeChatBot(config);
         System.out.println("Press enter to start bot");
-        // bot.start();
+        bot.start();
         while (true) {
             String input = scanner.nextLine();
             if (input.isEmpty()) {
@@ -54,6 +49,7 @@ public class DugaTest {
             bot.postMessages(WebhookParameters.toRoom("16134"),
                 Collections.singletonList(input));
         }
+        bot.stop();
         scanner.close();
     }
 

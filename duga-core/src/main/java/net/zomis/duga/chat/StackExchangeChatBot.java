@@ -88,20 +88,22 @@ public class StackExchangeChatBot {
 				request.addHeader("Referer", configuration.getRootUrl() + "/users/chat-login");
 			}
 		});
-        this.executorService.submit(() -> {
-            try {
-                start();
-				System.out.println("Start draining");
-                drainMessagesQueue();
-            } catch (Exception ex) {
-				System.out.println("Error!! " + ex);
-                ex.printStackTrace();
-            }
-        });
-
     }
 
 	public void start() {
+		this.executorService.submit(() -> {
+			try {
+				startBackground();
+				System.out.println("Start draining");
+				drainMessagesQueue();
+			} catch (Exception ex) {
+				System.out.println("Error!! " + ex);
+				ex.printStackTrace();
+			}
+		});
+	}
+
+	private void startBackground() {
         login();
 
 		String deployGreeting = ""; // TODO: configService.getConfig("deployGreeting", "");
@@ -280,10 +282,6 @@ public class StackExchangeChatBot {
 			postMessages(null, Collections.singletonList(this.undeployGoodbyeText));
 		}
 		this.executorService.shutdown();
-	}
-
-	public void destroy() throws Exception {
-		this.stop();
 	}
 
 	private void drainMessagesQueue() {
