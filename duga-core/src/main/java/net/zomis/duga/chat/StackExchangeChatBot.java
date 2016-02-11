@@ -46,7 +46,6 @@ public class StackExchangeChatBot implements ChatBot {
 
 	private String chatFKey;
 
-	private String undeployGoodbyeText;
     private final Map<Class<?>, List<Consumer<Object>>> handlers = new HashMap<>();
 
     public StackExchangeChatBot(BotConfiguration config) {
@@ -115,8 +114,6 @@ public class StackExchangeChatBot implements ChatBot {
 				}
 			}
 		}
-
-		this.undeployGoodbyeText = ""; // configService.getConfig("undeployGoodbyeText", "");
 	}
 
     private void login() {
