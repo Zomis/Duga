@@ -39,7 +39,7 @@ public class DugaTest {
         config.setChatMinimumDelay(500);
         ChatBot bot = new StackExchangeChatBot(config);
         bot.registerListener(DugaStartedEvent.class,
-            e -> new Thread(() -> interactive(e)).run());
+            e -> new Thread(() -> interactive(e)).start());
         bot.registerListener(DugaStopEvent.class, DugaTest::shutdown);
         System.out.println("Starting bot...");
         bot.start();
