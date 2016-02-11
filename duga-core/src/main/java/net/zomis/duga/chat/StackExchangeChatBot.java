@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ public class StackExchangeChatBot implements ChatBot {
 	private final BlockingQueue<List<ChatMessage>> messagesQueue = new LinkedBlockingQueue<>();
 
 	private final MechanizeAgent agent;
+    private final LoginFunction loginFunction = new StackExchangeLogin();
 
 	private final BotConfiguration configuration;
 
@@ -50,36 +52,7 @@ public class StackExchangeChatBot implements ChatBot {
 
     public StackExchangeChatBot(BotConfiguration config) {
         this.configuration = config;
-		this.agent = new MechanizeAgent();
-
-        this.agent.getClient().setRedirectStrategy(new RedirectStrategy() {
-            @Override
-            public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-                return response.getStatusLine().getStatusCode() == 302;
-            }
-
-            @Override
-            public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-                System.out.println(Arrays.toString(response.getAllHeaders()));
-                String host = request.getFirstHeader("Host").getValue();
-				String location = response.getFirstHeader("Location").getValue();
-				String protocol = host.equals("openid.stackexchange.com") ? "https" : "http";
-				if (location.startsWith("http://") || location.startsWith("https://")) {
-					LOGGER.info("Redirecting to " + location);
-					return new HttpGet(location);
-				} else {
-					LOGGER.info("Redirecting to " + protocol + "://" + host + location);
-					return new HttpGet(protocol + "://" + host + location);
-				}
-			}
-		});
-
-		this.agent.getClient().addRequestInterceptor((request, context) -> {
-			LOGGER.info("Request to " + request.getRequestLine().getUri());
-			if (request.getRequestLine().getUri().equals("/login/global-fallback")) {
-				request.addHeader("Referer", configuration.getRootUrl() + "/users/chat-login");
-			}
-		});
+		this.agent = loginFunction.constructAgent(config);
     }
 
 	public void start() {
@@ -97,52 +70,9 @@ public class StackExchangeChatBot implements ChatBot {
 	}
 
     private void login() {
-        loginOpenId();
-        loginRoot();
-        loginChat();
-
-        String fkey = retrieveFKey();
-        this.chatFKey = fkey;
-        LOGGER.info("Found fkey: " + fkey);
+        this.chatFKey = loginFunction.retrieveFKey(agent, configuration);
+        LOGGER.info("Found fkey: " + chatFKey);
     }
-
-	private void loginOpenId() {
-		HtmlDocument openIdLoginPage = agent.get("https://openid.stackexchange.com/account/login");
-        System.out.println(openIdLoginPage);
-        System.out.println(openIdLoginPage.getRoot());
-        Form loginForm = openIdLoginPage.forms().getAll().get(0);
-		loginForm.get("email").setValue(configuration.getBotEmail());
-		loginForm.get("password").setValue(configuration.getBotPassword());
-		List<SubmitButton> submitButtons = loginForm.findAll("input[type=submit]", SubmitButton.class);
-		HtmlDocument response = loginForm.submit(submitButtons.get(0));
-		LOGGER.info(response.getTitle());
-		LOGGER.info("OpenID login attempted.");
-	}
-
-	private void loginRoot() {
-		HtmlDocument rootLoginPage = agent.get(configuration.getRootUrl() + "/users/login");
-		Form loginForm = rootLoginPage.forms().getAll().get(rootLoginPage.forms().getAll().size() - 1);
-		loginForm.get("openid_identifier").setValue("https://openid.stackexchange.com/");
-		List<SubmitButton> submitButtons = loginForm.findAll("input[type=submit]", SubmitButton.class);
-		HtmlDocument response = loginForm.submit(submitButtons.get(submitButtons.size() - 1));
-		LOGGER.info(response.getTitle());
-		LOGGER.info("Root login attempted.");
-	}
-
-	private void loginChat() {
-		HtmlDocument chatLoginPage = agent.get(configuration.getRootUrl() + "/users/chat-login");
-		Form loginForm = chatLoginPage.forms().getAll().get(chatLoginPage.forms().getAll().size() - 1);
-		List<SubmitButton> submitButtons = loginForm.findAll("input[type=submit]", SubmitButton.class);
-		HtmlDocument response = loginForm.submit(submitButtons.get(submitButtons.size() - 1));
-		LOGGER.info(response.getTitle());
-		LOGGER.info("Chat login attempted.");
-	}
-
-	private String retrieveFKey() {
-		HtmlDocument joinFavoritesPage = agent.get(configuration.getChatUrl() + "/chats/join/favorite");
-		Form joinForm = joinFavoritesPage.forms().getAll().get(joinFavoritesPage.forms().getAll().size() - 1);
-		return joinForm.get("fkey").getValue();
-	}
 
 	public Future<List<ChatMessageResponse>> postMessages(WebhookParameters params, final List<String> messages) {
 		if (params == null) {
