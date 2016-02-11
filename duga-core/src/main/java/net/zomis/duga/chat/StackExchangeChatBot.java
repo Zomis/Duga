@@ -3,10 +3,13 @@ package net.zomis.duga.chat;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import net.zomis.duga.chat.events.DugaEvent;
+import net.zomis.duga.chat.events.DugaStartedEvent;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
@@ -43,8 +46,9 @@ public class StackExchangeChatBot implements ChatBot {
 	private String chatFKey;
 
 	private String undeployGoodbyeText;
+    private final Map<Class<?>, List<Consumer<Object>>> handlers = new HashMap<>();
 
-	public StackExchangeChatBot(BotConfiguration config) {
+    public StackExchangeChatBot(BotConfiguration config) {
         this.configuration = config;
 		this.agent = new MechanizeAgent();
 
@@ -83,6 +87,7 @@ public class StackExchangeChatBot implements ChatBot {
 			try {
 				startBackground();
 				System.out.println("Start draining");
+                executeEvent(new DugaStartedEvent(this));
 				drainMessagesQueue();
 			} catch (Exception ex) {
 				System.out.println("Error!! " + ex);
@@ -192,7 +197,7 @@ public class StackExchangeChatBot implements ChatBot {
         return null;
 	}
 
-	private void attemptPostMessageToChat(final ChatMessage message) {
+	private ChatMessageResponse attemptPostMessageToChat(final ChatMessage message) {
 		System.out.println("Real message post: " + message);
         Objects.requireNonNull(message, "message");
         ChatMessageResponse response = postMessageToChat(message);
@@ -209,6 +214,7 @@ public class StackExchangeChatBot implements ChatBot {
             if (response2.hasException()) {
                 LOGGER.log(Level.SEVERE, "Failed to post message on retry", response2.getException());
             }
+            return response2;
 		}
         if (response.getException() instanceof ProbablyNotLoggedInException) {
 			System.out.println("Probably not logged in");
@@ -218,7 +224,9 @@ public class StackExchangeChatBot implements ChatBot {
             if (response2.hasException()) {
                 LOGGER.log(Level.SEVERE, "Failed to post message on retry", response2.getException());
             }
+            return response2;
 		}
+        return response;
 	}
 
     @Override
@@ -244,7 +252,7 @@ public class StackExchangeChatBot implements ChatBot {
 
     @Override
     public ChatMessageResponse postNow(ChatMessage message) {
-        return null;
+        return attemptPostMessageToChat(message);
     }
 
     private ChatMessageResponse postMessageToChat(final ChatMessage message) {
@@ -302,7 +310,18 @@ public class StackExchangeChatBot implements ChatBot {
 		this.executorService.shutdown();
 	}
 
-	private void drainMessagesQueue() {
+    @Override
+    public <E extends DugaEvent> void registerListener(Class<E> eventClass, Consumer<E> handler) {
+        handlers.putIfAbsent(eventClass, new ArrayList<>());
+        handlers.get(eventClass).add(e -> handler.accept((E) e));
+    }
+
+    private void executeEvent(DugaEvent event) {
+        List<Consumer<Object>> list = handlers.get(event.getClass());
+        list.forEach(e -> e.accept(event));
+    }
+
+    private void drainMessagesQueue() {
 		try {
 			while (true) {
 				System.out.println("Posting drained messages...");

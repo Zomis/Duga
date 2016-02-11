@@ -4,6 +4,7 @@ import net.zomis.duga.chat.BotConfiguration;
 import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.StackExchangeChatBot;
 import net.zomis.duga.chat.WebhookParameters;
+import net.zomis.duga.chat.events.DugaStartedEvent;
 
 import java.io.File;
 import java.io.FileReader;
@@ -37,10 +38,16 @@ public class DugaTest {
         config.setChatThrottle(10000);
         config.setChatMaxBurst(2);
         config.setChatMinimumDelay(500);
-        Scanner scanner = new Scanner(System.in);
         ChatBot bot = new StackExchangeChatBot(config);
-        System.out.println("Press enter to start bot");
+        bot.registerListener(DugaStartedEvent.class, DugaTest::interactive);
+        System.out.println("Starting bot...");
         bot.start();
+    }
+
+    private static void interactive(DugaStartedEvent event) {
+        System.out.println("Bot started and ready.");
+        Scanner scanner = new Scanner(System.in);
+        ChatBot bot = event.getBot();
         WebhookParameters room = WebhookParameters.toRoom("16134");
         while (true) {
             String input = scanner.nextLine();

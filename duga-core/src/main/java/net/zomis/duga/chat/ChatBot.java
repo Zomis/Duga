@@ -1,7 +1,11 @@
 package net.zomis.duga.chat;
 
+import net.zomis.duga.chat.events.DugaEvent;
+import net.zomis.duga.chat.events.DugaStartedEvent;
+
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 public interface ChatBot {
 
@@ -26,4 +30,6 @@ public interface ChatBot {
     void start();
 
     void stop();
+
+    <E extends DugaEvent> void registerListener(Class<E> eventClass, Consumer<E> handler);
 }
