@@ -5,16 +5,16 @@ import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.StackExchangeChatBot;
 import net.zomis.duga.chat.WebhookParameters;
 import net.zomis.duga.chat.events.DugaStartedEvent;
+import net.zomis.duga.chat.events.DugaStopEvent;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
 import java.util.Scanner;
 
 public class DugaTest {
+
+    private static final WebhookParameters room = WebhookParameters.toRoom("16134");
 
     public static void main(String[] args) {
 
@@ -33,22 +33,26 @@ public class DugaTest {
         }
 
         System.out.println("Using email " + config.getBotEmail());
-        System.out.println("With password " + config.getBotPassword());
 
         config.setChatThrottle(10000);
         config.setChatMaxBurst(2);
         config.setChatMinimumDelay(500);
         ChatBot bot = new StackExchangeChatBot(config);
         bot.registerListener(DugaStartedEvent.class, DugaTest::interactive);
+        bot.registerListener(DugaStopEvent.class, DugaTest::shutdown);
         System.out.println("Starting bot...");
         bot.start();
+    }
+
+    private static void shutdown(DugaStopEvent event) {
+        event.getBot().postNow(room.message("Shutting down!"));
     }
 
     private static void interactive(DugaStartedEvent event) {
         System.out.println("Bot started and ready.");
         Scanner scanner = new Scanner(System.in);
         ChatBot bot = event.getBot();
-        WebhookParameters room = WebhookParameters.toRoom("16134");
+        bot.postNow(room.message("Hello World!"));
         while (true) {
             String input = scanner.nextLine();
             if (input.isEmpty()) {

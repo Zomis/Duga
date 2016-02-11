@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import net.zomis.duga.chat.events.DugaEvent;
 import net.zomis.duga.chat.events.DugaStartedEvent;
+import net.zomis.duga.chat.events.DugaStopEvent;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
@@ -303,10 +304,7 @@ public class StackExchangeChatBot implements ChatBot {
 	}
 
 	public void stop() {
-		if (!this.undeployGoodbyeText.isEmpty()) {
-			// TODO: Use specific chat parameters
-			postMessages(null, Collections.singletonList(this.undeployGoodbyeText));
-		}
+        this.executeEvent(new DugaStopEvent(this));
 		this.executorService.shutdown();
 	}
 

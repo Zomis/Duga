@@ -6,11 +6,13 @@ import net.zomis.duga.chat.ChatMessage
 import net.zomis.duga.chat.ChatMessageResponse
 import net.zomis.duga.chat.StackExchangeChatBot
 import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.events.DugaEvent
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 
 import java.util.concurrent.Future
+import java.util.function.Consumer
 
 class DugaBotService implements ChatBot, InitializingBean {
 
@@ -46,6 +48,11 @@ class DugaBotService implements ChatBot, InitializingBean {
     @Override
     void stop() {
         bot.stop()
+    }
+
+    @Override
+    def <E extends DugaEvent> void registerListener(Class<E> eventClass, Consumer<E> handler) {
+        bot.registerListener(eventClass, handler)
     }
 
     @Override
