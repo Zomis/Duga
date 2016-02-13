@@ -23,16 +23,19 @@ public class TestBot implements ChatBot {
 
     @Override
     public Future<ChatMessageResponse> postAsync(ChatMessage message) {
+        postChat(Arrays.asList(message));
         return null;
     }
 
     @Override
     public ChatMessageResponse postNowOnce(ChatMessage message) {
+        postChat(Arrays.asList(message));
         return null;
     }
 
     @Override
     public ChatMessageResponse postNow(ChatMessage message) {
+        postChat(Arrays.asList(message));
         return null;
     }
 
