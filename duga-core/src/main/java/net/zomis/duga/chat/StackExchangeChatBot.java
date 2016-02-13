@@ -199,7 +199,9 @@ public class StackExchangeChatBot implements ChatBot {
 
     private void executeEvent(DugaEvent event) {
         List<Consumer<Object>> list = handlers.get(event.getClass());
-        list.forEach(e -> e.accept(event));
+        if (list != null) {
+            list.forEach(e -> e.accept(event));
+        }
     }
 
     private void drainMessagesQueue() {
