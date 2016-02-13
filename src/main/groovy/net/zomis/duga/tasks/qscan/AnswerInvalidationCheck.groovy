@@ -2,6 +2,7 @@ package net.zomis.duga.tasks.qscan
 
 import net.zomis.duga.chat.ChatBot
 import net.zomis.duga.StackAPI
+import net.zomis.duga.chat.ChatMessage
 import net.zomis.duga.chat.WebhookParameters
 
 import java.time.Instant
@@ -9,6 +10,8 @@ import java.util.stream.Collectors
 import static org.apache.commons.lang.StringEscapeUtils.unescapeHtml
 
 class AnswerInvalidationCheck {
+
+    private static final WebhookParameters debug = WebhookParameters.toRoom('20298');
 
     static void perform(def result, Instant lastCheck, StackAPI stackExchangeAPI, ChatBot dugaBot, WebhookParameters params) {
         println 'Answer invalidation check'
@@ -24,7 +27,7 @@ class AnswerInvalidationCheck {
                 println 'edited: ' + it.question_id
                 int id = it.question_id
                 def edits = stackExchangeAPI.apiCall(editCall(id), 'codereview', '!9YdnS7lAD')
-                dugaBot.postDebug("Edits fetched for $id: ${edits.items.size()}. quota remaining $edits.quota_remaining")
+                dugaBot.postAsync(debug.message("Edits fetched for $id: ${edits.items.size()}. quota remaining $edits.quota_remaining"))
                 def possibleInvalidations = codeChanges(edits, lastCheck)
                 if (!possibleInvalidations.isEmpty()) {
                     String link = questionLink.replaceAll('/questions/.*', "/posts/$questionId/revisions")
