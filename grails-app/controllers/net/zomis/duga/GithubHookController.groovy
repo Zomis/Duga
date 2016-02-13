@@ -26,6 +26,9 @@ class GithubHookController {
 
         List<String> strings = stringification.postGithub(eventType, json)
         strings.forEach({ println it })
+        if (room == null) {
+            room = '16134'
+        }
         String[] rooms = room.split(',')
         for (String postRoom : rooms) {
             bot.postChat(WebhookParameters.toRoom(postRoom), strings)
