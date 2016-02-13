@@ -38,11 +38,11 @@ def getMavenSettingsCredentials() {
 def getCredentials() {
     def entries = getMavenSettingsCredentials()
     for (entry in entries) {
-        if (entry."id".text() == 'zomis-ftp') {
+        if (entry."id".text() == 'zomisnet') {
             return [username: entry.username.text(), password: entry.password.text()]
         }
     }
-    return [username: 'invalid', password: 'invalid']
+    throw new RuntimeException('No credentials found');
 }
 
 uploadArchives {
