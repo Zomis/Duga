@@ -42,7 +42,7 @@ def getCredentials() {
             return [username: entry.username.text(), password: entry.password.text()]
         }
     }
-    throw new RuntimeException('No credentials found');
+    return [username: 'invalid', password: 'invalid']
 }
 
 uploadArchives {
