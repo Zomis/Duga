@@ -1,0 +1,16 @@
+web:
+  build: .
+#  command: php -S 0.0.0.0:8000 -t /code
+  ports:
+    - "8000:8080"
+  links:
+    - db
+  volumes:
+    - ./webapp:/usr/local/tomcat/webapps
+    - .:/code
+db:
+  image: postgres
+  environment:
+    POSTGRES_USER: duga
+    POSTGRES_PASSWORD: duga
+    POSTGRES_DB: duga
