@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WebhookParameters {
+public class BotRoom {
 	
 	private String roomId;
 
@@ -16,8 +16,8 @@ public class WebhookParameters {
 		this.roomId = roomId;
 	}
 
-	public static WebhookParameters toRoom(String roomId) {
-		WebhookParameters params = new WebhookParameters();
+	public static BotRoom toRoom(String roomId) {
+		BotRoom params = new BotRoom();
 		params.setRoomId(roomId);
 		return params;
 	}
@@ -28,7 +28,7 @@ public class WebhookParameters {
 		if (o == null) return false;
         if (getClass() != o.getClass()) return false;
 
-        WebhookParameters that = (WebhookParameters) o;
+        BotRoom that = (BotRoom) o;
 
         if (!roomId.equals(that.roomId)) return false;
 

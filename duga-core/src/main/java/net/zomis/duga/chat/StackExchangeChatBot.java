@@ -23,7 +23,7 @@ public class StackExchangeChatBot implements ChatBot {
 	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
 
     @Deprecated
-	private static final WebhookParameters debugRoom = WebhookParameters.toRoom("20298");
+	private static final BotRoom debugRoom = BotRoom.toRoom("20298");
 
 	private static final int MAX_MESSAGE_LENGTH = 500;
 	private static final String MESSAGE_CONTINUATION = "...";
@@ -71,7 +71,7 @@ public class StackExchangeChatBot implements ChatBot {
             return null;
         }
 		List<ChatMessage> shortenedMessages = new ArrayList<>();
-        WebhookParameters params = WebhookParameters.toRoom(messages.get(0).getRoom());
+        BotRoom params = BotRoom.toRoom(messages.get(0).getRoom());
 		for (ChatMessage mess : messages) {
             String message = mess.getMessage();
 			if (message.length() > MAX_MESSAGE_LENGTH) {

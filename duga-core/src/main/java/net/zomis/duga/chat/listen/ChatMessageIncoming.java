@@ -4,7 +4,7 @@ package net.zomis.duga.chat.listen;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.zomis.duga.chat.ChatBot;
-import net.zomis.duga.chat.WebhookParameters;
+import net.zomis.duga.chat.BotRoom;
 
 public class ChatMessageIncoming {
 
@@ -36,7 +36,7 @@ public class ChatMessageIncoming {
     private boolean showParent;
 
     ChatBot bot;
-    WebhookParameters params;
+    BotRoom params;
 
     public void reply(String message) {
         bot.postAsync(params.message(":" + messageId + " " + message));

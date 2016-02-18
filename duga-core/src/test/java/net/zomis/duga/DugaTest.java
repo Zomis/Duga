@@ -1,9 +1,9 @@
 package net.zomis.duga;
 
 import net.zomis.duga.chat.BotConfiguration;
+import net.zomis.duga.chat.BotRoom;
 import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.StackExchangeChatBot;
-import net.zomis.duga.chat.WebhookParameters;
 import net.zomis.duga.chat.events.DugaStartedEvent;
 import net.zomis.duga.chat.events.DugaStopEvent;
 import net.zomis.duga.chat.listen.ChatMessageIncoming;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DugaTest {
 
-    private static final WebhookParameters room = WebhookParameters.toRoom("20298");
+    private static final BotRoom room = BotRoom.toRoom("20298");
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) {

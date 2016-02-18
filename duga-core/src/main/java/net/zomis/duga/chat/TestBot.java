@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 public class TestBot implements ChatBot {
 
-    private Map<WebhookParameters, List<String>> messages = new HashMap<>();
+    private Map<BotRoom, List<String>> messages = new HashMap<>();
 
     @Override
     public Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages) {
-        WebhookParameters params = WebhookParameters.toRoom(messages.get(0).getRoom());
+        BotRoom params = BotRoom.toRoom(messages.get(0).getRoom());
         this.messages.putIfAbsent(params, new ArrayList<>());
         this.messages.get(params).addAll(messages.stream()
             .map(ChatMessage::getMessage)
@@ -54,7 +54,7 @@ public class TestBot implements ChatBot {
 
     }
 
-    public Map<WebhookParameters, List<String>> getMessages() {
+    public Map<BotRoom, List<String>> getMessages() {
         return messages;
     }
 

@@ -5,8 +5,8 @@ import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.document.json.node.JsonNode;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
+import net.zomis.duga.chat.BotRoom;
 import net.zomis.duga.chat.StackExchangeChatBot;
-import net.zomis.duga.chat.WebhookParameters;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -21,7 +21,7 @@ public class ListenTask implements Runnable {
 
     private final StackExchangeChatBot bot;
     private final String room;
-    private final WebhookParameters params;
+    private final BotRoom params;
     private long lastHandledId;
     private long lastMessageTime;
     private MechanizeAgent agent;
@@ -30,7 +30,7 @@ public class ListenTask implements Runnable {
     public ListenTask(StackExchangeChatBot bot, String room, Consumer<ChatMessageIncoming> handler) {
         this.bot = bot;
         this.room = room;
-        this.params = WebhookParameters.toRoom(room);
+        this.params = BotRoom.toRoom(room);
         this.agent = new MechanizeAgent();
         this.handler = handler;
     }
