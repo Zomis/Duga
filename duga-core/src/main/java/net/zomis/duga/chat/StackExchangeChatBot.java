@@ -45,6 +45,10 @@ public class StackExchangeChatBot implements ChatBot {
 		this.agent = loginFunction.constructAgent(config);
     }
 
+	public BotRoom room(String roomId) {
+		return new BotRoom(this, roomId);
+	}
+
 	public void start() {
 		this.executorService.submit(() -> {
 			try {

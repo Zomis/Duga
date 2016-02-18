@@ -50,6 +50,11 @@ public class TestBot implements ChatBot {
     }
 
     @Override
+    public BotRoom room(String roomId) {
+        return new BotRoom(this, roomId);
+    }
+
+    @Override
     public <E extends DugaEvent> void registerListener(Class<E> eventClass, Consumer<E> handler) {
 
     }

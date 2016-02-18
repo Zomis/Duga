@@ -28,6 +28,8 @@ public interface ChatBot {
 
     void stop();
 
+    BotRoom room(String roomId);
+
     /**
      * Add an event listener. Note that all events are run synchronously.
      *

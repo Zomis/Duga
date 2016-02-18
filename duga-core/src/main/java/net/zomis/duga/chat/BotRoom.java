@@ -5,21 +5,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BotRoom {
-	
-	private String roomId;
 
-	public String getRoomId() {
+    private final ChatBot bot;
+    private String roomId;
+
+    public BotRoom(ChatBot bot, String roomId) {
+        this.bot = bot;
+        this.roomId = roomId;
+    }
+
+    public String getRoomId() {
 		return roomId;
 	}
-	
-	public void setRoomId(String roomId) {
-		this.roomId = roomId;
-	}
 
+    @Deprecated
 	public static BotRoom toRoom(String roomId) {
-		BotRoom params = new BotRoom();
-		params.setRoomId(roomId);
-		return params;
+		return new BotRoom(null, roomId);
 	}
 
     @Override
@@ -47,7 +48,7 @@ public class BotRoom {
     }
 
 	public ChatMessage message(String input) {
-		return new ChatMessage(this, input);
+		return new ChatMessage(bot, this, input);
 	}
 
     public List<ChatMessage> messages(String... messages) {

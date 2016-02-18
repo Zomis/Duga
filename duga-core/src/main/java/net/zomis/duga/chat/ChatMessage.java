@@ -1,5 +1,6 @@
 package net.zomis.duga.chat;
 
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import com.gistlabs.mechanize.document.json.JsonDocument;
@@ -8,19 +9,36 @@ public class ChatMessage {
 	
 	private final String room;
 	private final String message;
-	private final Consumer<JsonDocument> onSuccess;
+	private Consumer<JsonDocument> onSuccess;
+    private final ChatBot bot;
+    private final BotRoom params;
 
-	public ChatMessage(BotRoom params, String message) {
-		this(params, message, null);
-	}
-	
-	public ChatMessage(BotRoom params, String message, Consumer<JsonDocument> onSuccess) {
-		this.room = params.getRoomId();
-		this.message = message;
+    public ChatMessage(BotRoom params, String message) {
+        this(null, params, message);
+    }
+
+    public ChatMessage(ChatBot bot, BotRoom params, String message) {
+        this.bot = bot;
+        this.params = params;
+        this.room = params.getRoomId();
+        this.message = message;
+        this.onSuccess = null;
+    }
+
+    public ChatMessage(BotRoom params, String message, Consumer<JsonDocument> onSuccess) {
+        this(null, params, message);
 		this.onSuccess = onSuccess;
 	}
-	
-	public String getMessage() {
+
+    public Future<ChatMessageResponse> post() {
+        return bot.postAsync(this);
+    }
+
+    public ChatMessageResponse postNow() {
+        return bot.postNow(this);
+    }
+
+    public String getMessage() {
 		return message;
 	}
 	
