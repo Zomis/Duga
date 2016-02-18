@@ -4,7 +4,7 @@ import java.time.Instant;
 
 import net.zomis.duga.DugaBotService;
 import net.zomis.duga.StackExchangeAPI;
-import net.zomis.duga.chat.WebhookParameters;
+import net.zomis.duga.chat.BotRoom;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -16,10 +16,10 @@ public class CommentsScanTask implements Runnable {
     private long fromDate;
     private int remainingQuota;
     
-	private final WebhookParameters params = WebhookParameters.toRoom("8595");
-	private final WebhookParameters debug = WebhookParameters.toRoom("20298");
-	private final WebhookParameters programmers = WebhookParameters.toRoom("21");
-	private final WebhookParameters softwareRecs = WebhookParameters.toRoom("22668");
+	private final BotRoom params;
+	private final BotRoom debug;
+	private final BotRoom programmers;
+	private final BotRoom softwareRecs;
 
 	private StackExchangeAPI stackAPI;
 
@@ -28,6 +28,10 @@ public class CommentsScanTask implements Runnable {
     public CommentsScanTask(StackExchangeAPI stackAPI, DugaBotService chatBot) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
+		this.params = chatBot.room("8595");
+		this.debug = chatBot.room("20298");
+		this.programmers = chatBot.room("21");
+		this.softwareRecs = chatBot.room("22668");
 	}
 
 	static boolean isInterestingComment(comment) {

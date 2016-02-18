@@ -1,6 +1,6 @@
 package net.zomis.duga
 
-import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.BotRoom
 import org.grails.web.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -29,7 +29,7 @@ class AppveyorHookController {
         println 'JSON Request: ' + buildEvent
         String room = params?.roomId
         println 'Room: ' + room
-        WebhookParameters params = WebhookParameters.toRoom(room)
+        BotRoom params = chatBot.room(room)
         String eventName = buildEvent.eventName.replace('_', ' ')
         def event = buildEvent.eventData
 

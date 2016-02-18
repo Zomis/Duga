@@ -1,7 +1,7 @@
 package net.zomis.duga.tasks
 
 import net.zomis.duga.DugaBotService
-import net.zomis.duga.chat.WebhookParameters;
+import net.zomis.duga.chat.BotRoom
 
 import java.text.MessageFormat;
 
@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 public class StatisticTask implements Runnable {
     private static final Logger logger = LogManager.getLogger(StatisticTask.class);
 	private final DugaBotService chatBot;
-    private final List<WebhookParameters> rooms
+    private final List<BotRoom> rooms
 
     public StatisticTask(DugaBotService chatBot, String rooms) {
 		this.chatBot = chatBot;
         this.rooms = Arrays.stream(rooms.split(','))
-                .map({String str -> WebhookParameters.toRoom(str)})
+                .map({String str -> chatBot.room(str)})
                 .collect(Collectors.toList())
 	}
 	
@@ -32,7 +32,7 @@ public class StatisticTask implements Runnable {
 
             results.sort(Comparator.comparing({DailyInfo ee -> ee.getName().toLowerCase()}));
 
-            for (WebhookParameters params : rooms) {
+            for (BotRoom params : rooms) {
 
                 chatBot.postSingle(params, "***RELOAD!***");
 
@@ -54,7 +54,7 @@ public class StatisticTask implements Runnable {
                 }
             }
             if (!rooms.isEmpty()) {
-                WebhookParameters debug = rooms.get(0)
+                BotRoom debug = rooms.get(0)
                 for (DailyInfo result : results) {
                     result.reset()
                     if (!result.save(failOnError: true, flush: true)) {

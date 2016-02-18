@@ -2,7 +2,7 @@ package net.zomis.duga.tasks
 
 import net.zomis.duga.DugaBotService
 import net.zomis.duga.HookStringification
-import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.BotRoom
 import net.zomis.duga.GithubBean
 import net.zomis.duga.github.GithubEventFilter;
 
@@ -55,8 +55,7 @@ public class GithubTask implements Runnable {
     		return;
     	}
 
-    	WebhookParameters params = new WebhookParameters();
-    	params.setRoomId(follow.getRoomIds());
+    	BotRoom params = bot.room(follow.roomIds);
 
     	Stream<Object> stream = events.stream();
     	stream = GithubEventFilter.filter(stream, follow.getInterestingEvents());
@@ -72,7 +71,7 @@ public class GithubTask implements Runnable {
         follow.save(flush: true)
 	}
     
-	private void post(event, long lastEventId, WebhookParameters params) {
+	private void post(event, long lastEventId, BotRoom params) {
 	    if (Long.parseLong(event.id) > lastEventId) {
 			System.out.println("POST: " + event);
             List<String> list = new ArrayList<>()

@@ -1,6 +1,6 @@
 package net.zomis.duga
 
-import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.BotRoom
 import org.grails.web.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -28,7 +28,7 @@ class GithubHookController {
         strings.forEach({ println it })
         String[] rooms = room.split(',')
         for (String postRoom : rooms) {
-            WebhookParameters hookParams = WebhookParameters.toRoom(postRoom)
+            BotRoom hookParams = bot.room(postRoom)
             bot.postChat(hookParams.messages(strings))
         }
         render 'OK'

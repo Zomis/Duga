@@ -3,7 +3,7 @@ package net.zomis.duga.tasks
 import net.zomis.duga.DugaBotService;
 
 import net.zomis.duga.StackExchangeAPI;
-import net.zomis.duga.chat.WebhookParameters;
+import net.zomis.duga.chat.BotRoom;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -11,7 +11,7 @@ public class UnansweredTask implements Runnable {
 	private static final Logger logger = LogManager.getLogger(UnansweredTask.class);
 	
 	private final StackExchangeAPI api;
-	private final WebhookParameters room;
+	private final BotRoom room;
 	private final DugaBotService bot;
 	private final String site;
 	private final String message;
@@ -19,7 +19,7 @@ public class UnansweredTask implements Runnable {
 	public UnansweredTask(StackExchangeAPI stackAPI, String room,
 						  DugaBotService chatBot, String site, String message) {
 		this.api = stackAPI;
-		this.room = WebhookParameters.toRoom(room);
+		this.room = bot.room(room);
 		this.bot = chatBot;
 		this.site = site;
 		this.message = message;

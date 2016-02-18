@@ -1,19 +1,20 @@
-package net.zomis.duga.tasks;
+package net.zomis.duga.tasks
+
+import net.zomis.duga.chat.BotRoom;
 
 import java.time.Instant;
 
 import net.zomis.duga.DugaBotService;
-import net.zomis.duga.chat.WebhookParameters;
 
 public class MessageTask implements Runnable {
 
 	private final DugaBotService chatBot;
-	private final WebhookParameters room;
+	private final BotRoom room;
 	private final String message;
 
 	public MessageTask(DugaBotService chatBot, String room, String message) {
 		this.chatBot = chatBot;
-		this.room = WebhookParameters.toRoom(room);
+		this.room = chatBot.room(room);
 		this.message = message;
 	}
 

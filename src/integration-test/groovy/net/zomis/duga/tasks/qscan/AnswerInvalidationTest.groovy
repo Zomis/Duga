@@ -4,9 +4,7 @@ import groovy.json.JsonSlurper
 import net.zomis.duga.GithubBean
 import net.zomis.duga.HookStringification
 import net.zomis.duga.chat.TestBot
-import net.zomis.duga.chat.WebhookParameters
 import org.junit.Test
-import org.springframework.core.env.Environment
 
 import java.time.Instant
 
@@ -224,7 +222,7 @@ class AnswerInvalidationTest {
                 'codereview', 'answerInvalidation', 'roomAnswerInvalidation')
         task.lastCheck = Instant.ofEpochSecond(1428420748) // question was edited at 1428420749
         task.run()
-        def messages = bot.messages.get(WebhookParameters.toRoom('roomAnswerInvalidation'))
+        def messages = bot.messages.get(bot.room('roomAnswerInvalidation'))
         println bot.messages
 
         assert AnswerInvalidationCheck.codeChanged(edits, Instant.ofEpochSecond(1428420748))

@@ -4,7 +4,7 @@ import net.zomis.duga.chat.ChatBot
 import net.zomis.duga.GithubBean
 import net.zomis.duga.HookStringification
 import net.zomis.duga.StackAPI
-import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.BotRoom
 
 import java.time.Instant
 
@@ -19,7 +19,7 @@ class QuestionScanTask implements Runnable {
     private final ChatBot bot
     private final String site
     private final String actions
-    private final WebhookParameters params
+    private final BotRoom params
     Instant lastCheck
 
     def QuestionScanTask(StackAPI stackExchangeAPI, GithubBean githubBean,
@@ -31,7 +31,7 @@ class QuestionScanTask implements Runnable {
         this.bot = dugaBot
         this.site = site
         this.actions = actions
-        this.params = WebhookParameters.toRoom(room)
+        this.params = dugaBot.room(room)
         this.lastCheck = Instant.now()
     }
 

@@ -1,9 +1,8 @@
 package net.zomis.duga.tasks.qscan
 
+import net.zomis.duga.chat.BotRoom
 import net.zomis.duga.chat.ChatBot
 import net.zomis.duga.StackAPI
-import net.zomis.duga.chat.ChatMessage
-import net.zomis.duga.chat.WebhookParameters
 
 import java.time.Instant
 import java.util.stream.Collectors
@@ -11,9 +10,9 @@ import static org.apache.commons.lang.StringEscapeUtils.unescapeHtml
 
 class AnswerInvalidationCheck {
 
-    private static final WebhookParameters debug = WebhookParameters.toRoom('20298');
+    private static final BotRoom debug = BotRoom.toRoom('20298');
 
-    static void perform(def result, Instant lastCheck, StackAPI stackExchangeAPI, ChatBot dugaBot, WebhookParameters params) {
+    static void perform(def result, Instant lastCheck, StackAPI stackExchangeAPI, ChatBot dugaBot, BotRoom params) {
         println 'Answer invalidation check'
         List questions = result.items
         questions.each {

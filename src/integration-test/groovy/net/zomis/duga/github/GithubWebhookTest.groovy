@@ -4,7 +4,6 @@ import groovy.json.JsonSlurper
 import net.zomis.duga.DugaStats
 import net.zomis.duga.HookStringification
 import net.zomis.duga.chat.TestBot
-import net.zomis.duga.chat.WebhookParameters
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,7 +55,7 @@ class GithubWebhookTest {
         def obj = new JsonSlurper().parseText(stream.text)
         def result = stringer.postGithub(type, obj)
         def bot = new TestBot()
-        def param = WebhookParameters.toRoom('hookTest')
+        def param = bot.room('hookTest')
         bot.postChat(param.messages(result))
         assert bot.messages[param] == messages
     }

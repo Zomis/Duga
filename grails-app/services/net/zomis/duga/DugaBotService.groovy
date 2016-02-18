@@ -1,11 +1,11 @@
 package net.zomis.duga
 
 import net.zomis.duga.chat.BotConfiguration
+import net.zomis.duga.chat.BotRoom
 import net.zomis.duga.chat.ChatBot
 import net.zomis.duga.chat.ChatMessage
 import net.zomis.duga.chat.ChatMessageResponse
 import net.zomis.duga.chat.StackExchangeChatBot
-import net.zomis.duga.chat.WebhookParameters
 import net.zomis.duga.chat.events.DugaEvent
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +22,7 @@ class DugaBotService implements ChatBot, InitializingBean {
     private StackExchangeChatBot bot
 
     @Deprecated
-    void postSingle(WebhookParameters params, String message) {
+    void postSingle(BotRoom params, String message) {
         this.postAsync(params.message(message))
     }
 
@@ -57,6 +57,11 @@ class DugaBotService implements ChatBot, InitializingBean {
     @Override
     void stop() {
         bot.stop()
+    }
+
+    @Override
+    BotRoom room(String s) {
+        return bot.room(s)
     }
 
     @Override

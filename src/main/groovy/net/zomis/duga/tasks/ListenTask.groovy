@@ -11,7 +11,7 @@ import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBotService
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.chat.listen.ChatMessageIncoming
-import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.BotRoom
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.control.CompilerConfiguration
@@ -29,7 +29,7 @@ class ListenTask implements Runnable {
     private final String commandPrefix
     private final DugaBotService bot
     private final String room
-    private final WebhookParameters params
+    private final BotRoom params
     private final DugaChatListener bean
     private final ChatCommands handler
     private final GroovyShell groovyShell
@@ -42,7 +42,7 @@ class ListenTask implements Runnable {
         this.bean = bean
         this.bot = bot
         this.room = room
-        this.params = WebhookParameters.toRoom(room)
+        this.params = bot.room(room)
         this.handler = commandHandler
         this.agent = new MechanizeAgent()
         this.commandPrefix = bean.environment.getProperty('commandPrefix', '@Duga ')

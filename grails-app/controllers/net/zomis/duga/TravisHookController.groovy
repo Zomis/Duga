@@ -1,6 +1,6 @@
 package net.zomis.duga
 
-import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.BotRoom
 import org.grails.web.json.JSONObject;
 
 import java.text.MessageFormat;
@@ -38,7 +38,7 @@ class TravisHookController {
 	public void build() {
         String room = params?.roomId
         JSONObject buildEvent = request.JSON
-        WebhookParameters params = WebhookParameters.toRoom(room)
+        BotRoom params = chatBot.room(room)
 // TODO:		stats.fixRepositoryURL(buildEvent.getRepository());
 		List<String> messages = new ArrayList<>();
 		

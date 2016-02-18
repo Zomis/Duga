@@ -1,7 +1,7 @@
 package net.zomis.duga
 
 import grails.transaction.Transactional
-import net.zomis.duga.chat.WebhookParameters
+import net.zomis.duga.chat.BotRoom
 import org.grails.web.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
@@ -31,7 +31,7 @@ class BotController {
             return
         }
         String roomId = json.roomId
-        WebhookParameters roomParams = WebhookParameters.toRoom(roomId)
+        BotRoom roomParams = bot.room(roomId)
 
         User user = User.findByApiKey(json.apiKey)
         if (user) {
@@ -66,7 +66,7 @@ class BotController {
             return
         }
         String roomId = params.roomId
-        WebhookParameters roomParams = WebhookParameters.toRoom(roomId)
+        BotRoom roomParams = bot.room(roomId)
 
         User user = User.findByApiKey(params.apiKey)
         if (user) {

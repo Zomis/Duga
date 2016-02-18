@@ -4,7 +4,6 @@ import net.zomis.duga.DugaChatListener
 import net.zomis.duga.HookStringification
 import net.zomis.duga.User
 import net.zomis.duga.chat.listen.ChatMessageIncoming
-import net.zomis.duga.chat.WebhookParameters
 
 /**
  * Delegate for running chat commands
@@ -81,7 +80,7 @@ abstract class ChatCommandDelegate extends Script {
     Map say(String text) {
         requireAdmin()
         [inRoom: {int id ->
-            bean.chatBot.postSingle(WebhookParameters.toRoom(Integer.toString(id)), text)
+            bean.chatBot.postSingle(bean.chatBot.room(Integer.toString(id)), text)
         }, default: {
             message.reply(text)
         }]
