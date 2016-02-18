@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import net.zomis.duga.chat.events.DugaEvent;
+import net.zomis.duga.chat.events.DugaPrepostEvent;
 import net.zomis.duga.chat.events.DugaStartedEvent;
 import net.zomis.duga.chat.events.DugaStopEvent;
 
@@ -148,7 +149,12 @@ public class StackExchangeChatBot implements ChatBot {
     private ChatMessageResponse postMessageToChat(final ChatMessage message) {
 		Objects.requireNonNull(message, "message");
 		Map<String, String> parameters = new HashMap<>();
-        String text = message.getMessage();
+        DugaPrepostEvent prepostEvent = new DugaPrepostEvent(this, message);
+        executeEvent(prepostEvent);
+        if (!prepostEvent.isPerformPost()) {
+            return new ChatMessageResponse(-1, 0, "CANCELLED");
+        }
+        String text = prepostEvent.getMessage();
         text = text.replaceAll("access_token=([0-9a-f]+)", "access_token=xxxxxxxxxxxxxx");
         parameters.put("text", text);
 		parameters.put("fkey", this.chatFKey);

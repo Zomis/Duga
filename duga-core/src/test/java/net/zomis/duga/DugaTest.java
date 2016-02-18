@@ -4,6 +4,8 @@ import net.zomis.duga.chat.BotConfiguration;
 import net.zomis.duga.chat.BotRoom;
 import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.StackExchangeChatBot;
+import net.zomis.duga.chat.events.DugaEvent;
+import net.zomis.duga.chat.events.DugaPrepostEvent;
 import net.zomis.duga.chat.events.DugaStartedEvent;
 import net.zomis.duga.chat.events.DugaStopEvent;
 import net.zomis.duga.chat.listen.ChatMessageIncoming;
@@ -19,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DugaTest {
 
-    private static final BotRoom room = BotRoom.toRoom("20298");
+    private static BotRoom room;
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) {
@@ -44,13 +46,25 @@ public class DugaTest {
         config.setChatMaxBurst(2);
         config.setChatMinimumDelay(500);
         StackExchangeChatBot bot = new StackExchangeChatBot(config);
+        room = bot.room("20298");
         bot.registerListener(DugaStartedEvent.class,
             e -> new Thread(() -> interactive(e)).start());
         bot.registerListener(DugaStopEvent.class, DugaTest::shutdown);
+        bot.registerListener(DugaPrepostEvent.class, DugaTest::beforePost);
         System.out.println("Starting bot...");
         bot.start();
         System.out.println("Bot started.");
         scheduler.scheduleAtFixedRate(new ListenTask(bot, bot.listener(), "20298", DugaTest::handle), 0, 3000, TimeUnit.MILLISECONDS);
+    }
+
+    private static void beforePost(DugaPrepostEvent e) {
+        if (e.getMessage().startsWith("/room")) {
+            e.setPerformPost(false);
+            room = e.getBot().room(e.getMessage().substring(e.getMessage().indexOf(' ') + 1));
+        }
+        if (e.getMessage().equals("Good night!")) {
+            e.setMessage("TTGTB!");
+        }
     }
 
     private static void handle(ChatMessageIncoming chatMessageIncoming) {
