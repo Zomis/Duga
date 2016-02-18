@@ -20,6 +20,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.apache.httpcomponents:httpclient:4.3.5'
     compile 'com.gistlabs:mechanize:2.0.0-RC1'
+    compile 'commons-io:commons-io:2.4'
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1-1'
 }
