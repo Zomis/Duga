@@ -8,6 +8,14 @@ class BootStrap {
     def tasks
 
     def init = { servletContext ->
+        String externalConfig = System.getenv("DUGA_CONFIG");
+        if (externalConfig) {
+            File file = new File(externalConfig)
+            if (file.exists()) {
+
+            }
+        }
+
         def users = User.list()
         if (users.isEmpty()) {
             def roleUser = new Authority(authority: 'ROLE_USER').save(failOnError: true)
