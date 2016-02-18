@@ -17,6 +17,8 @@ import com.gistlabs.mechanize.document.html.HtmlDocument;
 import com.gistlabs.mechanize.document.html.HtmlElement;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
+import net.zomis.duga.chat.listen.ChatMessageRetriever;
+import net.zomis.duga.chat.listen.StackExchangeFetch;
 
 public class StackExchangeChatBot implements ChatBot {
 
@@ -278,4 +280,8 @@ public class StackExchangeChatBot implements ChatBot {
 	}
 
     public String getFKey() { return chatFKey; }
+
+    public ChatMessageRetriever listener() {
+        return new StackExchangeFetch(() -> chatFKey);
+    }
 }

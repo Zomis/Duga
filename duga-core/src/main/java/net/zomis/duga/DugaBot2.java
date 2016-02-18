@@ -3,11 +3,7 @@ package net.zomis.duga;
 public class DugaBot2 {
 
 /*
-Room parameters
-StackExchangeChatBot implementation
 Poll for new chat messages
-Avoid https://github.com/Cardshifter/Cardshifter/blob/master/build.gradle#L177
-DugaRemote(url, dugaApiKey)
 Add posting filters (Duga issue https://github.com/Zomis/Duga/issues/111 )
 Support all chat domains for the future -- https://github.com/Zomis/Duga/issues/57
 

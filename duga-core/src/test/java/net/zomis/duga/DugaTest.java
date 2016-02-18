@@ -50,7 +50,7 @@ public class DugaTest {
         System.out.println("Starting bot...");
         bot.start();
         System.out.println("Bot started.");
-        scheduler.scheduleAtFixedRate(new ListenTask(bot, "20298", DugaTest::handle), 0, 3000, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(new ListenTask(bot, bot.listener(), "20298", DugaTest::handle), 0, 3000, TimeUnit.MILLISECONDS);
     }
 
     private static void handle(ChatMessageIncoming chatMessageIncoming) {

@@ -5,6 +5,7 @@ package net.zomis.duga.chat.listen;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.BotRoom;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class ChatMessageIncoming {
 
@@ -47,7 +48,7 @@ public class ChatMessageIncoming {
     }
 
     public void ping(String message) {
-        bot.postAsync(params.message("@$user_name $message"));
+        bot.postAsync(params.message("@" + userName + " " + message));
     }
 
     @Override
@@ -103,7 +104,7 @@ public class ChatMessageIncoming {
         return userName;
     }
 
-//    public void cleanHTML() {
-//        content = StringEscapeUtils.unescapeHtml(content);
-//    }
+    public String cleanHTML() {
+        return StringEscapeUtils.unescapeHtml4(content);
+    }
 }
