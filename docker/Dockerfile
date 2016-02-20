@@ -36,9 +36,9 @@ EXPOSE 8080
 CMD ["catalina.sh", "run"]
 
 
-WORKDIR /home
-RUN apt-get install -y git
-RUN git clone https://github.com/Zomis/Duga.git
-WORKDIR Duga
-RUN ./gradlew war
-
+# WORKDIR /home
+# RUN apt-get install -y git
+# RUN git clone https://github.com/Zomis/Duga.git
+# WORKDIR Duga
+# ADD duga.groovy grails-app/conf/
+# RUN ./gradlew war

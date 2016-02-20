@@ -13,4 +13,4 @@ db:
   environment:
     POSTGRES_USER: duga
     POSTGRES_PASSWORD: duga
-    POSTGRES_DB: duga
+    POSTGRES_DB: grails

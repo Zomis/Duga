@@ -1,3 +1,5 @@
+docker/webapp/
+
 build.xml
 nbproject/
 MANIFEST.MF
