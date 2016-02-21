@@ -17,7 +17,7 @@ beans = {
     // Ordered by dependencies, thing A may be dependent on B if it is listed below B.
     // This ordering does not matter to Spring or Grails, only for personal convenience
     stackAPI(StackExchangeAPI)
-    dugaBot(DugaBotService)
+    // dugaBot(DugaBotService)
     stats(DugaStats)
     stringification(HookStringification)
     githubAPI(GithubBean)
