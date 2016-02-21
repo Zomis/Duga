@@ -8,14 +8,6 @@ class BootStrap {
     def tasks
 
     def init = { servletContext ->
-        String externalConfig = System.getenv("DUGA_CONFIG");
-        if (externalConfig) {
-            File file = new File(externalConfig)
-            if (file.exists()) {
-
-            }
-        }
-
         def users = User.list()
         if (users.isEmpty()) {
             def roleUser = new Authority(authority: 'ROLE_USER').save(failOnError: true)
@@ -31,6 +23,18 @@ class BootStrap {
             UserAuthority.create(admin, roleAdmin, true)
         }
         tasks.initOnce()
+
+        //String externalConfig = System.getenv("DUGA_CONFIG");
+        URL config = getClass().getClassLoader().getResource('init-tasks.groovy')
+        if (config) {
+            tasks.fromGroovyDSL(config.text)
+        }
+/*        if (externalConfig) {
+            File file = new File(externalConfig)
+            if (file.exists()) {
+
+            }
+        }*/
     }
     def destroy = {
     }

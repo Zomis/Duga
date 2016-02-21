@@ -9,6 +9,7 @@ import net.zomis.duga.tasks.UnansweredTask
 import net.zomis.duga.tasks.UserRepDiffTask
 import net.zomis.duga.tasks.qscan.QuestionScanTask
 import org.apache.log4j.Logger
+import org.codehaus.groovy.control.CompilerConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.support.CronTrigger
@@ -53,10 +54,10 @@ class DugaTasks {
 
     private class TaskRunner implements Runnable {
 
-        private final TaskData data;
+        private final Object data;
         private final Runnable task;
 
-        public TaskRunner(TaskData data, Runnable runnable) {
+        public TaskRunner(Object data, Runnable runnable) {
             this.data = data;
             this.task = runnable;
         }
@@ -99,6 +100,81 @@ class DugaTasks {
 
     public synchronized List<TaskData> getTasks() {
         return new ArrayList<>(taskData);
+    }
+
+    public void fromGroovyDSL(String groovyCode) {
+        def cc = new CompilerConfiguration()
+        cc.setScriptBaseClass(TasksDelegate.class.name)
+        GroovyShell sh = new GroovyShell(cc);
+        println "parsing script"
+        TasksDelegate script = (TasksDelegate) sh.parse(groovyCode, 'InitTasks.groovy')
+        println "setting script outer to $this on $script"
+        script.setOuter(this);
+        println "outer is now $script.outer called from $this on $script, running script"
+        script.run()
+        println "script finished"
+        for (CronRunnable cronRunnable : script.data) {
+            def runner = new TaskRunner(cronRunnable, cronRunnable.runnable)
+            ScheduledFuture<?> future = scheduler.schedule(runner, cronRunnable.trigger)
+            tasks.add(future)
+            System.out.println("Added task: $cronRunnable with cron $cronRunnable.trigger")
+        }
+    }
+
+    public static class CronRunnable {
+        CronTrigger trigger;
+        Runnable runnable;
+    }
+
+    public static abstract class TasksDelegate extends Script {
+
+        private final List<CronRunnable> data = [];
+        CronTrigger trigger;
+        private DugaTasks outer;
+
+        public List<CronRunnable> getData() {
+            return this.@data
+        }
+
+        public void tasks(Closure closure) {
+            println "tasks run closure with " + this.@outer
+            closure.setDelegate(this)
+            closure.run()
+        }
+
+        public void cron(String cron, Closure closure) {
+            println "cron run closure with " + this.@outer
+            trigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"))
+            closure.delegate = this
+            closure.run()
+        }
+
+        public void message(String room, String message) {
+            println "get outer returns: " + getOuter()
+            createTask(new MessageTask(this.@outer.chatBot, room, message))
+        }
+
+        public void repdiff(String room, String site, int user1, int user2) {
+            createTask(new UserRepDiffTask(this.@outer.stackAPI, room, this.@outer.chatBot, "$user1,$user2", site))
+        }
+
+        private void createTask(Runnable runnable) {
+            CronRunnable cronRunnable = new CronRunnable()
+            cronRunnable.trigger = trigger;
+            cronRunnable.runnable = runnable;
+            data.add(cronRunnable)
+        }
+
+        public void setOuter(DugaTasks outer) {
+            println "Set outer to $outer on $this"
+            this.@outer = outer
+        }
+
+        public DugaTasks getOuter() {
+            println "get outer for $this"
+            this.@outer
+        }
+
     }
 
 }
