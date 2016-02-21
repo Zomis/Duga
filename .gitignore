@@ -1,3 +1,8 @@
+### Duga-specific
+
+duga.groovy
+duga.conf
+
 
 docker/webapp/
 
@@ -120,10 +125,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
-
-
-### Duga-specific
-
-grails-app/conf/duga.groovy
-duga.conf

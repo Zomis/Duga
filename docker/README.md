@@ -3,7 +3,7 @@ How to run Duga on Docker
 
 Clone the duga repository
 
-Edit `grails-app/conf/duga_example.groovy` to set your settings. Leave the dataSource configuration as-is. Also rename this to `duga.groovy`
+Edit `src/main/resources/duga_example.groovy` to set your settings. Leave the dataSource configuration as-is. Also rename this to `duga.groovy`
 
 Run `./gradlew war`
 
