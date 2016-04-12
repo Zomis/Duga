@@ -1,4 +1,6 @@
-package net.zomis.duga.tasks;
+package net.zomis.duga.tasks
+
+import net.zomis.machlearn.text.TextClassification
 
 import java.time.Instant;
 
@@ -6,7 +8,7 @@ import net.zomis.duga.DugaBot;
 import net.zomis.duga.StackExchangeAPI;
 import net.zomis.duga.chat.WebhookParameters;
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.log4j.Logger
 
 public class CommentsScanTask implements Runnable {
     private static final Logger logger = LogManager.getLogger(CommentsScanTask.class);
@@ -24,10 +26,20 @@ public class CommentsScanTask implements Runnable {
 	private StackExchangeAPI stackAPI;
 
 	private DugaBot chatBot;
-	
+	private final TextClassification programmersClassification;
+
     public CommentsScanTask(StackExchangeAPI stackAPI, DugaBot chatBot) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
+/*		this.params = chatBot.room("8595");
+		this.debug = chatBot.room("20298");
+		this.programmers = chatBot.room("21");
+		this.softwareRecs = chatBot.room("22668");*/
+
+        String source = getClass().getClassLoader()
+                .getResource("trainingset-programmers-comments.txt");
+        String[] lines = source.split("\n");
+        this.programmersClassification = ProgrammersClassification.machineLearning(lines);
 	}
 
 	static boolean isInterestingComment(comment) {
@@ -70,9 +82,13 @@ public class CommentsScanTask implements Runnable {
     				if (programmersCertainty >= CommentClassification.REAL) {
     					chatBot.postSingle(programmers, comment.link as String);
     				}
+
     				if (programmersCertainty >= CommentClassification.DEBUG) {
-    					chatBot.postSingle(debug, "Certainty level " + programmersCertainty);
-    					chatBot.postSingle(debug, comment.link as String);
+                        double programmersMLscore = programmersMLscore(comment)
+                        String certaintyLevelMessage =
+                            "Certainty level " + programmersCertainty +
+                            " (ML Classification " + programmersMLscore + ")";
+    					chatBot.postChat(debug, Arrays.asList(certaintyLevelMessage, comment.link as String));
     				}
     				
     				float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
@@ -93,4 +109,12 @@ public class CommentsScanTask implements Runnable {
     	}
     }
 
+    double programmersMLscore(def comment) {
+        String text = comment.body_markdown
+        if (!comment.contains("programmers")) {
+            // No need to check with the Machine Learning system in this case
+            return -1;
+        }
+        return programmersClassification.score(text);
+    }
 }
