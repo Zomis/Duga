@@ -1,6 +1,6 @@
 package net.zomis.duga.tasks
 
-import net.zomis.machlearn.text.TextClassification
+import net.zomis.machlearn.text.TextClassification;
 
 import java.time.Instant;
 
@@ -36,9 +36,10 @@ public class CommentsScanTask implements Runnable {
 		this.programmers = chatBot.room("21");
 		this.softwareRecs = chatBot.room("22668");*/
 
-        String source = getClass().getClassLoader()
-                .getResource("trainingset-programmers-comments.txt");
-        String[] lines = source.split("\n");
+		URL trainingData = getClass().getClassLoader()
+				.getResource("trainingset-programmers-comments.txt");
+        String source = trainingData?.text;
+        String[] lines = source?.split("\n");
         this.programmersClassification = ProgrammersClassification.machineLearning(lines);
 	}
 

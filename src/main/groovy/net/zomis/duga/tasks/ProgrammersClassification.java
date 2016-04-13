@@ -37,6 +37,10 @@ public class ProgrammersClassification {
     }
 
     public static TextClassification machineLearning(String[] lines) {
+        if (lines == null || lines.length == 0) {
+            // Return a classifier that is only classifying as false and giving -1 score
+            return new TextClassification(s -> s, new TextFeatureMapper("programmers"), new double[]{-1, 0}, 0.5);
+        }
         TextFeatureBuilder textFeatures = new TextFeatureBuilder(new int[]{1, 2},
             ProgrammersClassification::filter);
         LearningDataSet data = new LearningDataSet();
