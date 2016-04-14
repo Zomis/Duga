@@ -40,6 +40,7 @@ assets {
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
+    maven { url "http://www.zomis.net/maven" }
 }
 
 dependencyManagement {
@@ -50,6 +51,7 @@ dependencyManagement {
 }
 
 dependencies {
+    compile 'net.zomis:machlearn:0.1.0-SNAPSHOT'
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.boot:spring-boot-autoconfigure"
