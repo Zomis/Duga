@@ -58,7 +58,7 @@ public class StackExchangeLogin implements LoginFunction {
     public String retrieveFKey(MechanizeAgent agent, BotConfiguration configuration) {
         loginOpenId(agent, configuration);
         loginRoot(agent, configuration);
-        loginChat(agent, configuration);
+        // loginChat(agent, configuration);
         return retrieveFKeyReal(agent, configuration);
     }
 
