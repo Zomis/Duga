@@ -19,8 +19,8 @@ public class UnansweredTask implements Runnable {
 	public UnansweredTask(StackExchangeAPI stackAPI, String room,
 						  DugaBotService chatBot, String site, String message) {
 		this.api = stackAPI;
-		this.room = bot.room(room);
 		this.bot = chatBot;
+		this.room = chatBot.room(room);
 		this.site = site;
 		this.message = message;
 	}
