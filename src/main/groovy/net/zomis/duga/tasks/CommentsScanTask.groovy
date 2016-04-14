@@ -116,7 +116,7 @@ public class CommentsScanTask implements Runnable {
 
     double programmersMLscore(def comment) {
         String text = comment.body_markdown
-        if (!comment.contains("programmers")) {
+        if (!text.contains("programmers")) {
             // No need to check with the Machine Learning system in this case
             return -1;
         }
