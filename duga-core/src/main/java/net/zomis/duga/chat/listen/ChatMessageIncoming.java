@@ -36,6 +36,9 @@ public class ChatMessageIncoming {
     @JsonProperty("show_parent")
     private boolean showParent;
 
+    @JsonProperty("message_edits")
+    private int messageEdits;
+
     ChatBot bot;
     BotRoom params;
 
