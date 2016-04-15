@@ -74,7 +74,7 @@ abstract class ChatCommandDelegate extends Script {
     }
 
     void allowAll() {
-        assert message.user_id > 0
+        assert message.getUserId() > 0
     }
 
     Map say(String text) {
