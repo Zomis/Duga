@@ -2,12 +2,17 @@ package net.zomis.duga.chat.listen;
 
 //import org.apache.commons.lang.StringEscapeUtils;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.BotRoom;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.util.logging.Logger;
+
 public class ChatMessageIncoming {
+
+    private static final Logger logger = Logger.getLogger(ChatMessageIncoming.class.getCanonicalName());
 
     @JsonProperty
     private String content;
@@ -109,5 +114,11 @@ public class ChatMessageIncoming {
 
     public String cleanHTML() {
         return StringEscapeUtils.unescapeHtml4(content);
+    }
+
+    @JsonAnySetter
+    public void setProperty(String name, Object value) {
+        logger.severe("Cannot set property for ChatMessageIncoming: " + name + " = " + value);
+        // do nothing, just prevent crash
     }
 }
