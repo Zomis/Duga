@@ -5,6 +5,8 @@ import net.zomis.duga.HookStringification
 import net.zomis.duga.User
 import net.zomis.duga.chat.listen.ChatMessageIncoming
 
+import java.util.concurrent.atomic.AtomicReference
+
 /**
  * Delegate for running chat commands
  */
@@ -31,9 +33,17 @@ abstract class ChatCommandDelegate extends Script {
         message.reply('pong!')
     }
 
+    private User fetchUser() {
+        AtomicReference<User> user = new AtomicReference<>();
+        User.withNewSession {status ->
+            user.set(User.findByChatId(message.getUserId()))
+        }
+        return user.get()
+    }
+
     Closure webhooks = {
         requireUser()
-        User user = message.fetchUser()
+        User user = fetchUser()
 
         List<String> reposHooked = new ArrayList<>()
         List<String> unhooked = new ArrayList<>()
@@ -62,7 +72,7 @@ abstract class ChatCommandDelegate extends Script {
 
     void addWebhook(String repo, int roomId) {
         requireUser()
-        User user = message.fetchUser()
+        User user = fetchUser()
         def request = [name: 'web', active: true, 'events': ['*'],
             config: [
                 url: "http://stats.zomis.net/GithubHookSEChatService/hook?roomId=$roomId",
@@ -87,18 +97,18 @@ abstract class ChatCommandDelegate extends Script {
     }
 
     void requireUser() {
-        assert message.fetchUser()
+        assert fetchUser()
     }
 
     void requireRole(String role) {
-        User user = message.fetchUser()
+        User user = fetchUser()
         if (!user) {
             message.reply('You are not registered with Duga. Please go to http://stats.zomis.net/GithubHookSEChatService/registration/index for registration instructions')
             assert false
         }
         boolean userHasRole = false
         User.withNewSession {status ->
-            userHasRole = message.fetchUser().getAuthorities().stream().anyMatch({auth ->
+            userHasRole = fetchUser().getAuthorities().stream().anyMatch({auth ->
                 auth.authority.equals(role)
             })
             if (!userHasRole) {
@@ -125,7 +135,7 @@ abstract class ChatCommandDelegate extends Script {
         [search: {String query ->
             // https://api.github.com/search/issues?q=systems%20repo:Cardshifter/Cardshifter%20is:open
             String q = query.replaceAll(' ', '+')
-            def issues = message.fetchUser().github("search/issues?q=repo:$repo+is:open+$q")
+            def issues = fetchUser().github("search/issues?q=repo:$repo+is:open+$q")
             StringBuilder results = new StringBuilder(issues.total_count + ' results found. ' as String)
             int count = 0
             for (def json in issues.items) {
@@ -142,7 +152,7 @@ abstract class ChatCommandDelegate extends Script {
             }
             message.reply(results.toString())
         }, id: {int id ->
-            def issue = message.fetchUser().github("repos/$repo/issues/$id")
+            def issue = fetchUser().github("repos/$repo/issues/$id")
             message.reply(HookStringification.issue(issue))
         }]
     }
