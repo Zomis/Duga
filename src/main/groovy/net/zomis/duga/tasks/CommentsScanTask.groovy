@@ -103,17 +103,17 @@ public class CommentsScanTask implements Runnable {
     }
 
     void classifyProgrammers(def comment) {
-        float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
+        float oldClassification = CommentClassification.calcInterestingLevelProgrammers(comment);
+        double programmersMLscore = programmersMLscore(comment)
 
-        if (programmersCertainty >= CommentClassification.REAL) {
+        if (programmersMLscore >= CommentClassification.ML_THRESHOLD) {
             chatBot.postAsync(programmers.message(comment.link as String));
         }
 
-        if (programmersCertainty >= CommentClassification.DEBUG) {
-            double programmersMLscore = programmersMLscore(comment)
+        if (programmersMLscore >= CommentClassification.DEBUG) {
             String certaintyLevelMessage =
-                    "Certainty level " + programmersCertainty +
-                            " (ML Classification " + programmersMLscore + ")";
+                    "ML Classification " + programmersMLscore +
+                            " (Old classification " + oldClassification + ")";
             chatBot.postChat(debug.messages(
                     certaintyLevelMessage, comment.link as String));
         }

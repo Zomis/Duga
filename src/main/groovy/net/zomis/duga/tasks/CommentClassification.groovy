@@ -3,7 +3,8 @@ package net.zomis.duga.tasks;
 import java.util.regex.Pattern;
 
 class CommentClassification {
-	
+
+    public static final float ML_THRESHOLD = 0.3f;
     public static final float REAL = 0.49f;
 	public static final float DEBUG = 0.01f;
 	
