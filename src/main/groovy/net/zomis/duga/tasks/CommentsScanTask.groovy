@@ -18,7 +18,7 @@ public class CommentsScanTask implements Runnable {
     private long fromDate;
     private int remainingQuota;
     
-	private final BotRoom params;
+	private final BotRoom codeReview;
 	private final BotRoom debug;
 	private final BotRoom programmers;
 	private final BotRoom softwareRecs;
@@ -31,7 +31,7 @@ public class CommentsScanTask implements Runnable {
     public CommentsScanTask(StackExchangeAPI stackAPI, DugaBotService chatBot) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
-		this.params = chatBot.room("8595");
+		this.codeReview = chatBot.room("8595");
 		this.debug = chatBot.room("20298");
 		this.programmers = chatBot.room("21");
 		this.softwareRecs = chatBot.room("22668");
@@ -78,23 +78,11 @@ public class CommentsScanTask implements Runnable {
     				lastComment = Math.max(comment.comment_id as long, lastComment);
     				fromDate = Math.max(comment.creation_date as long, fromDate);
     				if (isInterestingComment(comment)) {
-    					chatBot.postAsync(params.message(comment.link as String));
-    				}
-    				float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
-    				
-    				if (programmersCertainty >= CommentClassification.REAL) {
-    					chatBot.postAsync(programmers.message(comment.link as String));
+    					chatBot.postAsync(codeReview.message(comment.link as String));
     				}
 
-    				if (programmersCertainty >= CommentClassification.DEBUG) {
-                        double programmersMLscore = programmersMLscore(comment)
-                        String certaintyLevelMessage =
-                            "Certainty level " + programmersCertainty +
-                            " (ML Classification " + programmersMLscore + ")";
-    					chatBot.postChat(debug.messages(
-							certaintyLevelMessage, comment.link as String));
-    				}
-    				
+                    classifyProgrammers(comment);
+
     				float softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment);
     				
     				if (softwareCertainty >= CommentClassification.REAL) {
@@ -112,6 +100,23 @@ public class CommentsScanTask implements Runnable {
     		logger.error("Error retrieving comments", e);
     		chatBot.postAsync(debug.message(Instant.now().toString() + " Exception in comment task " + e));
     	}
+    }
+
+    void classifyProgrammers(def comment) {
+        float programmersCertainty = CommentClassification.calcInterestingLevelProgrammers(comment);
+
+        if (programmersCertainty >= CommentClassification.REAL) {
+            chatBot.postAsync(programmers.message(comment.link as String));
+        }
+
+        if (programmersCertainty >= CommentClassification.DEBUG) {
+            double programmersMLscore = programmersMLscore(comment)
+            String certaintyLevelMessage =
+                    "Certainty level " + programmersCertainty +
+                            " (ML Classification " + programmersMLscore + ")";
+            chatBot.postChat(debug.messages(
+                    certaintyLevelMessage, comment.link as String));
+        }
     }
 
     double programmersMLscore(def comment) {
