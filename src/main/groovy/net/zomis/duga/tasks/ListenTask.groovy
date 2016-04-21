@@ -26,6 +26,7 @@ class ListenTask implements Runnable {
     private final String room
     private final BotRoom params
     private final DugaChatListener bean
+    @Deprecated
     private final ChatCommands handler
     private final GroovyShell groovyShell
     private MechanizeAgent agent
