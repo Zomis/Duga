@@ -70,6 +70,16 @@ abstract class ChatCommandDelegate extends Script {
         message.reply('Unhooked repos: ' + unhooked)
     }
 
+    DugaLearning getProgrammers() {
+        if (message.getParentId() > 0) {
+            message.reply("Reply to the message you want to use and do `@Duga do programmers.features` " +
+                "or `@Duga do programmers.classify true` " +
+                "or `@Duga do programmers.classify false`")
+        }
+        String text = ChatScrape.fetch(message.getParentId());
+        return new DugaLearning(null, text)
+    }
+
     void addWebhook(String repo, int roomId) {
         requireUser()
         User user = fetchUser()
