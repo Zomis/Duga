@@ -1,19 +1,9 @@
 package net.zomis.duga.chat.listen;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gistlabs.mechanize.Resource;
-import com.gistlabs.mechanize.document.json.JsonDocument;
-import com.gistlabs.mechanize.document.json.node.JsonNode;
-import com.gistlabs.mechanize.impl.MechanizeAgent;
 import net.zomis.duga.chat.BotRoom;
 import net.zomis.duga.chat.ChatBot;
-import net.zomis.duga.chat.StackExchangeChatBot;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class ListenTask implements Runnable {

@@ -1,7 +1,5 @@
 package net.zomis.duga.chat.listen;
 
-//import org.apache.commons.lang.StringEscapeUtils;
-
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.zomis.duga.chat.ChatBot;
