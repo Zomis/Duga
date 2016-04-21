@@ -133,7 +133,8 @@ class ListenTask implements Runnable {
 
     def botCommand(ChatMessageIncoming chatMessageIncoming) {
         try {
-            ChatCommandDelegate script = (ChatCommandDelegate) groovyShell.parse(chatMessageIncoming.content.substring(commandPrefix.length()))
+            ChatCommandDelegate script = (ChatCommandDelegate) groovyShell
+                .parse(chatMessageIncoming.cleanHTML().substring(commandPrefix.length()))
             script.init(chatMessageIncoming, bean)
             def result = script.run()
             println 'Script ' + chatMessageIncoming + ' returned ' + result
