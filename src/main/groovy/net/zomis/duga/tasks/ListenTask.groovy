@@ -72,6 +72,7 @@ class ListenTask implements Runnable {
                     Long,
                     Double,
                     BigDecimal,
+                    Boolean.TYPE,
                     Integer.TYPE,
                     Long.TYPE,
                     Float.TYPE,
