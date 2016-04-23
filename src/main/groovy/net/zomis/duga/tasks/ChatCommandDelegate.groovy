@@ -72,8 +72,8 @@ abstract class ChatCommandDelegate extends Script {
 
     DugaLearning getProgrammers() {
         allowAll() // change this if it becomes a problem
-        if (message.getParentId() > 0) {
-            message.reply("Reply to the message you want to use and do `@Duga do programmers.features` " +
+        if (message.getParentId() <= 0) {
+            throw new IllegalArgumentException("Reply to the message you want to use and do `@Duga do programmers.features` " +
                 "or `@Duga do programmers.classify true` " +
                 "or `@Duga do programmers.classify false`")
         }
