@@ -67,6 +67,7 @@ dependencies {
     compile "org.grails.plugins:cache"
     compile "org.hibernate:hibernate-ehcache"
     compile 'net.zomis:duga-core:0.1'
+    compile 'org.eclipse.jgit:org.eclipse.jgit:4.3.0.201604071810-r'
 
     runtime "org.grails.plugins:asset-pipeline"
     runtime "org.grails.plugins:scaffolding"

@@ -1,4 +1,5 @@
 import net.zomis.duga.DugaChatListener
+import net.zomis.duga.DugaGit
 import net.zomis.duga.DugaMachineLearning
 import net.zomis.duga.DugaStats
 import net.zomis.duga.DugaTasks
@@ -26,4 +27,5 @@ beans = {
     chatListener(DugaChatListener)
     chatScrape(ChatScrape)
     learning(DugaMachineLearning)
+    dugaGit(DugaGit)
 }

@@ -1,15 +1,30 @@
 package net.zomis.duga.tasks
 
+import net.zomis.duga.DugaGit
+import net.zomis.duga.chat.listen.ChatMessageIncoming
 import net.zomis.machlearn.text.TextClassification
+import org.eclipse.jgit.api.CreateBranchCommand
+import org.eclipse.jgit.api.Git
+
+import java.nio.file.Files
+import java.util.stream.Stream
 
 class DugaLearning {
 
+    enum ClassificationResult {
+        CLASSIFICATION_ADDED, ALREADY_EXISTS;
+    }
+
     private final TextClassification classification
     private final String text
+    private final ChatMessageIncoming chatMessage
+    private final DugaGit git
 
-    DugaLearning(TextClassification classification, String text) {
+    DugaLearning(TextClassification classification, String text, ChatMessageIncoming chatMessage, DugaGit git) {
         this.classification = classification
         this.text = text
+        this.chatMessage = chatMessage
+        this.git = git
     }
 
     String getProcessed() {
@@ -22,10 +37,49 @@ class DugaLearning {
         classification.getFeatures(getProcessed())
     }
 
-    void classify(boolean classification) {
+    ClassificationResult classify(boolean classification) {
+        Git repo = git.cloneOrPull("Duga", "https://github.com/Zomis/Duga.git")
 
+        repo.checkout()
+            .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+            .setName('classification')
+            .setCreateBranch(true)
+            .call()
+
+        String relativePath = "src/main/resources/trainingset-programmers-comments.txt";
+        println repo.repository.workTree.absolutePath
+        File file = new File(repo.repository.workTree, relativePath);
+        Stream<String> stream = Files.lines(file.toPath())
+        Optional<String> existing = stream.filter({str -> str.contains(text)}).findFirst();
+        if (existing.isPresent()) {
+            // search for previous, if one is found then return
+            return ClassificationResult.ALREADY_EXISTS;
+        }
         println "Classify as " + classification
-        // search for previous
+        def pw = new PrintWriter(new FileOutputStream(file, true))
+        String classificationPrefix = classification ? "1 " : "0 ";
+        String line = classificationPrefix + text
+        pw.println line
+        pw.close()
+
+        repo.add().addFilepattern(relativePath).call()
+
+        long messageId = chatMessage.getMessageId()
+        String username = chatMessage.getUserName()
+        String message = chatMessage.getContent()
+        String commitMessage = """Add programmers classification training data
+
+http://chat.stackexchange.com/transcript/message/$messageId#$messageId
+$username said: $message
+"""
+        repo.commit()
+            .setAuthor(git.personIdent)
+            .setCommitter(git.personIdent)
+            .setMessage(commitMessage)
+            .call()
+
+        git.push(repo)
+
         // make a commit with the new classification
         // to the training set data associated with the classification
     }

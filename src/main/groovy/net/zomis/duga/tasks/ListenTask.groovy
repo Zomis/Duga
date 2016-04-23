@@ -21,6 +21,9 @@ import static org.codehaus.groovy.syntax.Types.*
 
 class ListenTask implements Runnable {
 
+    public static final String CONFIG_COMMAND_PREFIX_KEY = 'commandPrefix'
+    public static final String CONFIG_COMMAND_PREFIX_DEFAULT = '@Duga '
+
     private final String commandPrefix
     private final DugaBotService bot
     private final String room
@@ -40,7 +43,7 @@ class ListenTask implements Runnable {
         this.params = bot.room(room)
         this.handler = commandHandler
         this.agent = new MechanizeAgent()
-        this.commandPrefix = bean.environment.getProperty('commandPrefix', '@Duga ')
+        this.commandPrefix = bean.environment.getProperty(CONFIG_COMMAND_PREFIX_KEY, CONFIG_COMMAND_PREFIX_DEFAULT)
         this.domainTask = new net.zomis.duga.chat.listen.ListenTask(bot, new StackExchangeFetch({bot.fkey()}), room,
             {this.handle(it)})
 

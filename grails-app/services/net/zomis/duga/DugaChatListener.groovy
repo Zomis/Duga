@@ -18,6 +18,7 @@ class DugaChatListener implements InitializingBean {
     @Autowired Environment environment
     @Autowired ChatScrape chatScrape
     @Autowired DugaMachineLearning learning
+    @Autowired DugaGit dugaGit
 
     private ChatCommands commands
 

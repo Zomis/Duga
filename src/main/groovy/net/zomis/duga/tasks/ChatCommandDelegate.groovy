@@ -71,13 +71,14 @@ abstract class ChatCommandDelegate extends Script {
     }
 
     DugaLearning getProgrammers() {
+        allowAll() // change this if it becomes a problem
         if (message.getParentId() > 0) {
             message.reply("Reply to the message you want to use and do `@Duga do programmers.features` " +
                 "or `@Duga do programmers.classify true` " +
                 "or `@Duga do programmers.classify false`")
         }
         String text = bean.chatScrape.fetch(message.getParentId());
-        return new DugaLearning(bean.learning.programmers, text)
+        return new DugaLearning(bean.learning.programmers, text, message, bean.dugaGit)
     }
 
     void addWebhook(String repo, int roomId) {
