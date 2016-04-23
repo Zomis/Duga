@@ -623,3 +623,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 1 Well, honestly this is not exactly what stackoverflow questions should be redacted, even, Stackoverflow questions are suppsed to be about <i>&quot;code&quot;</i>. Programmers or (even) superuser from StackExchange too might be more appropiate.... Anyways, did you solve the issue or figured it out? —
 1 You might want to head over to <a href="http://programmers.stackexchange.com/">programmers.stackexchange.com</a> —
 1 @PatrickRoberts move it to programmers than ? there are questions regarding what generators are and iterables, so why not this ? —
+1 @Cristik - definitely not math. I think SO is appropriate place... Maybe programmers would be equally good, CS is likely border-line ok. —
