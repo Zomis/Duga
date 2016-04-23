@@ -26,7 +26,7 @@ public class ListenTaskTest {
         DugaMachineLearning learning = new DugaMachineLearning()
         learning.programmers = new TextClassification({s -> s} as UnaryOperator<String>,
                 new TextFeatureMapper("comment", "programmers", "Stack Overflow", "404"),
-        [0.2, 0.1, -0.15, 0.4] as double[], 0.3);
+        [0.05, 0.2, 0.1, -0.15, 0.4] as double[], 0.3);
         Mockito.when(bean.getLearning()).thenReturn(learning);
 
         ChatScrape scrape = Mockito.mock(ChatScrape.class);
@@ -38,10 +38,11 @@ public class ListenTaskTest {
         ListenTask task = new ListenTask(bot, "20298", Mockito.mock(ChatCommands.class),
             bean);
         ChatMessageIncoming message = command("programmers.features");
-        task.botCommand(message);
+        def result = task.botCommand(message);
+        assert result.toString().contains("comment:0.2")
     }
 
-    private ChatMessageIncoming command(String text) {
+    private static ChatMessageIncoming command(String text) {
         ChatMessageIncoming chatMessage = Mockito.mock(ChatMessageIncoming.class);
         Mockito.when(chatMessage.getContent()).thenReturn("@Duga do " + text);
         Mockito.when(chatMessage.cleanHTML()).thenReturn("@Duga do " + text);
