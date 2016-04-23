@@ -3,8 +3,10 @@ package net.zomis.duga.tasks
 import net.zomis.duga.DugaGit
 import net.zomis.duga.chat.listen.ChatMessageIncoming
 import net.zomis.machlearn.text.TextClassification
+import org.eclipse.jgit.api.CheckoutCommand
 import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.Ref
 
 import java.nio.file.Files
 import java.util.stream.Stream
@@ -40,11 +42,15 @@ class DugaLearning {
     ClassificationResult classify(boolean classification) {
         Git repo = git.cloneOrPull("Duga", "https://github.com/Zomis/Duga.git")
 
-        repo.checkout()
-            .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-            .setName('classification')
-            .setCreateBranch(true)
-            .call()
+        String branchName = 'classification';
+        boolean branchExists = repo.branchList().call().stream()
+            .anyMatch({Ref ref -> ref.name.equals("refs/heads/" + branchName)})
+        CheckoutCommand checkout = repo.checkout();
+        if (!branchExists) {
+            checkout = checkout.setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+                .setCreateBranch(true)
+        }
+        checkout.setName(branchName).call()
 
         String relativePath = "src/main/resources/trainingset-programmers-comments.txt";
         println repo.repository.workTree.absolutePath
