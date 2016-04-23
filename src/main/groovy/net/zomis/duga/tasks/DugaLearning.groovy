@@ -39,6 +39,10 @@ class DugaLearning {
         classification.getFeatures(getProcessed())
     }
 
+    double getScore() {
+        return classification.score(text);
+    }
+
     ClassificationResult classify(boolean classification) {
         Git repo = git.cloneOrPull("Duga", "https://github.com/Zomis/Duga.git")
 
