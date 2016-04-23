@@ -625,3 +625,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 1 @PatrickRoberts move it to programmers than ? there are questions regarding what generators are and iterables, so why not this ? —
 1 @Cristik - definitely not math. I think SO is appropriate place... Maybe programmers would be equally good, CS is likely border-line ok. —
 1 Reask on programmers SE. —
+1 can try other stackexchange sites perhaps, like <i>programmers</i> ( see menu at top of page) ... I'm just being the messenger for what's outlined in the help center guidelines. Likely best to spend part of a day on each trying them out and checking activity in issue tracker and pull requests —
