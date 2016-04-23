@@ -42,6 +42,7 @@ class DugaLearning {
     ClassificationResult classify(boolean classification) {
         Git repo = git.cloneOrPull("Duga", "https://github.com/Zomis/Duga.git")
 
+        // checkout the specific branch
         String branchName = 'classification';
         boolean branchExists = repo.branchList().call().stream()
             .anyMatch({Ref ref -> ref.name.equals("refs/heads/" + branchName)})
@@ -52,6 +53,7 @@ class DugaLearning {
         }
         checkout.setName(branchName).call()
 
+        // Open the training set file and see if the training data exists already
         String relativePath = "src/main/resources/trainingset-programmers-comments.txt";
         println repo.repository.workTree.absolutePath
         File file = new File(repo.repository.workTree, relativePath);
@@ -61,7 +63,8 @@ class DugaLearning {
             // search for previous, if one is found then return
             return ClassificationResult.ALREADY_EXISTS;
         }
-        println "Classify as " + classification
+
+        // Add line to the training set file
         def pw = new PrintWriter(new FileOutputStream(file, true))
         String classificationPrefix = classification ? "1 " : "0 ";
         String line = classificationPrefix + text
@@ -78,6 +81,7 @@ class DugaLearning {
 http://chat.stackexchange.com/transcript/message/$messageId#$messageId
 $username said: $message
 """
+        // make a commit with the new classification
         repo.commit()
             .setAuthor(git.personIdent)
             .setCommitter(git.personIdent)
@@ -86,8 +90,7 @@ $username said: $message
 
         git.push(repo)
 
-        // make a commit with the new classification
-        // to the training set data associated with the classification
+        return ClassificationResult.CLASSIFICATION_ADDED;
     }
 
 }
