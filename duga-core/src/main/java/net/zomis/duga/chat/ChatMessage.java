@@ -30,6 +30,10 @@ public class ChatMessage {
 		this.onSuccess = onSuccess;
 	}
 
+    public ChatMessage createCopy(String text) {
+        return new ChatMessage(bot, params, text);
+    }
+
     public Future<ChatMessageResponse> post() {
         return bot.postAsync(this);
     }

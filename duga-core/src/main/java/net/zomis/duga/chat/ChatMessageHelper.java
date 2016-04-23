@@ -13,9 +13,11 @@ package net.zomis.duga.chat;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * A helper class to help handle oversized messages and maybe some other things.
@@ -25,7 +27,9 @@ import java.util.regex.Pattern;
  * @author Vogel612<<a href="mailto:vogel612@gmx.de"
  *         >vogel612@gmx.de</a>>
  */
-class ChatMessageHelper {
+public class ChatMessageHelper {
+    private static final int MAX_MESSAGE_LENGTH = 500;
+    private static final String MESSAGE_CONTINUATION = "...";
 
 	private static final String LINK_TOKEN_REGEX =
 			"\\[(?>[^\\]]+|(?<=\\\\)])+\\]\\((?:https?|ftp):\\/\\/\\S*(?:\\s+\"(?:[^\"]|(?<=\\\\)\")+\")?\\)";
@@ -39,6 +43,23 @@ class ChatMessageHelper {
 
 	private static final Pattern MARKDOWN_TOKENIZER = Pattern.compile(MESSAGE_TOKEN_REGEX, Pattern.CASE_INSENSITIVE
 		| Pattern.DOTALL | Pattern.UNICODE_CASE);
+
+    public static List<ChatMessage> split(ChatMessage chatMessage) {
+        final List<ChatMessage> shortenedMessages;
+        String message = chatMessage.getMessage();
+        if (message.length() > MAX_MESSAGE_LENGTH) {
+            final List<String> messageTokens = ChatMessageHelper.splitToTokens(message);
+            List<String> reassembled = ChatMessageHelper.reassembleTokens(messageTokens,
+                    MAX_MESSAGE_LENGTH, MESSAGE_CONTINUATION);
+
+            shortenedMessages = reassembled.stream()
+                .map(chatMessage::createCopy)
+                .collect(Collectors.toList());
+        } else {
+            shortenedMessages = Arrays.asList(chatMessage);
+        }
+        return shortenedMessages;
+    }
 
 	public static List<String> splitToTokens(String message) {
 		final Matcher m = MARKDOWN_TOKENIZER.matcher(message);

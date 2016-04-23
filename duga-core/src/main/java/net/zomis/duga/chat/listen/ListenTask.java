@@ -22,7 +22,7 @@ public class ListenTask implements Runnable {
           String room, Consumer<ChatMessageIncoming> handler) {
         this.bot = bot;
         this.room = room;
-        this.params = BotRoom.toRoom(room);
+        this.params = bot.room(room);
         this.retriever = retriever;
         this.handler = handler;
     }

@@ -6,6 +6,8 @@ import groovy.transform.TimedInterrupt
 import net.zomis.duga.ChatCommands
 import net.zomis.duga.DugaBotService
 import net.zomis.duga.DugaChatListener
+import net.zomis.duga.chat.ChatMessage
+import net.zomis.duga.chat.ChatMessageHelper
 import net.zomis.duga.chat.listen.ChatMessageIncoming
 import net.zomis.duga.chat.BotRoom
 import net.zomis.duga.chat.listen.StackExchangeFetch
@@ -128,7 +130,9 @@ class ListenTask implements Runnable {
         println "possible command: $message.content"
         def commandResult = botCommand(message)
         if (commandResult != null) {
-            message.reply('Result: ' + String.valueOf(commandResult))
+            String text = String.valueOf(commandResult);
+            List<ChatMessage> response = ChatMessageHelper.split(message.createReply('Result: ' + text));
+            response.forEach({it.post()})
         }
     }
 

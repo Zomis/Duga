@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.zomis.duga.chat.ChatBot;
 import net.zomis.duga.chat.BotRoom;
+import net.zomis.duga.chat.ChatMessage;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.logging.Logger;
@@ -46,7 +47,11 @@ public class ChatMessageIncoming {
     BotRoom params;
 
     public void reply(String message) {
-        bot.postAsync(params.message(":" + messageId + " " + message));
+        bot.postAsync(createReply(message));
+    }
+
+    public ChatMessage createReply(String message) {
+        return params.message(":" + messageId + " " + message);
     }
 
     public void post(String message) {
@@ -119,4 +124,9 @@ public class ChatMessageIncoming {
         logger.severe("Cannot set property for ChatMessageIncoming: " + name + " = " + value);
         // do nothing, just prevent crash
     }
+
+    public BotRoom getParams() {
+        return params;
+    }
+
 }
