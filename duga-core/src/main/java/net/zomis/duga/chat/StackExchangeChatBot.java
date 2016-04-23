@@ -72,6 +72,7 @@ public class StackExchangeChatBot implements ChatBot {
     }
 
     @Override
+    @Deprecated
     public Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages) {
 		Objects.requireNonNull(messages, "messages");
         if (messages.isEmpty()) {

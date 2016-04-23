@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 public interface ChatBot {
 
+    @Deprecated
     Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages);
 
     Future<ChatMessageResponse> postAsync(ChatMessage message);
