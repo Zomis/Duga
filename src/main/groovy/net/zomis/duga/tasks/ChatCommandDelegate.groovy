@@ -76,8 +76,8 @@ abstract class ChatCommandDelegate extends Script {
                 "or `@Duga do programmers.classify true` " +
                 "or `@Duga do programmers.classify false`")
         }
-        String text = ChatScrape.fetch(message.getParentId());
-        return new DugaLearning(null, text)
+        String text = bean.chatScrape.fetch(message.getParentId());
+        return new DugaLearning(bean.learning.programmers, text)
     }
 
     void addWebhook(String repo, int roomId) {

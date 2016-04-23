@@ -1,5 +1,6 @@
 package net.zomis.duga
 
+import net.zomis.duga.tasks.ChatScrape
 import net.zomis.duga.tasks.ListenTask
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,8 @@ class DugaChatListener implements InitializingBean {
     @Autowired DugaBotService chatBot
     @Autowired DugaTasks tasks
     @Autowired Environment environment
+    @Autowired ChatScrape chatScrape
+    @Autowired DugaMachineLearning learning
 
     private ChatCommands commands
 

@@ -1,5 +1,6 @@
 package net.zomis.duga.tasks
 
+import net.zomis.duga.DugaMachineLearning
 import net.zomis.machlearn.text.TextClassification;
 
 import java.time.Instant;
@@ -28,19 +29,14 @@ public class CommentsScanTask implements Runnable {
 	private DugaBotService chatBot;
 	private final TextClassification programmersClassification;
 
-    public CommentsScanTask(StackExchangeAPI stackAPI, DugaBotService chatBot) {
+    public CommentsScanTask(StackExchangeAPI stackAPI, DugaBotService chatBot, DugaMachineLearning learning) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
 		this.codeReview = chatBot.room("8595");
 		this.debug = chatBot.room("20298");
 		this.programmers = chatBot.room("21");
 		this.softwareRecs = chatBot.room("22668");
-
-		URL trainingData = getClass().getClassLoader()
-				.getResource("trainingset-programmers-comments.txt");
-        String source = trainingData?.text;
-        String[] lines = source?.split("\n");
-        this.programmersClassification = ProgrammersClassification.machineLearning(lines);
+        this.programmersClassification = learning.programmers
 	}
 
 	static boolean isInterestingComment(comment) {

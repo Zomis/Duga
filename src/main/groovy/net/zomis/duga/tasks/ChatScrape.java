@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ChatScrape {
 
-    public static String fetch(long messageId) throws IOException {
+    public String fetch(long messageId) throws IOException {
         String url = "http://chat.stackexchange.com/transcript/message/" +
             messageId + "#" + messageId;
         System.out.println("Fetching URL " + url);

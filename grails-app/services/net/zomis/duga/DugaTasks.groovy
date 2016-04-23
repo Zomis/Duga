@@ -51,6 +51,7 @@ class DugaTasks {
     @Autowired private GithubBean githubBean;
     @Autowired private StackExchangeAPI stackAPI;
     @Autowired private HookStringification stringification;
+    @Autowired private DugaMachineLearning learning;
 
     private class TaskRunner implements Runnable {
 
@@ -86,7 +87,7 @@ class DugaTasks {
             case "github":
                 return new GithubTask(githubBean, stringification, chatBot)
             case "comments":
-                return new CommentsScanTask(stackAPI, chatBot)
+                return new CommentsScanTask(stackAPI, chatBot, learning)
             case "mess":
                 return new MessageTask(chatBot, taskInfo[1], taskInfo[2])
             case "ratingdiff":
