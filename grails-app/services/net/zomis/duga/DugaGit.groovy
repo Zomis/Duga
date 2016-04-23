@@ -25,8 +25,9 @@ class DugaGit implements InitializingBean {
     void afterPropertiesSet() throws Exception {
         String gitPath = environment.getProperty(CONFIG_GIT_BASE_DIR, "duga-git-worktrees");
         baseDir = new File(gitPath);
-        if (baseDir.mkdirs()) {
-            logger.info("Git base created: " + baseDir.getAbsolutePath())
+        baseDir.mkdirs();
+        if (baseDir.exists() && baseDir.isDirectory()) {
+            logger.info("Using git base: " + baseDir.getAbsolutePath())
         } else {
             logger.error("Git base could not be created: " + baseDir.getAbsolutePath())
         }
