@@ -6,7 +6,7 @@ class CommentClassification {
 
     public static final float ML_THRESHOLD = 0.3f;
     public static final float REAL = 0.49f;
-	public static final float DEBUG = 0.01f;
+	public static final float DEBUG = 0f;
 	
 	public static final Pattern PROG_LINK = Pattern.compile(
 			Pattern.quote("<a href=\"http") + "s?" + Pattern.quote("://programmers.stackexchange.com") + "(/|/help/.*)?" + Pattern.quote("\">"));
