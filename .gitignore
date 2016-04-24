@@ -5,7 +5,7 @@ duga.conf
 
 
 docker/webapp/
-
+duga-git-worktrees/
 
 # Created by https://www.gitignore.io/api/java,gradle,grails
 
