@@ -42,8 +42,11 @@ class DugaLearning {
     double getScore() {
         return classification.score(text);
     }
-
     ClassificationResult classify(boolean classification) {
+        return mark(classification ? "1" : "0");
+    }
+
+    ClassificationResult mark(String mark) {
         Git repo = git.cloneOrPull("Duga", "https://github.com/Zomis/Duga.git")
 
         // checkout the specific branch
@@ -70,7 +73,7 @@ class DugaLearning {
 
         // Add line to the training set file
         def pw = new PrintWriter(new FileOutputStream(file, true))
-        String classificationPrefix = classification ? "1 " : "0 ";
+        String classificationPrefix = mark + " ";
         String line = classificationPrefix + text
         pw.println line
         pw.close()
