@@ -630,3 +630,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 1 Excellent question but please move to programmers. I hope it does not get down voted. Any way to check if your application is not doing something function pass through a code. I once passed the code of same application and compiled at the other end. I complied fine yet checksum was failing. Can be many reasons mine was new line and space getting added during transfer. —
 1 Should this be on &quot;Programmers Exchange&quot; instead? —
 1 StackOverflow is not a suitable site for plugin recommendations or opinion answers. You may want to try programmers stackexchange. —
+1 @honk Well yeah maybe you're right but from time to time there are questions I'm not really able to tell whether if I should post them on Programmers or on SO. However, if in question I rather post it on SO than on Programmers. ^^ —
