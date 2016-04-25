@@ -633,3 +633,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 1 @honk Well yeah maybe you're right but from time to time there are questions I'm not really able to tell whether if I should post them on Programmers or on SO. However, if in question I rather post it on SO than on Programmers. ^^ —
 1 I think this may be one of the rare SO questions that would actually benefit from a migration to Programmers. Maybe it's not <i>quite</i> clear enough yet, but I think it could get there pretty easily. —
 1 First, consider separating your thoughts in paragraphs, it makes for an easier read. Second, it's not clear that you have a specific, programming-related problem that needs a solution. If your present code is working, then this may be a better fit for programmers.se. —
+1 Is it also too broad for <code>http://programmers.stackexchange.com/</code>? I may not find anybody that can understand my story about <code>sphinx</code> over there... —
