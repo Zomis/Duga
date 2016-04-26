@@ -176,8 +176,8 @@ abstract class ChatCommandDelegate extends Script {
                 message.reply('No such user found.')
             } else if (user.accountLocked) {
                 user.setAccountLocked(false)
-                user.setChatName(message.user_name)
-                user.chatId = message.user_id
+                user.setChatName(message.userName)
+                user.chatId = message.userId
                 if (!user.save(failOnError: true, flush: true)) {
                     message.reply('Unable to save')
                     user.errors.each {
