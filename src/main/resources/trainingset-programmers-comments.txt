@@ -642,3 +642,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 0 Good question. Generally your fellow programmers like to see your own attempt before sending in theirs. —
 1 I suggest you repost this question to <a href="http://programmers.stackexchange.com/">programmers.stackexchange.com</a>. —
 1 -1 down vote As this calls for opinion and is very broad, it is not a good question for SO. See the section on asking questions linked here. <a href="http://stackoverflow.com/tour">stackoverflow.com/tour</a>. I believe that the more appropriate Stack Exchange site would be programmers which is specifically for questions that require opinion.<a href="http://programmers.stackexchange.com/">programmers.stackexchange.com</a> —
+3 Every-time I've asked questions at programmers.stackexchange, I usually get down-voted and closed. Not sure why but understanding how to ask questions over there - and what content is acceptable - is super confusing to me. —
