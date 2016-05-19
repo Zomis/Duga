@@ -669,3 +669,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 1 Also voting to close. Consider <a href="http://programmers.stackexchange.com/">programmers.stackexchange.com</a> —
 0 You may find <a href="http://programmers.stackexchange.com/questions/129296/the-case-for-code-obfuscation">The case for code obfuscation?</a> over at Programmers SE interesting. The answers there pretty much say the same thing as folks here: You can slow down folks trying to read your JavaScript, but you can't make it impossible. —
 1 This would be a question you'd typically ask on <a href="http://programmers.stackexchange.com/">programmers.stackexchange.com</a> . There's no real answer to this question, use whatever makes sense and you and/or the people you are working with like to use. —
+1 @cwallenpoole, I feel like it might belong between programmers, cs, and academia stackexchanges, but it is hard to decide on a particular one. —
