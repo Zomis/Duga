@@ -671,3 +671,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 1 This would be a question you'd typically ask on <a href="http://programmers.stackexchange.com/">programmers.stackexchange.com</a> . There's no real answer to this question, use whatever makes sense and you and/or the people you are working with like to use. —
 1 @cwallenpoole, I feel like it might belong between programmers, cs, and academia stackexchanges, but it is hard to decide on a particular one. —
 2 @Pekka웃 ty, and programmers.stack? —
+2 @lxrec That's a function of the SE software, and all the sites have that. The Programmers.SE was actually opened up for questions like this. I just posted to the wrong one. Think about it; does it really make any sense to have a Stackoverflow and a Programmers.SE? —
