@@ -84,7 +84,7 @@ class BitbucketStringification {
 
             distinctCommits.forEach({commitObj ->
                 // All commits should be stored in stats
-                stats.addCommit(json.repository, commitObj);
+                stats.addCommitBitbucket(json.repository, commitObj);
             })
 
             final int MAX_DISTINCT_COMMITS = 10;
