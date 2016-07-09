@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 class BitbucketController {
 
-    static allowedMethods = [hook:'POST']
+    static allowedMethods = [bitbucket:'POST']
 
     @Autowired
     DugaBotService bot
@@ -14,7 +14,7 @@ class BitbucketController {
     @Autowired
     BitbucketStringification stringificationBitbucket
 
-    def hook() {
+    def bitbucket() {
         String eventType = request.getHeader('X-Event-Key')
         String room = params?.roomId
         JSONObject json = request.JSON
