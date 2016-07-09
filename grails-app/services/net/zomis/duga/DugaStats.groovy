@@ -44,6 +44,23 @@ class DugaStats {
     }
 
     @Transactional
+    void addCommitBitbucket(def repo, def commit) {
+        DailyInfo info = findOrCreateBitbucket(repo)
+        info.addCommits(1, 0, 0)
+        info.save(flush: true)
+    }
+
+    DailyInfo findOrCreateBitbucket(repo) {
+        DailyInfo info = DailyInfo.findByName(repo.full_name)
+        if (info == null) {
+            info = new DailyInfo()
+            info.name = repo.full_name
+            info.url = repo.links.html.href
+        }
+        info
+    }
+
+    @Transactional
     void addIssueComment(def repo) {
         DailyInfo info = findOrCreate(repo)
         info.comments++

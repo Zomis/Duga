@@ -1,3 +1,4 @@
+import net.zomis.duga.BitbucketStringification
 import net.zomis.duga.DugaChatListener
 import net.zomis.duga.DugaGit
 import net.zomis.duga.DugaMachineLearning
@@ -22,6 +23,7 @@ beans = {
     // dugaBot(DugaBotService)
     stats(DugaStats)
     stringification(HookStringification)
+    stringificationBitbucket(BitbucketStringification)
     githubAPI(GithubBean)
     tasks(DugaTasks)
     chatListener(DugaChatListener)

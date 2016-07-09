@@ -1,0 +1,236 @@
+{
+  "push": {
+    "changes": [
+      {
+        "forced": false,
+        "old": {
+          "links": {
+            "commits": {
+              "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commits/master"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/refs/branches/master"
+            },
+            "html": {
+              "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/branch/master"
+            }
+          },
+          "type": "branch",
+          "target": {
+            "hash": "bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commit/bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+              },
+              "html": {
+                "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/commits/bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+              }
+            },
+            "author": {
+              "raw": "Simon Forsberg <zomis2k@hotmail.com>"
+            },
+            "parents": [
+              {
+                "hash": "2dab83bff9b85d2fa5101bc572faf4bfd7d82d83",
+                "type": "commit",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commit/2dab83bff9b85d2fa5101bc572faf4bfd7d82d83"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/commits/2dab83bff9b85d2fa5101bc572faf4bfd7d82d83"
+                  }
+                }
+              }
+            ],
+            "date": "2016-07-07T20:36:10+00:00",
+            "message": "Fix some more API 2.0 changes\n",
+            "type": "commit"
+          },
+          "repository": {
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai"
+              },
+              "html": {
+                "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/avatar/32/"
+              }
+            },
+            "type": "repository",
+            "uuid": "{799de9cf-23c8-4049-a1ff-8f06eb6ee5c0}",
+            "full_name": "SimonForsberg/minesweeper-ai",
+            "name": "Minesweeper AI"
+          },
+          "name": "master"
+        },
+        "links": {
+          "diff": {
+            "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/diff/ac97f33fbee6b3d2ddf27a38394db9f134c94b12..bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+          },
+          "html": {
+            "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/branches/compare/ac97f33fbee6b3d2ddf27a38394db9f134c94b12..bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+          },
+          "commits": {
+            "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commits?include=ac97f33fbee6b3d2ddf27a38394db9f134c94b12&exclude=bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+          }
+        },
+        "created": false,
+        "commits": [
+          {
+            "hash": "ac97f33fbee6b3d2ddf27a38394db9f134c94b12",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commit/ac97f33fbee6b3d2ddf27a38394db9f134c94b12"
+              },
+              "html": {
+                "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/commits/ac97f33fbee6b3d2ddf27a38394db9f134c94b12"
+              }
+            },
+            "author": {
+              "raw": "Simon Forsberg <zomis2k@hotmail.com>"
+            },
+            "parents": [
+              {
+                "hash": "bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0",
+                "type": "commit",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commit/bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/commits/bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+                  }
+                }
+              }
+            ],
+            "date": "2016-07-09T16:32:40+00:00",
+            "message": "Fix AI_Challenger for new API\n",
+            "type": "commit"
+          }
+        ],
+        "truncated": false,
+        "closed": false,
+        "new": {
+          "links": {
+            "commits": {
+              "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commits/master"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/refs/branches/master"
+            },
+            "html": {
+              "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/branch/master"
+            }
+          },
+          "type": "branch",
+          "target": {
+            "hash": "ac97f33fbee6b3d2ddf27a38394db9f134c94b12",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commit/ac97f33fbee6b3d2ddf27a38394db9f134c94b12"
+              },
+              "html": {
+                "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/commits/ac97f33fbee6b3d2ddf27a38394db9f134c94b12"
+              }
+            },
+            "author": {
+              "raw": "Simon Forsberg <zomis2k@hotmail.com>"
+            },
+            "parents": [
+              {
+                "hash": "bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0",
+                "type": "commit",
+                "links": {
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai/commit/bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/commits/bb65b75491d8bd882bd98e85dbbbb49c0ccaa8b0"
+                  }
+                }
+              }
+            ],
+            "date": "2016-07-09T16:32:40+00:00",
+            "message": "Fix AI_Challenger for new API\n",
+            "type": "commit"
+          },
+          "repository": {
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai"
+              },
+              "html": {
+                "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/avatar/32/"
+              }
+            },
+            "type": "repository",
+            "uuid": "{799de9cf-23c8-4049-a1ff-8f06eb6ee5c0}",
+            "full_name": "SimonForsberg/minesweeper-ai",
+            "name": "Minesweeper AI"
+          },
+          "name": "master"
+        }
+      }
+    ]
+  },
+  "actor": {
+    "username": "SimonForsberg",
+    "type": "user",
+    "display_name": "Simon Forsberg",
+    "uuid": "{1084efe1-7962-410a-b53c-80a2b2e77189}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/SimonForsberg"
+      },
+      "html": {
+        "href": "https://bitbucket.org/SimonForsberg/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/SimonForsberg/avatar/32/"
+      }
+    }
+  },
+  "repository": {
+    "scm": "git",
+    "website": "",
+    "uuid": "{799de9cf-23c8-4049-a1ff-8f06eb6ee5c0}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/SimonForsberg/minesweeper-ai"
+      },
+      "html": {
+        "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/SimonForsberg/minesweeper-ai/avatar/32/"
+      }
+    },
+    "full_name": "SimonForsberg/minesweeper-ai",
+    "owner": {
+      "username": "SimonForsberg",
+      "type": "user",
+      "display_name": "Simon Forsberg",
+      "uuid": "{1084efe1-7962-410a-b53c-80a2b2e77189}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/SimonForsberg"
+        },
+        "html": {
+          "href": "https://bitbucket.org/SimonForsberg/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/SimonForsberg/avatar/32/"
+        }
+      }
+    },
+    "type": "repository",
+    "is_private": true,
+    "name": "Minesweeper AI"
+  }
+}
