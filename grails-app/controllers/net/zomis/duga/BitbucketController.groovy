@@ -12,7 +12,7 @@ class BitbucketController {
     DugaBotService bot
 
     @Autowired
-    BitbucketStringification stringification
+    BitbucketStringification stringificationBitbucket
 
     def hook() {
         String eventType = request.getHeader('X-Event-Key')
@@ -24,7 +24,7 @@ class BitbucketController {
         println 'Room: ' + room
         println 'Github Event: ' + eventType
 
-        List<String> strings = stringification.postBitbucket(eventType, json)
+        List<String> strings = stringificationBitbucket.postBitbucket(eventType, json)
         strings.forEach({ println it })
         if (room == null) {
             room = '16134'
