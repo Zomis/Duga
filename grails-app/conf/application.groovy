@@ -70,7 +70,7 @@ environments {
     development {
         dataSource {
             dbCreate = 'update'
-            url = 'jdbc:postgresql://localhost:5432/grailsdev'
+            url = 'jdbc:postgresql://db:5432/grails'
         }
     }
     production {
