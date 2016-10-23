@@ -32,6 +32,10 @@ ext {
     gradleWrapperVersion = project.gradleWrapperVersion
 }
 
+war {
+    env = 'production'
+}
+
 assets {
     minifyJs = true
     minifyCss = true
