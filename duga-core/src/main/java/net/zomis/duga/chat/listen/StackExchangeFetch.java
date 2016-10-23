@@ -5,6 +5,8 @@ import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.document.json.node.JsonNode;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +16,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class StackExchangeFetch implements ChatMessageRetriever {
+
+    private static final Logger logger = LoggerFactory.getLogger(StackExchangeFetch.class);
 
     private final MechanizeAgent agent;
     private final Supplier<String> fkey;
@@ -41,11 +45,11 @@ public class StackExchangeFetch implements ChatMessageRetriever {
         }
 
         if (!(response instanceof JsonDocument)) {
-            System.out.println("Unexpected response: " + response);
+            logger.warn("Unexpected response fetching " + roomId + ": " + response);
             return null;
         }
 
-        System.out.println("Checking for events in room " + roomId);
+        logger.debug("Checking for events in room " + roomId);
         JsonDocument jsonDocument = (JsonDocument) response;
         JsonNode node = jsonDocument.getRoot();
 

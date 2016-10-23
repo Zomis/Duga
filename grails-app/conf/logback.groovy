@@ -12,6 +12,28 @@ appender('STDOUT', ConsoleAppender) {
 logger('org.springframework.boot.autoconfigure.security', INFO)
 root(INFO, ['STDOUT'])
 
+appender("dugaTasks", FileAppender) {
+
+    file = "dugaTasks.log"
+    append = true
+    encoder(PatternLayoutEncoder) {
+        pattern = "%level %logger - %msg%n"
+    }
+}
+appender("dugaChat", FileAppender) {
+
+    file = "dugaChat.log"
+    append = true
+    encoder(PatternLayoutEncoder) {
+        pattern = "%level %logger - %msg%n"
+    }
+}
+
+logger("net.zomis.duga.chat.listen", DEBUG, ['dugaTasks', 'STDOUT'], false )
+logger("net.zomis.duga.tasks", DEBUG, ['dugaTasks', 'STDOUT'], false )
+
+logger("net.zomis.duga.chat", DEBUG, ['dugaChat', 'STDOUT'], false )
+
 if(Environment.current == Environment.DEVELOPMENT) {
     def targetDir = '.'
     if(targetDir) {

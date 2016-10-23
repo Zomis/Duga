@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import net.zomis.duga.chat.events.DugaEvent;
@@ -20,10 +18,12 @@ import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
 import net.zomis.duga.chat.listen.ChatMessageRetriever;
 import net.zomis.duga.chat.listen.StackExchangeFetch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StackExchangeChatBot implements ChatBot {
 
-	private final static Logger LOGGER = Logger.getLogger(StackExchangeChatBot.class.getSimpleName());
+	private final static Logger LOGGER = LoggerFactory.getLogger(StackExchangeChatBot.class);
 
     @Deprecated
 	private static final BotRoom debugRoom = BotRoom.toRoom("20298");
@@ -114,7 +114,7 @@ public class StackExchangeChatBot implements ChatBot {
 			}
             ChatMessageResponse response2 = postMessageToChat(message);
             if (response2.hasException()) {
-                LOGGER.log(Level.SEVERE, "Failed to post message on retry", response2.getException());
+                LOGGER.error("Failed to post message on retry", response2.getException());
             }
             return response2;
 		}
@@ -124,7 +124,7 @@ public class StackExchangeChatBot implements ChatBot {
 			login();
             ChatMessageResponse response2 = postMessageToChat(message);
             if (response2.hasException()) {
-                LOGGER.log(Level.SEVERE, "Failed to post message on retry", response2.getException());
+                LOGGER.error("Failed to post message on retry", response2.getException());
             }
             return response2;
 		}
@@ -159,7 +159,7 @@ public class StackExchangeChatBot implements ChatBot {
         text = text.replaceAll("access_token=([0-9a-f]+)", "access_token=xxxxxxxxxxxxxx");
         parameters.put("text", text);
 		parameters.put("fkey", this.chatFKey);
-		System.out.println("Okay, here we go!");
+		LOGGER.info("Okay, here we go!");
         Resource response;
         try {
             response = agent.post("http://chat.stackexchange.com/chats/" +
@@ -168,11 +168,11 @@ public class StackExchangeChatBot implements ChatBot {
             return new ChatMessageResponse(e.toString(), e);
         }
 
-        System.out.println("Response: " + response.getTitle());
+        LOGGER.info("Response: " + response.getTitle());
         if (response instanceof JsonDocument) {
-            System.out.println(response);
+			LOGGER.info(response.toString());
             JsonDocument json = (JsonDocument) response;
-            System.out.println("Success: " + json.getRoot());
+			LOGGER.info("Success: " + json.getRoot());
             message.onSuccess(json);
             return new ChatMessageResponse(Long.parseLong(json.getRoot().getChild("id").getValue()),
                     Long.parseLong(json.getRoot().getChild("time").getValue()), json.getRoot().toString());
@@ -181,7 +181,7 @@ public class StackExchangeChatBot implements ChatBot {
         if (response instanceof HtmlDocument) {
             //failure
             HtmlDocument htmlDocument = (HtmlDocument) response;
-            System.out.println("Failure: " + htmlDocument);
+			LOGGER.error("Failure: " + htmlDocument);
             HtmlElement body = htmlDocument.find("body");
             if (body.getInnerHtml().contains("You can perform this action again in")) {
                 int timing =
@@ -190,11 +190,11 @@ public class StackExchangeChatBot implements ChatBot {
                 return new ChatMessageResponse(body.getInnerHtml(), new ChatThrottleException(timing));
             }
 
-            System.out.println(body.getInnerHtml());
+            LOGGER.error(body.getInnerHtml());
             return new ChatMessageResponse(body.getInnerHtml(), new ProbablyNotLoggedInException());
         }
 
-        System.out.println("Unknown response: " + response);
+		LOGGER.error("Unknown response: " + response);
         //even harder failure
         throw new IllegalStateException("unexpected response, response.getClass() = " + response.getClass());
 	}
@@ -229,9 +229,8 @@ public class StackExchangeChatBot implements ChatBot {
 				}
 				catch (RuntimeException ex) {
 					System.out.println("Exception: " + ex);
-                    ex.printStackTrace(System.out);
 					try {
-						LOGGER.warning("Error in drainMessagesQueue: " + ex.toString());
+						LOGGER.warn("Error in drainMessagesQueue: " + ex, ex);
 						List<ChatMessage> messages = new ArrayList<ChatMessage>();
 						messages.add(new ChatMessage(debugRoom, ex.toString()));
 						messages.addAll(Arrays.stream(ex.getStackTrace())
@@ -259,7 +258,7 @@ public class StackExchangeChatBot implements ChatBot {
 	private void postDrainedMessages(final List<ChatMessage> messages) {
 		Objects.requireNonNull(messages, "messages");
 		System.out.println("Attempting to post");
-		LOGGER.fine("Attempting to post " + messages);
+		LOGGER.debug("Attempting to post " + messages);
 		if (currentBurst + messages.size() >= configuration.getChatMaxBurst()
 			|| System.currentTimeMillis() < lastPostedTime + configuration.getChatThrottle()) {
 			long sleepTime = lastPostedTime + configuration.getChatThrottle() - System.currentTimeMillis();
