@@ -15,6 +15,7 @@ class BitbucketTest {
     public void setup() {
         hook.stats = new DugaStats() {
             @Override void addCommit(def repo, def commit) {}
+            @Override void addCommitBitbucket(Object repo, Object commit) {}
             @Override void addIssueComment(def Object repo) {}
             @Override def addIssue(def Object repo, int delta) {}
         }
