@@ -1,6 +1,10 @@
 import grails.util.BuildSettings
 import grails.util.Environment
 
+def logPath = '.'
+if(Environment.current == Environment.PRODUCTION) {
+    logPath = '/var/lib/tomcat8/logs'
+}
 
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
 appender('STDOUT', ConsoleAppender) {
@@ -14,7 +18,7 @@ root(INFO, ['STDOUT'])
 
 appender("dugaTasks", FileAppender) {
 
-    file = "dugaTasks.log"
+    file = "$logPath/dugaTasks.log"
     append = true
     encoder(PatternLayoutEncoder) {
         pattern = "%level %logger - %msg%n"
@@ -22,7 +26,7 @@ appender("dugaTasks", FileAppender) {
 }
 appender("dugaChat", FileAppender) {
 
-    file = "dugaChat.log"
+    file = "$logPath/dugaChat.log"
     append = true
     encoder(PatternLayoutEncoder) {
         pattern = "%level %logger - %msg%n"
@@ -34,18 +38,13 @@ logger("net.zomis.duga.tasks", DEBUG, ['dugaTasks', 'STDOUT'], false )
 
 logger("net.zomis.duga.chat", DEBUG, ['dugaChat', 'STDOUT'], false )
 
-if(Environment.current == Environment.DEVELOPMENT) {
-    def targetDir = '.'
-    if(targetDir) {
-
-        appender("FULL_STACKTRACE", FileAppender) {
-
-            file = "${targetDir}/stacktrace.log"
-            append = true
-            encoder(PatternLayoutEncoder) {
-                pattern = "%level %logger - %msg%n"
-            }
+if(Environment.current == Environment.PRODUCTION) {
+    appender("FULL_STACKTRACE", FileAppender) {
+        file = "$logPath/stacktrace.log"
+        append = true
+        encoder(PatternLayoutEncoder) {
+            pattern = "%level %logger - %msg%n"
         }
-        logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false )
     }
+    logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false )
 }
