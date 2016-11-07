@@ -32,7 +32,7 @@ public class CommentsScanTask implements Runnable {
     public CommentsScanTask(StackExchangeAPI stackAPI, DugaBotService chatBot, DugaMachineLearning learning) {
 		this.stackAPI = stackAPI;
 		this.chatBot = chatBot;
-		this.codeReview = chatBot.room("25394");
+		this.codeReview = chatBot.room("8595");
 		this.debug = chatBot.room("20298");
 		this.programmers = chatBot.room("21");
 		this.softwareRecs = chatBot.room("22668");
