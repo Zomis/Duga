@@ -676,3 +676,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 1 Shouldn't your professor provide you with materials from which you can learn about the topic of your homework? StackOverflow does not help you with this kind of stuff. Visit (this)[<a href="http://programmers.stackexchange.com/]">programmers.stackexchange.com/]</a> site maybe. —
 1 I guess you might able to ask on <a href="http://softwareengineering.stackexchange.com">Software Engineering</a> —
 0 Software recommendations (&quot;and I need something similar&quot;) are explicitly off-topic for SO. —
+0 Questions asking us to recommend or find a book, tool, software library, tutorial or other off-site resource are off-topic for Stack Overflow as they tend to attract opinionated answers and spam. Instead, describe the problem and what has been done so far to solve it. —
