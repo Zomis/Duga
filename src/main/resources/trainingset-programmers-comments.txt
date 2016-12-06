@@ -695,3 +695,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 0 Why don't you just check if the package &quot;android.software.live_tv&quot; exist before trying to start the service? —
 0 In my case I need to use third party software which binds its ports on the loopback interface. I think it would be really nice if you can share the hosts loopback interface with a container. —
 0 <a href="https://www.gnu.org/software/tar/manual/html_node/appending-files.html" rel="nofollow">gnu.org/software/tar/manual/html_node/appending-files.html</a> —
+0 Welcome on SO. While this is website for programmers to help one an other, we are not getting pay for this, so don't depend on SO for commercial work... —
