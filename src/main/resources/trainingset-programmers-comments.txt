@@ -687,3 +687,4 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 0 Try <a href="http://softwarerecs.stackexchange.com/">Software Recommendations</a>. —
 0 I gotta do the same in my typical software development, so I'm quite familiar. I was expecting to need this, but was hoping I just wasn't aware of something. —
 0 Its strange, yesterday I haven't seen under <code>r5 studio runtime</code>. Today I can able to see 3.8.2EE under 'r5 studio runtime'. First check for updates and then see in software Updates. This is the steps i followed. —
+0 The API is called <code>CreateRemoteThread</code>. I used it once. Every virus detection software was immediately deciding that my application is a virus. —
