@@ -679,3 +679,20 @@ Post("@Mints97 Have you seen the number of questions in this question? I can bet
 0 Questions asking us to recommend or find a book, tool, software library, tutorial or other off-site resource are off-topic for Stack Overflow as they tend to attract opinionated answers and spam. Instead, describe the problem and what has been done so far to solve it. —
 1 I suppose this is a question for the software engineering stack. —
 0 Could be a firewall issue (hardware or software). —
+0 From the <a href="http://stackoverflow.com/help/on-topic">help center</a>: <i>Questions asking us to <b>recommend or find a book, tool, software library, tutorial or other off-site resource are off-topic for Stack Overflow</b> as they tend to attract opinionated answers and spam.</i> —
+0 If this is homework, I'd suggest reading the <a href="http://meta.programmers.stackexchange.com/questions/6166/open-letter-to-students-with-homework-problems">Open letter to students with homework problems</a>. —
+1 Interesting question. If you don't get a good answer, or it gets closed, take it to <a href="http://softwareengineering.stackexchange.com/">softwareengineering.stackexchange.com</a> —
+0 &quot;Questions asking us to recommend or find a book, tool, software library, tutorial or other off-site resource are off-topic for Stack Overflow as they tend to attract opinionated answers and spam. Instead, describe the problem and what has been done so far to solve it.&quot; —
+1 Define &quot;correctly&quot; because it could mean just about anything. If you can provide details someone may be able to tell you. Also, &quot;correctly&quot; may be too subjective for this site, you might try <a href="http://codereview.stackexchange.com/">codereview</a> or <a href="http://softwareengineering.stackexchange.com/">Software Engineering</a> instead. —
+0 Try <a href="http://softwarerecs.stackexchange.com/">Software Recommendations</a>. —
+0 I gotta do the same in my typical software development, so I'm quite familiar. I was expecting to need this, but was hoping I just wasn't aware of something. —
+0 Its strange, yesterday I haven't seen under <code>r5 studio runtime</code>. Today I can able to see 3.8.2EE under 'r5 studio runtime'. First check for updates and then see in software Updates. This is the steps i followed. —
+0 The API is called <code>CreateRemoteThread</code>. I used it once. Every virus detection software was immediately deciding that my application is a virus. —
+0 I found some ransom software which can encrypt jpg. it is called cryptowall. but still i don't have a message from it. so i have no sure that it is cryptowall. so it says it can encrypt file. so if there is no way to change data in jpg, how cryptowall encrypt it? I am still finding a way to get back my data. —
+0 I have Access 2013. It won't read these old files. And, as indicated, our preference is to read the file without Access or any other software. All I need is some good documentation of the format. —
+0 Absolutely not. Although Access is installed on my computer, I don't have any software on my system that is capable of reading these old MDB files. —
+1 @D.B. Questions about writing code (including debugging and understanding) are off-topic on Software Engineering. Please do not suggest sites unless you fully understand their scope. It leads to a poor user experience when someone asks an off-topic question on a site based on a recommendation and it ends up being down voted, closed, and deleted. —
+0 Why don't you just check if the package &quot;android.software.live_tv&quot; exist before trying to start the service? —
+0 In my case I need to use third party software which binds its ports on the loopback interface. I think it would be really nice if you can share the hosts loopback interface with a container. —
+0 <a href="https://www.gnu.org/software/tar/manual/html_node/appending-files.html" rel="nofollow">gnu.org/software/tar/manual/html_node/appending-files.html</a> —
+0 Welcome on SO. While this is website for programmers to help one an other, we are not getting pay for this, so don't depend on SO for commercial work... —
