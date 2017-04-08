@@ -2,8 +2,10 @@ import grails.util.BuildSettings
 import grails.util.Environment
 
 def logPath = '.'
-if(Environment.current == Environment.PRODUCTION) {
-    logPath = '/var/lib/tomcat8/logs'
+def env = System.getenv()
+
+if (env['TOMCAT_LOGS']) {
+    logPath = env['TOMCAT_LOGS']
 }
 
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
