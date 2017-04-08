@@ -3,10 +3,13 @@ import grails.util.Environment
 
 def logPath = '.'
 def env = System.getenv()
+println("LOGBACK TEST: Environment variables are $env")
+println("LOGBACK TEST: Current path is " + (new File(".")).getAbsolutePath())
 
 if (env['TOMCAT_LOGS']) {
     logPath = env['TOMCAT_LOGS']
 }
+logPath = "/var/lib/tomcat8/logs"
 
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
 appender('STDOUT', ConsoleAppender) {
