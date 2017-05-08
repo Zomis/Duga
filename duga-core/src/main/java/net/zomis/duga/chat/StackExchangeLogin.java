@@ -1,9 +1,11 @@
 package net.zomis.duga.chat;
 
+import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.html.HtmlDocument;
 import com.gistlabs.mechanize.document.html.form.Form;
 import com.gistlabs.mechanize.document.html.form.SubmitButton;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
@@ -12,6 +14,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -76,7 +79,18 @@ public class StackExchangeLogin implements LoginFunction {
     }
 
     private void loginRoot(MechanizeAgent agent, BotConfiguration configuration) {
-        HtmlDocument rootLoginPage = agent.get(configuration.getRootUrl() + "/users/login");
+        Resource resource = agent.get(configuration.getRootUrl() + "/users/login");
+        if (!(resource instanceof HtmlDocument)) {
+            logger.severe("Resource not HTML: " + resource);
+            logger.severe(resource.getResponse().toString());
+            try {
+                logger.severe(IOUtils.toString(resource.getInputStream()));
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot read input input stream.", e);
+            }
+            throw new RuntimeException("Resource is not HTML: " + resource);
+        }
+        HtmlDocument rootLoginPage = (HtmlDocument) resource;
         Form loginForm = rootLoginPage.forms().getAll().get(rootLoginPage.forms().getAll().size() - 1);
         loginForm.get("openid_identifier").setValue("https://openid.stackexchange.com/");
         List<SubmitButton> submitButtons = loginForm.findAll("input[type=submit]", SubmitButton.class);
