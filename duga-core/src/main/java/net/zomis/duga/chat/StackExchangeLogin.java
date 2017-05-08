@@ -33,7 +33,7 @@ public class StackExchangeLogin implements LoginFunction {
                 System.out.println(Arrays.toString(response.getAllHeaders()));
                 String host = request.getFirstHeader("Host").getValue();
                 String location = response.getFirstHeader("Location").getValue();
-                String protocol = host.equals("openid.stackexchange.com") ? "https" : "http";
+                String protocol = "https";
                 if (location.startsWith("http://") || location.startsWith("https://")) {
                     logger.info("Redirecting to " + location);
                     return new HttpGet(location);

@@ -28,8 +28,8 @@ public class DugaTest {
 
         BotConfiguration config = new BotConfiguration();
 
-        config.setRootUrl("http://stackexchange.com");
-        config.setChatUrl("http://chat.stackexchange.com");
+        config.setRootUrl("https://stackexchange.com");
+        config.setChatUrl("https://chat.stackexchange.com");
 
         try {
             Properties properties = new Properties();
