@@ -43,7 +43,7 @@ In order to run a StackExchange account as a bot, you need to follow the followi
 3. Create a StackExchange account on http://stackexchange.com.
 4. Make sure you can log in to it.
 5. Create an account on a specific site, for example http://stackoverflow.com.
-6. Earn 20 reputation, following the rules of the particular site.
+6. Earn 20 reputation, following the rules of the particular site. (or you can make your own chatroom and give the bot exclusive write access)
 7. Log in to http://chat.stackexchange.com.
 8. Confirm that you can talk.
 
