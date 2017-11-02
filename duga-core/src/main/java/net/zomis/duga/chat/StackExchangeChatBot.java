@@ -56,12 +56,11 @@ public class StackExchangeChatBot implements ChatBot {
 		this.executorService.submit(() -> {
 			try {
                 login();
-				System.out.println("Start draining");
+				LOGGER.info("Start draining");
                 executeEvent(new DugaStartedEvent(this));
 				drainMessagesQueue();
 			} catch (Exception ex) {
-				System.out.println("Error!! " + ex);
-				ex.printStackTrace();
+                LOGGER.error("Unable to start bot", ex);
 			}
 		});
 	}
@@ -94,19 +93,18 @@ public class StackExchangeChatBot implements ChatBot {
 			}
 		}
 
-		System.out.println("Adding messages to queue: " + shortenedMessages);
+        LOGGER.info("Adding messages to queue: " + shortenedMessages);
 		messagesQueue.add(shortenedMessages);
         return null;
 	}
 
 	private ChatMessageResponse attemptPostMessageToChat(final ChatMessage message) {
-		System.out.println("Real message post: " + message);
+        LOGGER.info("Real message post: " + message);
         Objects.requireNonNull(message, "message");
         ChatMessageResponse response = postMessageToChat(message);
         if (response.getException() instanceof ChatThrottleException) {
             ChatThrottleException ex = (ChatThrottleException) response.getException();
-			System.out.println("Chat throttle");
-            LOGGER.info("Sleeping for " + ex.getThrottleTiming() + " seconds, then reposting");
+            LOGGER.info("Chat throttle. Sleeping for " + ex.getThrottleTiming() + " seconds, then reposting");
 			try {
 				TimeUnit.SECONDS.sleep(ex.getThrottleTiming());
 			} catch(InterruptedException ex1) {
@@ -119,8 +117,7 @@ public class StackExchangeChatBot implements ChatBot {
             return response2;
 		}
         if (response.getException() instanceof ProbablyNotLoggedInException) {
-			System.out.println("Probably not logged in");
-			LOGGER.info("Not logged in, logging in and then reposting");
+            LOGGER.warn("Probably not logged in. Logging in and then reposting");
 			login();
             ChatMessageResponse response2 = postMessageToChat(message);
             if (response2.hasException()) {
@@ -220,17 +217,16 @@ public class StackExchangeChatBot implements ChatBot {
     private void drainMessagesQueue() {
 		try {
 			while (true) {
-				System.out.println("Posting drained messages...");
+                LOGGER.info("Posting drained messages...");
 				try {
                     List<ChatMessage> mess = messagesQueue.take();
-					System.out.println("Retrieved: " + mess);
+                    LOGGER.info("Retrieved: " + mess);
 					postDrainedMessages(mess);
-					System.out.println("Posted: " + mess);
+                    LOGGER.info("Posted: " + mess);
 				}
 				catch (RuntimeException ex) {
-					System.out.println("Exception: " + ex);
+                    LOGGER.warn("Error in drainMessagesQueue", ex);
 					try {
-						LOGGER.warn("Error in drainMessagesQueue: " + ex, ex);
 						List<ChatMessage> messages = new ArrayList<ChatMessage>();
 						messages.add(new ChatMessage(debugRoom, ex.toString()));
 						messages.addAll(Arrays.stream(ex.getStackTrace())
@@ -261,7 +257,6 @@ public class StackExchangeChatBot implements ChatBot {
 		if (currentBurst + messages.size() >= configuration.getChatMaxBurst()
 			|| System.currentTimeMillis() < lastPostedTime + configuration.getChatThrottle()) {
 			long sleepTime = lastPostedTime + configuration.getChatThrottle() - System.currentTimeMillis();
-			System.out.println("Sleeping for " + sleepTime);
 			LOGGER.info("Sleeping for " + sleepTime + " milliseconds");
 			try {
 				TimeUnit.MILLISECONDS.sleep(sleepTime);

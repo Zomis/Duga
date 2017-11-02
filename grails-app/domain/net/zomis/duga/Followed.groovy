@@ -12,5 +12,16 @@ class Followed {
 	boolean isUser() {
 		return followType == 1
 	}
-	
+
+    @Override
+    public String toString() {
+        return "Followed{" +
+                "name='" + name + '\'' +
+                ", lastChecked=" + lastChecked +
+                ", lastEventId=" + lastEventId +
+                ", roomIds='" + roomIds + '\'' +
+                ", followType=" + followType +
+                ", interestingEvents='" + interestingEvents + '\'' +
+                '}';
+    }
 }

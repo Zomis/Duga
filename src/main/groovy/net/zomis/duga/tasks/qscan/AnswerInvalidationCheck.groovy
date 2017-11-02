@@ -3,6 +3,8 @@ package net.zomis.duga.tasks.qscan
 import net.zomis.duga.chat.BotRoom
 import net.zomis.duga.chat.ChatBot
 import net.zomis.duga.StackAPI
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.time.Instant
 import java.util.stream.Collectors
@@ -10,10 +12,11 @@ import static org.apache.commons.lang.StringEscapeUtils.unescapeHtml
 
 class AnswerInvalidationCheck {
 
+    private static final Logger logger = LoggerFactory.getLogger(AnswerInvalidationCheck.class);
     private static final BotRoom debug = BotRoom.toRoom('20298');
 
     static void perform(def result, Instant lastCheck, StackAPI stackExchangeAPI, ChatBot dugaBot, BotRoom params) {
-        println 'Answer invalidation check'
+        logger.debug('Answer invalidation check')
         List questions = result.items
         questions.each {
 //            def created = it.creation_date
@@ -23,7 +26,7 @@ class AnswerInvalidationCheck {
             String op = formatDisplayName(it.owner.display_name)
             int questionId = it.question_id
             if (edited >= lastCheck.epochSecond && it.answer_count > 0) {
-                println 'edited: ' + it.question_id
+                logger.info('edited: ' + it.question_id)
                 int id = it.question_id
                 def edits = stackExchangeAPI.apiCall(editCall(id), 'codereview', '!9YdnS7lAD')
                 dugaBot.postAsync(debug.message("Edits fetched for $id: ${edits.items.size()}. quota remaining $edits.quota_remaining"))

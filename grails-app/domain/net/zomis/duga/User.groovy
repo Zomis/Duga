@@ -2,11 +2,15 @@ package net.zomis.duga
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 
 import java.nio.charset.StandardCharsets
 
 class User {
+
+    private static final Logger logger = LoggerFactory.getLogger(User.class)
 
     PasswordEncoder passwordEncoder
 
@@ -55,7 +59,7 @@ class User {
     def github(String apiPath) {
         char append = apiPath.contains('?') ? '&' : '?'
         URL url = new URL("https://api.github.com/$apiPath${append}access_token=$apiKey")
-        println 'Github GET request: ' + url.toString()
+        logger.info('Github GET request: ' + url.toString())
         URLConnection conn = url.openConnection()
 //        String encoding = Base64.getEncoder().encodeToString("$githubName:$apiKey".getBytes());
 //        conn.setRequestProperty("Authorization", "Basic " + encoding);
@@ -69,7 +73,7 @@ class User {
         Map<String, List<String>> map = conn.getHeaderFields();
 
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue());
+            logger.info("Headers: " + entry.getKey() + " : " + entry.getValue());
         }
     }
 

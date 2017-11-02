@@ -34,7 +34,7 @@ class DugaTasks {
 
     List<TaskData> reloadAll() {
         List<TaskData> allTasks = dugaConfig.getTasks()
-        println 'Reloading tasks, contains ' + allTasks
+        logger.info('Reloading tasks, contains ' + allTasks)
         tasks.forEach({ScheduledFuture<?> task -> task.cancel(false) })
         tasks.clear()
         taskData.clear()
@@ -43,7 +43,7 @@ class DugaTasks {
             Runnable run = createTask(task.taskValue)
             ScheduledFuture<?> future = scheduler.schedule(new TaskRunner(task, run), new CronTrigger(task.cronStr, TimeZone.getTimeZone("UTC")))
             tasks.add(future)
-            System.out.println("Added task: $task.taskValue - $run")
+            logger.info("Added task: $task.taskValue - $run")
         }
         return allTasks
     }
@@ -97,7 +97,7 @@ class DugaTasks {
             case "unanswered":
                 return new UnansweredTask(stackAPI, taskInfo[1], chatBot, taskInfo[2], taskInfo[3])
             default:
-                return { println "Unknown task: $taskData" }
+                return { logger.error("Unknown task: $taskData") }
         }
     }
 
@@ -109,18 +109,18 @@ class DugaTasks {
         def cc = new CompilerConfiguration()
         cc.setScriptBaseClass(TasksDelegate.class.name)
         GroovyShell sh = new GroovyShell(cc);
-        println "parsing script"
+        logger.debug("parsing script")
         TasksDelegate script = (TasksDelegate) sh.parse(groovyCode, 'InitTasks.groovy')
-        println "setting script outer to $this on $script"
+        logger.debug("setting script outer to $this on $script")
         script.setOuter(this);
-        println "outer is now $script.outer called from $this on $script, running script"
+        logger.debug("outer is now $script.outer called from $this on $script, running script")
         script.run()
-        println "script finished"
+        logger.debug("script finished")
         for (CronRunnable cronRunnable : script.data) {
             def runner = new TaskRunner(cronRunnable, cronRunnable.runnable)
             ScheduledFuture<?> future = scheduler.schedule(runner, cronRunnable.trigger)
             tasks.add(future)
-            System.out.println("Added task: $cronRunnable with cron $cronRunnable.trigger")
+            logger.info("Added task: $cronRunnable with cron $cronRunnable.trigger")
         }
     }
 
@@ -140,20 +140,20 @@ class DugaTasks {
         }
 
         public void tasks(Closure closure) {
-            println "tasks run closure with " + this.@outer
+            logger.debug("tasks run closure with " + this.@outer)
             closure.setDelegate(this)
             closure.run()
         }
 
         public void cron(String cron, Closure closure) {
-            println "cron run closure with " + this.@outer
+            logger.debug("cron run closure with " + this.@outer)
             trigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"))
             closure.delegate = this
             closure.run()
         }
 
         public void message(String room, String message) {
-            println "get outer returns: " + getOuter()
+            logger.debug("get outer returns: " + getOuter())
             createTask(new MessageTask(this.@outer.chatBot, room, message))
         }
 
@@ -169,12 +169,12 @@ class DugaTasks {
         }
 
         public void setOuter(DugaTasks outer) {
-            println "Set outer to $outer on $this"
+            logger.debug("Set outer to $outer on $this")
             this.@outer = outer
         }
 
         public DugaTasks getOuter() {
-            println "get outer for $this"
+            logger.debug("get outer for $this")
             this.@outer
         }
 

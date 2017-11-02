@@ -1,10 +1,14 @@
 package net.zomis.duga
 
 import net.zomis.duga.chat.listen.ChatMessageIncoming
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.util.function.Consumer
 
 class ChatCommands {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChatCommands.class)
 
     private final List<Consumer<ChatMessageIncoming>> consumers = new ArrayList<>()
     private final DugaTasks tasks
@@ -23,7 +27,7 @@ class ChatCommands {
                     if (!info.save(failOnError: true, flush: true)) {
                         event.reply('Failed')
                         info.errors.each {
-                            println it
+                            logger.error(it)
                         }
                     } else {
                         event.reply('OK')
@@ -40,7 +44,7 @@ class ChatCommands {
                     if (!config.save(failOnError: true, flush: true)) {
                         event.reply('Failed')
                         config.errors.each {
-                            println it
+                            logger.error(it)
                         }
                     } else {
                         event.reply('OK')
@@ -61,7 +65,7 @@ class ChatCommands {
                     if (!info.save(failOnError: true, flush: true)) {
                         event.reply('Failed')
                         info.errors.each {
-                            println it
+                            logger.error(it)
                         }
                     } else {
                         event.reply('OK')
@@ -81,21 +85,21 @@ class ChatCommands {
         consumers << {ChatMessageIncoming event ->
             if (event.content.contains('create task')) {
                 TaskData.withNewSession { status ->
-                    println 'Transaction ' + status
+                    logger.info('Transaction ' + status)
                     def task = new TaskData()
                     task.taskValue = 'no task defined'
                     task.cronStr = '0 0 * * * *'
                     if (!task.save(failOnError: true, flush: true)) {
                         event.reply('Failed')
                         task.errors.each {
-                            println it
+                            logger.error(it)
                         }
                     } else {
                         event.reply('OK')
                     }
-                    println 'Posted OK'
+                    logger.info('Posted OK')
                 }
-                println 'Done'
+                logger.info('Done')
             }
         }
     }

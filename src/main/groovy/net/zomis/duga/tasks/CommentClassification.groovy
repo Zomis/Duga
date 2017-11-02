@@ -1,8 +1,13 @@
-package net.zomis.duga.tasks;
+package net.zomis.duga.tasks
+
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
 class CommentClassification {
+
+	private static final Logger logger = LoggerFactory.getLogger(CommentClassification.class);
 
     public static final float ML_THRESHOLD = 0.3f;
     public static final float REAL = 0.49f;
@@ -88,7 +93,7 @@ class CommentClassification {
 
 	private static float score(float f, String comment, String string) {
 		if (comment.contains(string)) {
-			System.out.println(string + " --- " + comment + " --- " + f);
+			logger.info(string + " --- " + comment + " --- " + f);
 			return f;
 		}
 		return 0;

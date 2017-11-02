@@ -7,6 +7,8 @@ import net.zomis.duga.chat.ChatMessage
 import net.zomis.duga.chat.ChatMessageResponse
 import net.zomis.duga.chat.StackExchangeChatBot
 import net.zomis.duga.chat.events.DugaEvent
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
@@ -15,6 +17,8 @@ import java.util.concurrent.Future
 import java.util.function.Consumer
 
 class DugaBotService implements ChatBot, InitializingBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(DugaBotService.class)
 
     @Autowired
     Environment environment
@@ -29,7 +33,7 @@ class DugaBotService implements ChatBot, InitializingBean {
     @Override
     Future<List<ChatMessageResponse>> postChat(List<ChatMessage> messages) {
         messages.each {
-            println "postChat $it to $it.room"
+            logger.info("postChat $it to $it.room")
         }
         return bot.postChat(messages)
     }

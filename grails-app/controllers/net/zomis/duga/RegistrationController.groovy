@@ -1,12 +1,15 @@
 package net.zomis.duga
 
 import grails.transaction.Transactional
-import org.springframework.ui.Model
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import static org.springframework.http.HttpStatus.*
 
 @Transactional(readOnly = true)
 class RegistrationController {
+
+    private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class)
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -16,7 +19,7 @@ class RegistrationController {
 
     def saved() {
         String key = params.result
-        println 'Saved, responsekey: ' + key
+        logger.info('Saved, responsekey: ' + key)
         render(view: 'saved', model: [key: key])
     }
 

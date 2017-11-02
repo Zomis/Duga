@@ -33,7 +33,7 @@ public class StackExchangeLogin implements LoginFunction {
 
             @Override
             public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-                System.out.println(Arrays.toString(response.getAllHeaders()));
+                logger.info("Redirect. Headers: " + Arrays.toString(response.getAllHeaders()));
                 String host = request.getFirstHeader("Host").getValue();
                 String location = response.getFirstHeader("Location").getValue();
                 String protocol = "https";
@@ -67,8 +67,8 @@ public class StackExchangeLogin implements LoginFunction {
 
     private void loginOpenId(MechanizeAgent agent, BotConfiguration configuration) {
         HtmlDocument openIdLoginPage = agent.get("https://openid.stackexchange.com/account/login");
-        System.out.println(openIdLoginPage);
-        System.out.println(openIdLoginPage.getRoot());
+        logger.info("openIdLoginPage: " + openIdLoginPage);
+        logger.info("openIdLoginPage.root: " + openIdLoginPage.getRoot());
         Form loginForm = openIdLoginPage.forms().getAll().get(0);
         loginForm.get("email").setValue(configuration.getBotEmail());
         loginForm.get("password").setValue(configuration.getBotPassword());

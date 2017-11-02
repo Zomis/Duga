@@ -60,7 +60,7 @@ public class StatisticTask implements Runnable {
                     if (!result.save(failOnError: true, flush: true)) {
                         chatBot.postSingle(debug, 'Failed saving ' + result.name)
                         result.errors.each {
-                            println it
+                            logger.error(it)
                         }
                     }
                 }

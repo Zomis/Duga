@@ -4,7 +4,9 @@ import net.zomis.duga.DugaBotService
 import net.zomis.duga.HookStringification
 import net.zomis.duga.chat.BotRoom
 import net.zomis.duga.GithubBean
-import net.zomis.duga.github.GithubEventFilter;
+import net.zomis.duga.github.GithubEventFilter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -13,6 +15,8 @@ import java.util.stream.Stream;
 import net.zomis.duga.Followed;
 
 public class GithubTask implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger(GithubTask.class)
 	
 	private final GithubBean githubBean;
     private final HookStringification stringify;
@@ -30,7 +34,7 @@ public class GithubTask implements Runnable {
     	try {
             Followed.withNewSession {data ->
                 List<Followed> followed = Followed.list()
-                println 'followed: ' + followed
+                logger.info('followed: ' + followed)
                 followed.sort(Comparator.comparingLong({follow -> follow.getLastChecked()}));
                 followed.stream()
                         .limit(API_LIMIT)
@@ -38,8 +42,7 @@ public class GithubTask implements Runnable {
             }
     	}
     	catch (Exception ex) {
-            println 'Error: ' + ex
-    		ex.printStackTrace(System.out);
+            logger.error('Error checking Github', ex)
     	}
     }
 
@@ -47,11 +50,11 @@ public class GithubTask implements Runnable {
     	long update = Instant.now().getEpochSecond();
     	List<Object> events;
 		try {
-            println 'Before scan: ' + follow
+            logger.info('Before scan: ' + follow)
 			events = githubBean.fetchEvents(follow);
-            println 'events: ' + events.size()
+            logger.info('events: ' + events.size())
 		} catch (IOException e) {
-            println 'exc: ' + e
+            logger.error("Unable to scan followed " + follow, e)
     		return;
     	}
 
@@ -60,12 +63,12 @@ public class GithubTask implements Runnable {
     	Stream<Object> stream = events.stream();
     	stream = GithubEventFilter.filter(stream, follow.getInterestingEvents());
         def postEvents = stream.collect(Collectors.toList())
-        println 'filtered events: ' + postEvents.size()
+        logger.info('filtered events: ' + postEvents.size())
 
     	postEvents.forEach({ev -> post(ev, follow.getLastEventId(), params)});
     	
     	long eventId = events.stream().mapToLong({ev -> Long.parseLong(ev.id)}).max().orElse(follow.getLastEventId());
-    	System.out.println("Update : " + eventId);
+    	logger.info("Update : " + eventId);
         follow.lastChecked = update
         follow.lastEventId = eventId
         follow.save(flush: true)
@@ -73,7 +76,7 @@ public class GithubTask implements Runnable {
     
 	private void post(event, long lastEventId, BotRoom params) {
 	    if (Long.parseLong(event.id) > lastEventId) {
-			System.out.println("POST: " + event);
+			logger.info("POST: " + event);
             List<String> list = new ArrayList<>()
             String type = (event.type as String)
                     .replaceAll('Event', '')
@@ -92,7 +95,7 @@ public class GithubTask implements Runnable {
                 bot.postAsync(params.message("Exception $ex when processing event $event"));
             }
 		} else {
-    		System.out.println(event);
+    		logger.info(event.toString());
 		}
     }
 

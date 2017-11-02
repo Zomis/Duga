@@ -10,6 +10,8 @@ import net.zomis.machlearn.text.TextFeatureBuilder;
 import net.zomis.machlearn.text.TextFeatureMapper;
 import net.zomis.machlearn.text.TextFeatureWeights;
 import org.jblas.DoubleMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class ProgrammersClassification {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProgrammersClassification.class);
 
     private static final Pattern PROG_LINK = Pattern.compile(Pattern.quote("<a href=\"http") + "s?"
             + Pattern.quote("://programmers.stackexchange.com")
@@ -73,21 +77,21 @@ public class ProgrammersClassification {
                 new double[data.numFeaturesWithZero()], 0.01);
         double[] learnedTheta = learnedT.toArray();
         TextFeatureWeights weights = new TextFeatureWeights(mapper.getFeatures(), learnedTheta);
-        weights.getMapByValue().stream().forEach(System.out::println);
+        weights.getMapByValue().forEach(obj -> logger.info(obj.toString()));
 
         double cost = LogisticRegression.costFunction(trainingSet.getXs(), trainingSet.getY()).apply(learnedTheta);
-        System.out.println("Training Set Cost: " + cost);
+        logger.info("Training Set Cost: " + cost);
 
         double crossCost = LogisticRegression.costFunction(crossValidSet.getXs(), crossValidSet.getY()).apply(learnedTheta);
-        System.out.println("Validation Set Cost: " + crossCost);
+        logger.info("Validation Set Cost: " + crossCost);
 
         ClassifierFunction function = (theta, x) ->
                 LogisticRegression.hypothesis(theta, x) >= 0.3;
 
-        System.out.println("ALL Score: " + data.precisionRecallF1(learnedTheta, function));
-        System.out.println("Training Score: " + trainingSet.precisionRecallF1(learnedTheta, function));
-        System.out.println("CrossVal Score: " + crossValidSet.precisionRecallF1(learnedTheta, function));
-        System.out.println("TestSet  Score: " + testSet.precisionRecallF1(learnedTheta, function));
+        logger.info("ALL Score: " + data.precisionRecallF1(learnedTheta, function));
+        logger.info("Training Score: " + trainingSet.precisionRecallF1(learnedTheta, function));
+        logger.info("CrossVal Score: " + crossValidSet.precisionRecallF1(learnedTheta, function));
+        logger.info("TestSet  Score: " + testSet.precisionRecallF1(learnedTheta, function));
 
         TextClassification classification = new TextClassification(
             ProgrammersClassification::preprocessProgrammers, mapper, learnedTheta, 0.4);

@@ -1,9 +1,12 @@
 package net.zomis.duga
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.Environment
 
 class HookStringification {
+
+    private static final Logger logger = LoggerFactory.getLogger(HookStringification.class)
 
     @Autowired
     DugaStats stats
@@ -177,7 +180,7 @@ class HookStringification {
     void status(List<String> result, def json) {
         def event = json
         if (event.state == 'pending') {
-            println 'Status pending.'
+            logger.info('Status pending.')
             return
         }
         String repoURL = "http://github.com/$event.name"
@@ -300,7 +303,7 @@ class HookStringification {
         List<Object> nonDistinctCommits = new ArrayList<>();
 
         for (Object obj : json.commits) {
-            println 'commit: ' + obj
+            logger.info('commit: ' + obj)
             boolean distinct = obj.distinct
             List<Object> addTo = distinct ? distinctCommits : nonDistinctCommits
             addTo.add(obj)

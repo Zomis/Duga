@@ -7,11 +7,15 @@ import org.eclipse.jgit.api.CheckoutCommand
 import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.nio.file.Files
 import java.util.stream.Stream
 
 class DugaLearning {
+
+    private static final Logger logger = LoggerFactory.getLogger(DugaLearning.class)
 
     enum ClassificationResult {
         CLASSIFICATION_ADDED, ALREADY_EXISTS;
@@ -62,7 +66,7 @@ class DugaLearning {
 
         // Open the training set file and see if the training data exists already
         String relativePath = "src/main/resources/trainingset-programmers-comments.txt";
-        println repo.repository.workTree.absolutePath
+        logger.info(repo.repository.workTree.absolutePath)
         File file = new File(repo.repository.workTree, relativePath);
         Stream<String> stream = Files.lines(file.toPath())
         Optional<String> existing = stream.filter({str -> str.contains(text)}).findFirst();

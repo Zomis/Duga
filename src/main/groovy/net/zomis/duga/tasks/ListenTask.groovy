@@ -16,12 +16,16 @@ import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.util.concurrent.ScheduledFuture
 
 import static org.codehaus.groovy.syntax.Types.*
 
 class ListenTask implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger(ListenTask.class);
 
     public static final String CONFIG_COMMAND_PREFIX_KEY = 'commandPrefix'
     public static final String CONFIG_COMMAND_PREFIX_DEFAULT = '@Duga '
@@ -127,7 +131,7 @@ class ListenTask implements Runnable {
             return
         }
         message.cleanHTML()
-        println "possible command: $message.content"
+        logger.info("possible command: $message.content")
         def commandResult = botCommand(message)
         if (commandResult != null) {
             String text = String.valueOf(commandResult);
@@ -146,26 +150,25 @@ class ListenTask implements Runnable {
             ChatCommandDelegate script = (ChatCommandDelegate) groovyShell.parse(command)
             script.init(chatMessageIncoming, bean)
             def result = script.run()
-            println 'Script ' + chatMessageIncoming + ' returned ' + result
+            logger.info('Script ' + chatMessageIncoming + ' returned ' + result)
             if (result instanceof Map) {
                 Map res = (Map) result
                 Object obj = res.get('default')
                 if (obj != null) {
-                    println 'default key found in map, returned ' + obj
+                    logger.info('default key found in map, returned ' + obj)
                     result = obj
                 }
             }
             if (result instanceof Closure) {
                 result = result.call()
-                println 'Closure ' + chatMessageIncoming + ' returned ' + result
+                logger.info('Closure ' + chatMessageIncoming + ' returned ' + result)
             }
             return result
         } catch (Exception ex) {
-            println 'Script ' + chatMessageIncoming + ' caused exception: ' + ex
+            logger.error('Script ' + chatMessageIncoming + ' caused exception', ex)
             String mess = ex.toString()
             chatMessageIncoming.reply(mess.substring(0, Math.min(420, mess.length())))
 //            bot.postDebug(chatMessageIncoming.toString() + ' caused exception: ' + ex)
-            ex.printStackTrace(System.out)
             return null
         }
     }

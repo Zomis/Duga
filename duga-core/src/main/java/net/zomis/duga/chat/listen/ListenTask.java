@@ -2,11 +2,15 @@ package net.zomis.duga.chat.listen;
 
 import net.zomis.duga.chat.BotRoom;
 import net.zomis.duga.chat.ChatBot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ListenTask implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger(ListenTask.class);
 
     private static final int NUM_MESSAGES = 10;
 
@@ -39,7 +43,7 @@ public class ListenTask implements Runnable {
             lastHandledId = Math.max(lastHandledId, message.getMessageId());
             lastMessageTime = Math.max(lastMessageTime, message.getTimestamp());
             if (previousId <= 0) {
-                System.out.println("Previous id 0, skipping " + message.getContent());
+                logger.info("Previous id 0, skipping " + message.getContent());
                 continue;
             }
 

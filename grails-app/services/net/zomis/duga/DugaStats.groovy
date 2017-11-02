@@ -1,11 +1,15 @@
 package net.zomis.duga
 
 import grails.transaction.Transactional
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 
 @Transactional(readOnly = true)
 class DugaStats {
+
+    private static final Logger logger = LoggerFactory.getLogger(DugaStats.class)
 
     @Autowired
     Environment environment
@@ -16,7 +20,7 @@ class DugaStats {
         int additions = 0
         int deletions = 0
         if (apiKey == '') {
-            println 'No API Key set, skipping fetching of additions and deletions'
+            logger.error('No API Key set, skipping fetching of additions and deletions')
         } else {
             def user = new User()
             user.apiKey = apiKey

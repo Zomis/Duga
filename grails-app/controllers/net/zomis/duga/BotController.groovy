@@ -3,10 +3,14 @@ package net.zomis.duga
 import grails.transaction.Transactional
 import net.zomis.duga.chat.BotRoom
 import org.grails.web.json.JSONObject
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 
 class BotController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BotController.class)
 
     static allowedMethods = [post:'POST']
 
@@ -18,11 +22,11 @@ class BotController {
 
     @Transactional(readOnly = true)
     def jsonPost() {
-        println 'json post'
+        logger.info('json post')
         JSONObject json = request.JSON
-        println json
-        println request
-        println params
+        logger.info('JSON: ' + json)
+        logger.info('Request: ' + request)
+        logger.info('Params: ' + params)
 
         String text = json.text
         header 'Access-Control-Allow-Origin', '*'
@@ -37,7 +41,7 @@ class BotController {
         if (user) {
             for (Authority auth : user.authorities) {
                 if (auth.authority == 'ROLE_ADMIN') {
-                    println 'Request Text: ' + text
+                    logger.info('Request Text: ' + text)
                     bot.postSingle(roomParams, text)
                     def result = render 'OK'
                     return result
@@ -51,9 +55,8 @@ class BotController {
 
     @Transactional(readOnly = true)
     def post() {
-        println 'post'
         Map parameters = request.getParameterMap();
-        println parameters
+        logger.info('post: ' + parameters)
         header 'Access-Control-Allow-Origin', '*'
         if (parameters.size() != 3) {
             render 'Expected three parameters: Room, apiKey, and text'
@@ -72,7 +75,7 @@ class BotController {
         if (user) {
             for (Authority auth : user.authorities) {
                 if (auth.authority == 'ROLE_ADMIN') {
-                    println 'Request Text: ' + text
+                    logger.info('Request Text: ' + text)
                     bot.postSingle(roomParams, text)
                     def result = render 'OK'
                     return result

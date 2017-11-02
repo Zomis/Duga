@@ -22,13 +22,12 @@ class AppveyorHookController {
 	DugaBotService chatBot;
 	
 	def build() {
-        println 'AppVeyor!'
-        println 'JSON Data: ' + params
-        println 'Request: ' + request
+        LOGGER.info('AppVeyor! JSON Data: ' + params)
+        LOGGER.info('Request: ' + request)
         JSONObject buildEvent = request.JSON
-        println 'JSON Request: ' + buildEvent
+        LOGGER.info('JSON Request: ' + buildEvent)
         String room = params?.roomId
-        println 'Room: ' + room
+        LOGGER.info('Room: ' + room)
         BotRoom params = chatBot.room(room)
         String eventName = buildEvent.eventName.replace('_', ' ')
         def event = buildEvent.eventData
