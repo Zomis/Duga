@@ -14,7 +14,7 @@ logPath = "/var/lib/tomcat8/logs"
 // See http://logback.qos.ch/manual/groovy.html for details on configuration
 appender('STDOUT', ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%level %logger - %msg%n"
+        pattern = "[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level %logger - %msg%n"
     }
 }
 
@@ -26,7 +26,7 @@ appender("dugaTasks", FileAppender) {
     file = "$logPath/dugaTasks.log"
     append = true
     encoder(PatternLayoutEncoder) {
-        pattern = "%level %logger - %msg%n"
+        pattern = "[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level %logger - %msg%n"
     }
 }
 appender("dugaChat", FileAppender) {
@@ -34,7 +34,7 @@ appender("dugaChat", FileAppender) {
     file = "$logPath/dugaChat.log"
     append = true
     encoder(PatternLayoutEncoder) {
-        pattern = "%level %logger - %msg%n"
+        pattern = "[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level %logger - %msg%n"
     }
 }
 
@@ -48,7 +48,7 @@ if(Environment.current == Environment.PRODUCTION) {
         file = "$logPath/stacktrace.log"
         append = true
         encoder(PatternLayoutEncoder) {
-            pattern = "%level %logger - %msg%n"
+            pattern = "[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level %logger - %msg%n"
         }
     }
     logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false )
