@@ -49,7 +49,7 @@ public class StackExchangeFetch implements ChatMessageRetriever {
             return null;
         }
 
-        logger.debug("Checking for events in room " + roomId);
+        // logger.debug("Checking for events in room " + roomId);
         JsonDocument jsonDocument = (JsonDocument) response;
         JsonNode node = jsonDocument.getRoot();
 
