@@ -181,9 +181,10 @@ public class StackExchangeChatBot implements ChatBot {
 			LOGGER.error("Failure: " + htmlDocument);
             HtmlElement body = htmlDocument.find("body");
             if (body.getInnerHtml().contains("You can perform this action again in")) {
+                LOGGER.info("Throttling: " + body.getInnerHtml());
                 int timing =
                         Integer.parseInt(body.getInnerHtml().replaceAll("You can perform this action again in", "")
-                            .replaceAll("seconds", "").trim());
+                            .replaceAll("seconds?\\.?", "").trim());
                 return new ChatMessageResponse(body.getInnerHtml(), new ChatThrottleException(timing));
             }
 
