@@ -27,7 +27,7 @@ class BootStrap {
         //String externalConfig = System.getenv("DUGA_CONFIG");
         URL config = getClass().getClassLoader().getResource('init-tasks.groovy')
         if (config) {
-            tasks.fromGroovyDSL(config.text)
+            //tasks.fromGroovyDSL(config.text)
         }
 /*        if (externalConfig) {
             File file = new File(externalConfig)

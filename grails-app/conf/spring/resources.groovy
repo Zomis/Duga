@@ -1,5 +1,6 @@
 import net.zomis.duga.BitbucketStringification
 import net.zomis.duga.DugaChatListener
+import net.zomis.duga.DugaFileConfig
 import net.zomis.duga.DugaGit
 import net.zomis.duga.DugaMachineLearning
 import net.zomis.duga.DugaStats
@@ -21,6 +22,7 @@ beans = {
     // This ordering does not matter to Spring or Grails, only for personal convenience
     stackAPI(StackExchangeAPI)
     // dugaBot(DugaBotService)
+    dugaConfig(DugaFileConfig)
     stats(DugaStats)
     stringification(HookStringification)
     stringificationBitbucket(BitbucketStringification)

@@ -58,7 +58,7 @@ grails {
         }
     }
 }
-
+/*
 dataSource {
     pooled = true
     jmxExport = true
@@ -79,4 +79,4 @@ environments {
             url = 'jdbc:postgresql://db:5432/grails'
         }
     }
-}
+}*/

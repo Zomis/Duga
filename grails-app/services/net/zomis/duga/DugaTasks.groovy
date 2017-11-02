@@ -26,12 +26,14 @@ class DugaTasks {
 
     @Autowired TaskScheduler scheduler
 
+    @Autowired DugaFileConfig dugaConfig
+
     def initOnce() {
         reloadAll()
     }
 
     List<TaskData> reloadAll() {
-        List<TaskData> allTasks = TaskData.list()
+        List<TaskData> allTasks = dugaConfig.getTasks()
         println 'Reloading tasks, contains ' + allTasks
         tasks.forEach({ScheduledFuture<?> task -> task.cancel(false) })
         tasks.clear()
