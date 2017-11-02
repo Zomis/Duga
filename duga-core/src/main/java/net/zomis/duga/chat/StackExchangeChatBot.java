@@ -257,8 +257,7 @@ public class StackExchangeChatBot implements ChatBot {
 
 	private void postDrainedMessages(final List<ChatMessage> messages) {
 		Objects.requireNonNull(messages, "messages");
-		System.out.println("Attempting to post");
-		LOGGER.debug("Attempting to post " + messages);
+		LOGGER.info("Attempting to post " + messages);
 		if (currentBurst + messages.size() >= configuration.getChatMaxBurst()
 			|| System.currentTimeMillis() < lastPostedTime + configuration.getChatThrottle()) {
 			long sleepTime = lastPostedTime + configuration.getChatThrottle() - System.currentTimeMillis();

@@ -56,4 +56,12 @@ public class ChatMessage {
 		}
 	}
 	
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "room='" + room + '\'' +
+                ", message='" + message + '\'' +
+                ", params=" + params +
+                '}';
+    }
 }
