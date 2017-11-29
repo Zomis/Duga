@@ -13,14 +13,15 @@ import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class StackExchangeLogin implements LoginFunction {
-    private static final Logger logger = Logger.getLogger(StackExchangeLogin.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(StackExchangeLogin.class.getName());
 
     @Override
     public MechanizeAgent constructAgent(BotConfiguration configuration) {
@@ -69,22 +70,26 @@ public class StackExchangeLogin implements LoginFunction {
         HtmlDocument openIdLoginPage = agent.get("https://openid.stackexchange.com/account/login");
         logger.info("openIdLoginPage: " + openIdLoginPage);
         logger.info("openIdLoginPage.root: " + openIdLoginPage.getRoot());
-        Form loginForm = openIdLoginPage.forms().getAll().get(0);
+        List<Form> forms = openIdLoginPage.forms().getAll();
+        if (forms.isEmpty()) {
+            logger.info("openIdLoginPage result: No form found.");
+            return;
+        }
+        Form loginForm = forms.get(0);
         loginForm.get("email").setValue(configuration.getBotEmail());
         loginForm.get("password").setValue(configuration.getBotPassword());
         List<SubmitButton> submitButtons = loginForm.findAll("input[type=submit]", SubmitButton.class);
         HtmlDocument response = loginForm.submit(submitButtons.get(0));
-        logger.info(response.getTitle());
-        logger.info("OpenID login attempted.");
+        logger.info("OpenID login response title: {}", response.getTitle());
     }
 
     private void loginRoot(MechanizeAgent agent, BotConfiguration configuration) {
         Resource resource = agent.get(configuration.getRootUrl() + "/users/login");
         if (!(resource instanceof HtmlDocument)) {
-            logger.severe("Resource not HTML: " + resource);
-            logger.severe(resource.getResponse().toString());
+            logger.error("Resource not HTML: " + resource);
+            logger.error(resource.getResponse().toString());
             try {
-                logger.severe(IOUtils.toString(resource.getInputStream()));
+                logger.error(IOUtils.toString(resource.getInputStream()));
             } catch (IOException e) {
                 throw new RuntimeException("Cannot read input input stream.", e);
             }
@@ -109,7 +114,9 @@ public class StackExchangeLogin implements LoginFunction {
     }
 
     private String retrieveFKeyReal(MechanizeAgent agent, BotConfiguration configuration) {
-        HtmlDocument joinFavoritesPage = agent.get(configuration.getChatUrl() + "/chats/join/favorite");
+        String url = configuration.getChatUrl() + "/chats/join/favorite";
+        logger.info("Trying to fetch fkey from chatUrl: {}", url);
+        HtmlDocument joinFavoritesPage = agent.get(url);
         Form joinForm = joinFavoritesPage.forms().getAll().get(joinFavoritesPage.forms().getAll().size() - 1);
         return joinForm.get("fkey").getValue();
     }

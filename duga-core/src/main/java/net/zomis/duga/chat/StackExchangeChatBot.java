@@ -162,10 +162,10 @@ public class StackExchangeChatBot implements ChatBot {
             response = agent.post("https://chat.stackexchange.com/chats/" +
                     message.getRoom() + "/messages/new", parameters);
         } catch (UnsupportedEncodingException e) {
-            return new ChatMessageResponse(e.toString(), e);
+            return new ChatMessageResponse("UnsupportedEncodingException", e);
         }
 
-        LOGGER.info("Response: " + response.getTitle());
+        LOGGER.info("Response title: " + response.getTitle());
         if (response instanceof JsonDocument) {
 			LOGGER.info(response.toString());
             JsonDocument json = (JsonDocument) response;
@@ -176,10 +176,13 @@ public class StackExchangeChatBot implements ChatBot {
         }
 
         if (response instanceof HtmlDocument) {
-            //failure
             HtmlDocument htmlDocument = (HtmlDocument) response;
 			LOGGER.error("Failure: " + htmlDocument);
             HtmlElement body = htmlDocument.find("body");
+			if (body == null) {
+				LOGGER.error("Null body: {}", htmlDocument);
+				return new ChatMessageResponse(htmlDocument.asString(), new NullPointerException("Null Body"));
+			}
             if (body.getInnerHtml().contains("You can perform this action again in")) {
                 LOGGER.info("Throttling: " + body.getInnerHtml());
                 int timing =
@@ -188,7 +191,7 @@ public class StackExchangeChatBot implements ChatBot {
                 return new ChatMessageResponse(body.getInnerHtml(), new ChatThrottleException(timing));
             }
 
-            LOGGER.error(body.getInnerHtml());
+            LOGGER.error("Failure body: {}", body.getInnerHtml());
             return new ChatMessageResponse(body.getInnerHtml(), new ProbablyNotLoggedInException());
         }
 
