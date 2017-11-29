@@ -89,7 +89,7 @@ class DugaLearning {
         String message = chatMessage.getContent()
         String commitMessage = """Add programmers classification training data
 
-http://chat.stackexchange.com/transcript/message/$messageId#$messageId
+https://chat.stackexchange.com/transcript/message/$messageId#$messageId
 $username said: $message
 """
         // make a commit with the new classification

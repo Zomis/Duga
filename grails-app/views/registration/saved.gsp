@@ -16,7 +16,7 @@
         <div id="create-user" class="content scaffold-create" role="main">
             Thank you for registering with @Duga!<br>
             One more step remains, but don't worry, it is an easy step.<br>
-            Go to the Stack Exchange chat room <a href="http://chat.stackexchange.com/rooms/20298/dugas-playground">Duga's Playground</a>
+            Go to the Stack Exchange chat room <a href="https://chat.stackexchange.com/rooms/20298/dugas-playground">Duga's Playground</a>
              and ping @Duga with a one-time token that has been generated for you:<br>
             Write the following in chat: <pre>@Duga register '${key}'</pre>
             <br>

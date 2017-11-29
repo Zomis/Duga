@@ -16,7 +16,7 @@ public class ChatScrape {
     private static final Logger logger = LoggerFactory.getLogger(ChatScrape.class);
 
     public String fetch(long messageId) throws IOException {
-        String url = "http://chat.stackexchange.com/transcript/message/" +
+        String url = "https://chat.stackexchange.com/transcript/message/" +
             messageId + "#" + messageId;
         logger.info("Fetching URL " + url);
         Document doc = Jsoup.connect(url).get();

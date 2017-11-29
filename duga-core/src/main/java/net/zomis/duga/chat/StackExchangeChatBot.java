@@ -159,7 +159,7 @@ public class StackExchangeChatBot implements ChatBot {
 		LOGGER.info("Okay, here we go!");
         Resource response;
         try {
-            response = agent.post("http://chat.stackexchange.com/chats/" +
+            response = agent.post("https://chat.stackexchange.com/chats/" +
                     message.getRoom() + "/messages/new", parameters);
         } catch (UnsupportedEncodingException e) {
             return new ChatMessageResponse(e.toString(), e);

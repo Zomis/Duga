@@ -77,7 +77,7 @@ class DugaBotService implements ChatBot, InitializingBean {
     void afterPropertiesSet() throws Exception {
         def config = new BotConfiguration()
         config.rootUrl = environment.getProperty('rootUrl')
-        config.chatUrl = 'http://chat.stackexchange.com'
+        config.chatUrl = 'https://chat.stackexchange.com'
         config.botEmail = environment.getProperty('email')
         config.botPassword = environment.getProperty('password')
         config.chatThrottle = 10000

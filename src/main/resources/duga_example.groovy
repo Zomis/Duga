@@ -1,5 +1,5 @@
 botName = 'Greger'
-rootUrl = 'http://stackexchange.com'
+rootUrl = 'https://stackexchange.com'
 email = 'your@email.com'
 password = 'SE account password'
 

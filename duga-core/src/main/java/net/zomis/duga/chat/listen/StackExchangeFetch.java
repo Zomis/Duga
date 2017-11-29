@@ -38,7 +38,7 @@ public class StackExchangeFetch implements ChatMessageRetriever {
         parameters.put("msgCount", String.valueOf(count));
         Resource response;
         try {
-            response = agent.post("http://chat.stackexchange.com/chats/" +
+            response = agent.post("https://chat.stackexchange.com/chats/" +
                 roomId + "/events", parameters);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
