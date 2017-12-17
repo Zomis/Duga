@@ -19,29 +19,20 @@ appender('STDOUT', ConsoleAppender) {
 }
 
 logger('org.springframework.boot.autoconfigure.security', INFO)
-root(INFO, ['STDOUT'])
 
-appender("dugaTasks", FileAppender) {
+appender("duga", FileAppender) {
 
-    file = "$logPath/dugaTasks.log"
-    append = true
-    encoder(PatternLayoutEncoder) {
-        pattern = "[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level %logger - %msg%n"
-    }
-}
-appender("dugaChat", FileAppender) {
-
-    file = "$logPath/dugaChat.log"
+    file = "$logPath/duga.log"
     append = true
     encoder(PatternLayoutEncoder) {
         pattern = "[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level %logger - %msg%n"
     }
 }
 
-logger("net.zomis.duga.chat.listen", DEBUG, ['dugaTasks', 'STDOUT'], false )
-logger("net.zomis.duga.tasks", DEBUG, ['dugaTasks', 'STDOUT'], false )
-
-logger("net.zomis.duga.chat", DEBUG, ['dugaChat', 'STDOUT'], false )
+logger("net.zomis.duga.chat.listen", DEBUG, ['duga'], false )
+logger("net.zomis.duga.tasks", DEBUG, ['duga'], false )
+logger("net.zomis.duga.chat", DEBUG, ['duga'], false )
+root(INFO, ['duga'])
 
 if(Environment.current == Environment.PRODUCTION) {
     appender("FULL_STACKTRACE", FileAppender) {
