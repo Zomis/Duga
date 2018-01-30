@@ -226,9 +226,7 @@ public class StackExchangeChatBot implements ChatBot {
                     List<ChatMessage> mess = messagesQueue.take();
                     LOGGER.info("Retrieved: " + mess);
 					postDrainedMessages(mess);
-                    LOGGER.info("Posted: " + mess);
-				}
-				catch (RuntimeException ex) {
+				} catch (RuntimeException ex) {
                     LOGGER.warn("Error in drainMessagesQueue", ex);
 					try {
 						List<ChatMessage> messages = new ArrayList<ChatMessage>();

@@ -20,7 +20,7 @@ class DugaStats {
         int additions = 0
         int deletions = 0
         if (apiKey == '') {
-            logger.error('No API Key set, skipping fetching of additions and deletions')
+            logger.warn('No API Key set, skipping fetching of additions and deletions')
         } else {
             def user = new User()
             user.apiKey = apiKey
@@ -31,6 +31,7 @@ class DugaStats {
             def json = user.github("repos/$repo.full_name/commits/$sha")
             additions = json.stats.additions
             deletions = json.stats.deletions
+            logger.info("Adding {} additions and {} deletions to {} for commit {}", additions, deletions, repo.full_name, sha)
         }
         DailyInfo info = findOrCreate(repo)
         info.addCommits(1, additions, deletions)

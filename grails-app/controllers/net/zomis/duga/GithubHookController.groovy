@@ -22,14 +22,10 @@ class GithubHookController {
         String eventType = request.getHeader('X-GitHub-Event')
         String room = params?.roomId
         JSONObject json = request.JSON
-        logger.info('JSON Data: ' + params)
-        logger.info('JSON Request: ' + json)
-        logger.info('Request: ' + request)
-        logger.info('Room: ' + room)
-        logger.info('Github Event: ' + eventType)
+
+        logger.info('Received hook: {} to room {}: {}', eventType, room, json)
 
         List<String> strings = stringification.postGithub(eventType, json)
-        strings.forEach({ logger.info(it) })
         if (room == null) {
             room = '16134'
         }
