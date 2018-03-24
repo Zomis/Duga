@@ -74,7 +74,8 @@ public class CommentsScanTask implements Runnable {
     				lastComment = Math.max(comment.comment_id as long, lastComment);
     				fromDate = Math.max(comment.creation_date as long, fromDate);
     				if (isInterestingComment(comment)) {
-    					chatBot.postAsync(codeReview.message(comment.link as String));
+						logComment(comment, "Code Review")
+						chatBot.postAsync(codeReview.message(comment.link as String));
     				}
 
                     classifyProgrammers(comment);
@@ -98,7 +99,14 @@ public class CommentsScanTask implements Runnable {
     	}
     }
 
-    void classifyProgrammers(def comment) {
+	def logComment(def comment, String site) {
+		logger.info("$site comment $comment.comment_id " +
+				"on $comment.post_type $comment.post_id " +
+				"posted by $comment.owner.display_name " +
+				"with $comment.owner.reputation reputation: $comment.body_markdown")
+	}
+
+	void classifyProgrammers(def comment) {
         float oldClassification = CommentClassification.calcInterestingLevelProgrammers(comment);
         double programmersMLscore = programmersMLscore(comment)
 
@@ -107,6 +115,7 @@ public class CommentsScanTask implements Runnable {
         }
 
         if (programmersMLscore >= CommentClassification.DEBUG) {
+			logComment(comment, "Software Engineering (ML $programmersMLscore old $oldClassification)")
             String certaintyLevelMessage =
                     "ML Classification " + programmersMLscore +
                             " (Old classification " + oldClassification + ")";

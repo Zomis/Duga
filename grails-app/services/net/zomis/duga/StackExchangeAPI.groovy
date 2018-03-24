@@ -13,7 +13,7 @@ class StackExchangeAPI implements StackAPI {
 	private Environment config;
 	
 	def fetchComments(String site, long fromDate) {
-		final String filter = "!1zSk*x-OuqVk2k.(bS0NB";
+		final String filter = "!Fcb8.PVyNbcSSIFtmbqhHwtwVw";
 		return apiCall("comments?page=1&pagesize=100&fromdate=" + fromDate +
 				"&order=desc&sort=creation", site, filter);
 	}
