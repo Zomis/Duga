@@ -2,6 +2,7 @@
 node {
     checkout scm
     sh 'chmod +x gradlew'
+    sh 'cp /home/zomis/duga.groovy src/main/resources/'
     sh './gradlew duga-core:install build'
     sh 'sudo service tomcat8 stop'
     sh 'sudo rm -rf /var/lib/tomcat8/webapps/GithubHookSEChatService*'
