@@ -35,7 +35,7 @@ public class CommentsScanTask implements Runnable {
 		this.codeReview = chatBot.room("8595");
 		this.debug = chatBot.room("20298");
 		this.programmers = chatBot.room("21");
-		this.softwareRecs = chatBot.room("22668");
+		this.softwareRecs = chatBot.room("20298");
         this.programmersClassification = learning.programmers
 	}
 
