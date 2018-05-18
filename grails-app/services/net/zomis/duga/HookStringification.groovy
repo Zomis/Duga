@@ -172,7 +172,7 @@ class HookStringification {
     void issue_comment(List<String> result, def json) {
         String issue = issue(json.issue)
         String commentTarget = (json.issue.pull_request == null) ? "issue" : "pull request";
-        result << format(json, "%repository% %sender% [commented]($json.comment.html_url) on $commentTarget $issue");
+        result << format(json, "%repository% %sender% $json.action [comment]($json.comment.html_url) on $commentTarget $issue");
         result.add('> ' + truncate(json.comment.body))
         stats.addIssueComment(json.repository)
     }
