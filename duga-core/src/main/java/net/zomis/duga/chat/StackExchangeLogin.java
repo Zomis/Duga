@@ -5,6 +5,7 @@ import com.gistlabs.mechanize.document.html.HtmlDocument;
 import com.gistlabs.mechanize.document.html.form.Form;
 import com.gistlabs.mechanize.document.html.form.SubmitButton;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
+import com.gistlabs.mechanize.parameters.Parameters;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -17,8 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StackExchangeLogin implements LoginFunction {
     private static final Logger logger = LoggerFactory.getLogger(StackExchangeLogin.class.getName());
@@ -60,7 +64,7 @@ public class StackExchangeLogin implements LoginFunction {
 
     @Override
     public String retrieveFKey(MechanizeAgent agent, BotConfiguration configuration) {
-        loginOpenId(agent, configuration);
+//        loginOpenId(agent, configuration);
         loginRoot(agent, configuration);
         // loginChat(agent, configuration);
         return retrieveFKeyReal(agent, configuration);
@@ -96,12 +100,29 @@ public class StackExchangeLogin implements LoginFunction {
             throw new RuntimeException("Resource is not HTML: " + resource);
         }
         HtmlDocument rootLoginPage = (HtmlDocument) resource;
-        Form loginForm = rootLoginPage.forms().getAll().get(rootLoginPage.forms().getAll().size() - 1);
-        loginForm.get("openid_identifier").setValue("https://openid.stackexchange.com/");
-        List<SubmitButton> submitButtons = loginForm.findAll("input[type=submit]", SubmitButton.class);
-        HtmlDocument response = loginForm.submit(submitButtons.get(submitButtons.size() - 1));
-        logger.info(response.getTitle());
-        logger.info("Root login attempted.");
+        logger.debug(rootLoginPage.asString());
+        logger.info("element is " + rootLoginPage.find("input[name='fkey']"));
+        String fkey = rootLoginPage.find("input[name='fkey']").getAttribute("value");
+        logger.info("fkey loginstep 1: {}", fkey);
+
+        Map<String, String> loginParameters = new HashMap<>();
+        loginParameters.put("email", configuration.getBotEmail());
+        loginParameters.put("password", configuration.getBotPassword());
+        loginParameters.put("fkey", fkey);
+
+        try {
+            Resource result = agent.post(configuration.getRootUrl() + "/users/login", loginParameters);
+            logger.debug(result.asString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        Resource currentUserPage = agent.get(configuration.getRootUrl() + "/users/current");
+        HtmlDocument currentUserHtml = (HtmlDocument) currentUserPage;
+        logger.debug(currentUserHtml.asString());
+        boolean loggedIn = currentUserHtml.find(".js-inbox-button") != null;
+
+        logger.info("Root login attempted resulted in: " + loggedIn);
     }
 
     private void loginChat(MechanizeAgent agent, BotConfiguration configuration) {
@@ -118,7 +139,7 @@ public class StackExchangeLogin implements LoginFunction {
         logger.info("Trying to fetch fkey from chatUrl: {}", url);
         HtmlDocument joinFavoritesPage = agent.get(url);
         Form joinForm = joinFavoritesPage.forms().getAll().get(joinFavoritesPage.forms().getAll().size() - 1);
-        return joinForm.get("fkey").getValue();
+        return joinForm.get("fkey").getAttribute("value");
     }
 
 }
