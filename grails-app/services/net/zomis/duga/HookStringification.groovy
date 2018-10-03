@@ -53,8 +53,8 @@ class HookStringification {
     }
 
     String format(obj, String str) {
-        str.replace('%repository%', repository(obj))
-            .replace('%sender%', user(obj.sender))
+        str.replaceAll('%repository%', repository(obj))
+            .replaceAll('%sender%', user(obj.sender))
     }
 
     static String issue(json) {
@@ -183,6 +183,10 @@ class HookStringification {
 
     void label(List<String> result, def json) {
         result << format(json, "%repository% %sender% $json.action label ${labelJson(json)}")
+    }
+
+    void repository(List<String> result, def json) {
+        result << format(json, "%repository% %sender% $json.action repository %repository%")
     }
 
     void status(List<String> result, def json) {
