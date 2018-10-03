@@ -61,6 +61,10 @@ class HookStringification {
         "[**#$json.number: ${json.title.trim()}**]($json.html_url)"
     }
 
+    static String labelJson(json) {
+        "[**$json.label.name**]($json.repository.html_url/labels/${json.label.name.replace(' ', '%20')})"
+    }
+
     static String user(json) {
         if (!json) {
             return ''
@@ -133,7 +137,7 @@ class HookStringification {
             extra = "[**$json.assignee.login**]($json.assignee.html_url)"
         }
         if (json.label) {
-            extra = "[**$json.label.name**]($json.repository.html_url/labels/${json.label.name.replace(' ', '%20')})"
+            extra = labelJson(json)
         }
         switch (json.action) {
             case 'assigned':
@@ -175,6 +179,10 @@ class HookStringification {
         result << format(json, "%repository% %sender% $json.action [comment]($json.comment.html_url) on $commentTarget $issue");
         result.add('> ' + truncate(json.comment.body))
         stats.addIssueComment(json.repository)
+    }
+
+    void label(List<String> result, def json) {
+        result << format(json, "%repository% %sender% $json.action label ${labelJson(json)}")
     }
 
     void status(List<String> result, def json) {
