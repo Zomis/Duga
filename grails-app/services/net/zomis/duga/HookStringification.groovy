@@ -189,6 +189,19 @@ class HookStringification {
         result << format(json, "%repository% %sender% $json.action repository %repository%")
     }
 
+    Random random = new Random()
+    void project_card(List<String> result, def json) {
+        String[] options = [
+            "%repository% %sender% $json.action project card",
+            "%repository% %sender% did something with some project card",
+            "%repository% %sender% is playing around with a project card",
+            "%repository% %sender% is checking what fun stuff @Duga can say about project cards",
+            "%repository% %sender% is bored so why not move a project card",
+            "%repository% %sender% project card. Enough said."
+        ]
+        result << format(json, options[random.nextInt(options.size())])
+    }
+
     void status(List<String> result, def json) {
         def event = json
         if (event.state == 'pending') {
