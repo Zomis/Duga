@@ -49,12 +49,13 @@ class HookStringification {
         if (!json.repository) {
             return ''
         }
-        return "**\\\\[[$json.repository.full_name]($json.repository.html_url)\\\\]**"
+        return "**\\[[$json.repository.full_name]($json.repository.html_url)\\]**"
     }
 
     String format(obj, String str) {
-        str.replaceAll('%repository%', repository(obj))
-            .replaceAll('%sender%', user(obj.sender))
+        // Using replaceAll here makes a mess in regex escaping. Avoid using the same %thing% twice in templates.
+        str.replace('%repository%', repository(obj))
+            .replace('%sender%', user(obj.sender))
     }
 
     static String issue(json) {
@@ -70,8 +71,8 @@ class HookStringification {
             return ''
         }
         String username = json.login
-        username = username.replaceAll("\\[", "\\\\\\\\[")
-        username = username.replaceAll("]", "\\\\\\\\]")
+        username = username.replaceAll("\\[", "\\\\[")
+        username = username.replaceAll("]", "\\\\]")
         return "[**$username**]($json.html_url)"
     }
 
@@ -189,7 +190,7 @@ class HookStringification {
     }
 
     void repository(List<String> result, def json) {
-        result << format(json, "%repository% %sender% $json.action repository %repository%")
+        result << format(json, "%repository% %sender% $json.action repository")
     }
 
     Random random = new Random()
