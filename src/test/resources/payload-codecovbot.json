@@ -1,0 +1,114 @@
+{
+  "issue": {
+    "pull_request": {
+      "patch_url": "https://github.com/rubberduck-vba/Rubberduck/pull/4410.patch",
+      "html_url": "https://github.com/rubberduck-vba/Rubberduck/pull/4410",
+      "diff_url": "https://github.com/rubberduck-vba/Rubberduck/pull/4410.diff",
+      "url": "https://api.github.com/repos/rubberduck-vba/Rubberduck/pulls/4410"
+    },
+    "comments": 1,
+    "closed_at": null,
+    "assignees": [
+
+    ],
+    "created_at": "2018-10-06T19:27:33Z",
+    "title": "Ready for no modules",
+    "body": "This PR closes #2717.",
+    "url": "https://api.github.com/repos/rubberduck-vba/Rubberduck/issues/4410",
+    "labels": [
+
+    ],
+    "labels_url": "https://api.github.com/repos/rubberduck-vba/Rubberduck/issues/4410/labels{/name}",
+    "author_association": "CONTRIBUTOR",
+    "number": 4410,
+    "milestone": null,
+    "updated_at": "2018-10-06T19:40:45Z",
+    "events_url": "https://api.github.com/repos/rubberduck-vba/Rubberduck/issues/4410/events",
+    "html_url": "https://github.com/rubberduck-vba/Rubberduck/pull/4410",
+    "comments_url": "https://api.github.com/repos/rubberduck-vba/Rubberduck/issues/4410/comments",
+    "repository_url": "https://api.github.com/repos/rubberduck-vba/Rubberduck",
+    "id": 367487951,
+    "state": "open",
+    "assignee": null,
+    "locked": false,
+    "user": {
+      "gists_url": "https://api.github.com/users/MDoerner/gists{/gist_id}",
+      "repos_url": "https://api.github.com/users/MDoerner/repos",
+      "following_url": "https://api.github.com/users/MDoerner/following{/other_user}",
+      "starred_url": "https://api.github.com/users/MDoerner/starred{/owner}{/repo}",
+      "login": "MDoerner",
+      "followers_url": "https://api.github.com/users/MDoerner/followers",
+      "type": "User",
+      "url": "https://api.github.com/users/MDoerner",
+      "subscriptions_url": "https://api.github.com/users/MDoerner/subscriptions",
+      "received_events_url": "https://api.github.com/users/MDoerner/received_events",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/22868956?v=4",
+      "events_url": "https://api.github.com/users/MDoerner/events{/privacy}",
+      "html_url": "https://github.com/MDoerner",
+      "site_admin": false,
+      "id": 22868956,
+      "gravatar_id": "",
+      "node_id": "MDQ6VXNlcjIyODY4OTU2",
+      "organizations_url": "https://api.github.com/users/MDoerner/orgs"
+    },
+    "node_id": "MDExOlB1bGxSZXF1ZXN0MjIwOTA2MzEx"
+  },
+  "repository": {
+    "id": 39746630,
+    "name": "HTML-Client",
+    "full_name": "Cardshifter/HTML-Client",
+    "owner": {
+      "login": "Cardshifter",
+      "id": 8478053,
+      "avatar_url": "https://avatars.githubusercontent.com/u/8478053?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Cardshifter",
+      "html_url": "https://github.com/Cardshifter",
+    },
+    "html_url": "https://github.com/Cardshifter/HTML-Client"
+  },
+  "sender": {
+    "gists_url": "https://api.github.com/users/codecov%5Bbot%5D/gists{/gist_id}",
+    "repos_url": "https://api.github.com/users/codecov%5Bbot%5D/repos",
+    "following_url": "https://api.github.com/users/codecov%5Bbot%5D/following{/other_user}",
+    "starred_url": "https://api.github.com/users/codecov%5Bbot%5D/starred{/owner}{/repo}",
+    "login": "codecov[bot]",
+    "followers_url": "https://api.github.com/users/codecov%5Bbot%5D/followers",
+    "type": "Bot",
+    "url": "https://api.github.com/users/codecov%5Bbot%5D",
+    "subscriptions_url": "https://api.github.com/users/codecov%5Bbot%5D/subscriptions",
+    "received_events_url": "https://api.github.com/users/codecov%5Bbot%5D/received_events",
+    "avatar_url": "https://avatars2.githubusercontent.com/in/254?v=4",
+    "events_url": "https://api.github.com/users/codecov%5Bbot%5D/events{/privacy}",
+    "html_url": "https://github.com/apps/codecov",
+    "site_admin": false,
+    "id": 22429695,
+    "gravatar_id": "",
+    "node_id": "MDM6Qm90MjI0Mjk2OTU=",
+    "organizations_url": "https://api.github.com/users/codecov%5Bbot%5D/orgs"
+  },
+  "organization": {
+    "issues_url": "https://api.github.com/orgs/rubberduck-vba/issues",
+    "repos_url": "https://api.github.com/orgs/rubberduck-vba/repos",
+    "avatar_url": "https://avatars0.githubusercontent.com/u/12832254?v=4",
+    "events_url": "https://api.github.com/orgs/rubberduck-vba/events",
+    "members_url": "https://api.github.com/orgs/rubberduck-vba/members{/member}",
+    "description": "Give VBA devs proper tooling, see what happens.",
+    "id": 12832254,
+    "hooks_url": "https://api.github.com/orgs/rubberduck-vba/hooks",
+    "login": "rubberduck-vba",
+    "url": "https://api.github.com/orgs/rubberduck-vba",
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjEyODMyMjU0",
+    "public_members_url": "https://api.github.com/orgs/rubberduck-vba/public_members{/member}"
+  },
+  "action": "edited",
+  "comment": {
+    "author_association": "NONE",
+    "issue_url": "https://api.github.com/repos/rubberduck-vba/Rubberduck/issues/4410",
+    "updated_at": "2018-10-06T19:40:45Z",
+    "html_url": "https://github.com/rubberduck-vba/Rubberduck/pull/4410#issuecomment-427600845",
+    "created_at": "2018-10-06T19:38:35Z",
+    "id": 427600845,
+    "body": "..."
+  }
+}

@@ -15,6 +15,13 @@ class GithubWebhookTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         List<Object[]> data = []
+        data << ['issue_comment', 'payload-codecovbot',
+            ["**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)\\]** " +
+             "[**codecov\\[bot\\]**](https://github.com/apps/codecov) edited " +
+             "[comment](https://github.com/rubberduck-vba/Rubberduck/pull/4410#issuecomment-427600845) " +
+             "on pull request [**#4410: Ready for no modules**](https://github.com/rubberduck-vba/Rubberduck/pull/4410)",
+             "> ..."]
+        ]
         data << ['pull_request', 'payload-pr-opened',
             ['**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)\\]** ' +
              '[**SirPython**](https://github.com/SirPython) created pull request ' +

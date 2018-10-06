@@ -70,8 +70,8 @@ class HookStringification {
             return ''
         }
         String username = json.login
-        username = username.replaceAll("\\[", "\\\\[")
-        username = username.replaceAll("]", "\\\\]")
+        username = username.replaceAll("\\[", "\\\\\\\\[")
+        username = username.replaceAll("]", "\\\\\\\\]")
         return "[**$username**]($json.html_url)"
     }
 
