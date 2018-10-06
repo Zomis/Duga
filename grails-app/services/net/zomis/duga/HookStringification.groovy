@@ -69,7 +69,10 @@ class HookStringification {
         if (!json) {
             return ''
         }
-        return "[**$json.login**]($json.html_url)"
+        String username = json.login
+        username = username.replaceAll("\\[", "\\\\[")
+        username = username.replaceAll("]", "\\\\]")
+        return "[**$username**]($json.html_url)"
     }
 
     void ping(List<String> result, def json) {
