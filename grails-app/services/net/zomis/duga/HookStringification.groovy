@@ -49,7 +49,7 @@ class HookStringification {
         if (!json.repository) {
             return ''
         }
-        return "**\\[[$json.repository.full_name]($json.repository.html_url)\\]**"
+        return "**\\\\[[$json.repository.full_name]($json.repository.html_url)\\\\]**"
     }
 
     String format(obj, String str) {
