@@ -28,10 +28,14 @@ class DugaStats {
             if (sha == null) {
                 sha = commit.id
             }
-            def json = user.github("repos/$repo.full_name/commits/$sha")
-            additions = json.stats.additions
-            deletions = json.stats.deletions
-            logger.info("Adding {} additions and {} deletions to {} for commit {}", additions, deletions, repo.full_name, sha)
+            try {
+                def json = user.github("repos/$repo.full_name/commits/$sha")
+                additions = json.stats.additions
+                deletions = json.stats.deletions
+                logger.info("Adding {} additions and {} deletions to {} for commit {}", additions, deletions, repo.full_name, sha)
+            } catch (FileNotFoundException ex) {
+                logger.warn("Can't get commit details for $repo.full_name $sha", ex)
+            }
         }
         DailyInfo info = findOrCreate(repo)
         info.addCommits(1, additions, deletions)
