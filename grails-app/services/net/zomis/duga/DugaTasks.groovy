@@ -54,6 +54,7 @@ class DugaTasks {
     @Autowired private StackExchangeAPI stackAPI;
     @Autowired private HookStringification stringification;
     @Autowired private DugaMachineLearning learning;
+    @Autowired private DynamicStats dynamicStats
 
     private class TaskRunner implements Runnable {
 
@@ -81,7 +82,7 @@ class DugaTasks {
         String[] taskInfo = taskData.split(";")
         switch (taskInfo[0]) {
             case "dailyStats":
-                return new StatisticTask(chatBot, taskInfo[1])
+                return new StatisticTask(chatBot, taskInfo[1], dynamicStats)
             case "questionScan":
                 return new QuestionScanTask(stackAPI, githubBean,
                         stringification, chatBot,

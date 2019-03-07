@@ -6,6 +6,7 @@ class UrlMappings {
                 // apply constraints here
             }
         }
+        "/stats"(controller: "manualStats", action: "stats")
         "/hook"(controller: "githubHook", action: "hook")
         "/hooks/github/payload"(controller: "githubHook", action: "hook")
         "/hooks/bitbucket"(controller: "bitbucket", action: "bitbucket")

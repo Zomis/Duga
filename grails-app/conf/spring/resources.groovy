@@ -5,6 +5,7 @@ import net.zomis.duga.DugaGit
 import net.zomis.duga.DugaMachineLearning
 import net.zomis.duga.DugaStats
 import net.zomis.duga.DugaTasks
+import net.zomis.duga.DynamicStats
 import net.zomis.duga.GithubBean
 import net.zomis.duga.GormUserDetailsService
 import net.zomis.duga.HookStringification
@@ -23,6 +24,7 @@ beans = {
     stackAPI(StackExchangeAPI)
     // dugaBot(DugaBotService)
     dugaConfig(DugaFileConfig)
+    dynamicStats(DynamicStats)
     stats(DugaStats)
     stringification(HookStringification)
     stringificationBitbucket(BitbucketStringification)

@@ -1,6 +1,7 @@
 package net.zomis.duga.tasks
 
 import net.zomis.duga.DugaBotService
+import net.zomis.duga.DynamicStats
 import net.zomis.duga.chat.BotRoom
 
 import java.text.MessageFormat;
@@ -16,12 +17,14 @@ public class StatisticTask implements Runnable {
     private static final Logger logger = LogManager.getLogger(StatisticTask.class);
 	private final DugaBotService chatBot;
     private final List<BotRoom> rooms
+    private final DynamicStats dynamicStats
 
-    public StatisticTask(DugaBotService chatBot, String rooms) {
+    public StatisticTask(DugaBotService chatBot, String rooms, DynamicStats dynamicStats) {
 		this.chatBot = chatBot;
         this.rooms = Arrays.stream(rooms.split(','))
                 .map({String str -> chatBot.room(str)})
                 .collect(Collectors.toList())
+        this.dynamicStats = dynamicStats
 	}
 	
     @Override
@@ -29,11 +32,11 @@ public class StatisticTask implements Runnable {
 		logger.info("time!");
         DailyInfo.withNewSession {
             List<DailyInfo> results = DailyInfo.list()
+            List<DynamicStats.DynamicStat> dailyDynStats = dynamicStats.daily()
 
             results.sort(Comparator.comparing({DailyInfo ee -> ee.getName().toLowerCase()}));
 
             for (BotRoom params : rooms) {
-
                 chatBot.postSingle(params, "***RELOAD!***");
 
                 for (DailyInfo stat : results) {
@@ -51,6 +54,11 @@ public class StatisticTask implements Runnable {
                     if (str.length() > startLength) {
                         chatBot.postSingle(params, str.toString());
                     }
+                }
+                for (DynamicStats.DynamicStat dynamicStat : dailyDynStats) {
+                    def message = dynamicStat.application + ": " + dynamicStat.statsAsString()
+                    logger.info("DailyStat: " + message)
+                    params.message(message).post()
                 }
             }
             if (!rooms.isEmpty()) {
