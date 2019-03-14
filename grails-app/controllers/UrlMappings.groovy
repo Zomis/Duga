@@ -7,6 +7,7 @@ class UrlMappings {
             }
         }
         "/stats"(controller: "manualStats", action: "stats")
+        "/splunkWebhook"(controller: "splunk", action: "webhook")
         "/hook"(controller: "githubHook", action: "hook")
         "/hooks/github/payload"(controller: "githubHook", action: "hook")
         "/hooks/bitbucket"(controller: "bitbucket", action: "bitbucket")
