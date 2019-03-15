@@ -27,7 +27,7 @@ class SplunkController {
     }
 
     static List<String> stringify(JSONObject json) {
-        return ["**Splunk Alert:** ${json.search_name} - ${json.result}"]
+        return ["**Splunk Alert:** ${json.search_name} - ${json.result}".toString()]
     }
 
 }
