@@ -56,7 +56,7 @@ public class StatisticTask implements Runnable {
                     }
                 }
                 for (DynamicStats.DynamicStat dynamicStat : dailyDynStats) {
-                    def message = dynamicStat.application + ": " + dynamicStat.statsAsString()
+                    def message = "**[$dynamicStat.application]** " + dynamicStat.statsAsString()
                     logger.info("DailyStat: " + message)
                     params.message(message).post()
                 }
