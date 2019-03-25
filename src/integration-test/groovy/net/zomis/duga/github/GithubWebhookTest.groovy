@@ -16,21 +16,21 @@ class GithubWebhookTest {
     public static Collection<Object[]> data() {
         List<Object[]> data = []
         data << ['issue_comment', 'payload-codecovbot',
-            ["**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)\\]** " +
+            ["**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)]** " +
              "[**codecov\\[bot\\]**](https://github.com/apps/codecov) edited " +
              "[comment](https://github.com/rubberduck-vba/Rubberduck/pull/4410#issuecomment-427600845) " +
              "on pull request [**#4410: Ready for no modules**](https://github.com/rubberduck-vba/Rubberduck/pull/4410)",
              "> ..."]
         ]
         data << ['pull_request', 'payload-pr-opened',
-            ['**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)\\]** ' +
+            ['**\\[[Cardshifter/HTML-Client](https://github.com/Cardshifter/HTML-Client)]** ' +
              '[**SirPython**](https://github.com/SirPython) created pull request ' +
              '[**#98: Develop**](https://github.com/Cardshifter/HTML-Client/pull/98) to merge ' +
              '[**develop**](https://github.com/Cardshifter/HTML-Client/tree/develop) into ' +
              '[**deploy-script**](https://github.com/Cardshifter/HTML-Client/tree/deploy-script)',
              '> updating deploy-script']]
         data << ['release', 'payload-release-created',
-            ['**\\[[Vannevelj/RoslynTester](https://github.com/Vannevelj/RoslynTester)\\]** ' +
+            ['**\\[[Vannevelj/RoslynTester](https://github.com/Vannevelj/RoslynTester)]** ' +
              '[**Vannevelj**](https://github.com/Vannevelj) published release ' +
              '[**v1.5.0**](https://github.com/Vannevelj/RoslynTester/releases/tag/v1.5.0)']]
         return data;
