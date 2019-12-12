@@ -6,6 +6,7 @@ import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.gistlabs.mechanize.cookie.Cookie;
 import net.zomis.duga.chat.events.DugaEvent;
 import net.zomis.duga.chat.events.DugaPrepostEvent;
 import net.zomis.duga.chat.events.DugaStartedEvent;
@@ -18,6 +19,8 @@ import com.gistlabs.mechanize.document.json.JsonDocument;
 import com.gistlabs.mechanize.impl.MechanizeAgent;
 import net.zomis.duga.chat.listen.ChatMessageRetriever;
 import net.zomis.duga.chat.listen.StackExchangeFetch;
+import net.zomis.duga.chat.state.BotCookie;
+import net.zomis.duga.chat.state.BotState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -286,4 +289,22 @@ public class StackExchangeChatBot implements ChatBot {
     public ChatMessageRetriever listener() {
         return new StackExchangeFetch(() -> chatFKey);
     }
+
+	public BotState saveState() {
+		BotState state = new BotState();
+		state.setFkey(this.chatFKey);
+		List<BotCookie> cookies = new ArrayList<>();
+		for (Cookie cookie : this.agent.cookies()) {
+			cookies.add(BotCookie.create(cookie.getName(), cookie.getValue(), cookie.getDomain()));
+		}
+		state.setCookies(cookies);
+		return state;
+	}
+
+	public void load(BotState state) {
+		this.chatFKey = state.getFkey();
+		for (BotCookie cookie : state.getCookies()) {
+			this.agent.cookies().addNewCookie(cookie.getName(), cookie.getValue(), cookie.getDomain());
+		}
+	}
 }
