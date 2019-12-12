@@ -7,10 +7,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.gistlabs.mechanize.cookie.Cookie;
-import net.zomis.duga.chat.events.DugaEvent;
-import net.zomis.duga.chat.events.DugaPrepostEvent;
-import net.zomis.duga.chat.events.DugaStartedEvent;
-import net.zomis.duga.chat.events.DugaStopEvent;
+import net.zomis.duga.chat.events.*;
 
 import com.gistlabs.mechanize.Resource;
 import com.gistlabs.mechanize.document.html.HtmlDocument;
@@ -68,9 +65,10 @@ public class StackExchangeChatBot implements ChatBot {
 		});
 	}
 
-    private void login() {
+    public void login() {
         this.chatFKey = loginFunction.retrieveFKey(agent, configuration);
         LOGGER.info("Found fkey: " + chatFKey);
+        executeEvent(new DugaLoginEvent(this));
     }
 
     @Override
