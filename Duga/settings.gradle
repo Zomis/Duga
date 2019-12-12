@@ -1,0 +1,3 @@
+rootProject.name = 'duga'
+include 'duga-aws'
+
