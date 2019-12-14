@@ -5,8 +5,6 @@ import javax.jms.Session
 import com.amazonaws.services.sqs.model.SendMessageBatchRequestEntry
 import com.amazonaws.services.sqs.model.SendMessageBatchRequest
 
-
-
 class Duga {
 
     private val queueUrl = "https://sqs.eu-central-1.amazonaws.com/343175303479/Duga-Messages.fifo"

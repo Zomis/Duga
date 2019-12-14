@@ -1,3 +1,5 @@
+*.kotlin_module
+
 ### Duga-specific
 
 duga.groovy

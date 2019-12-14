@@ -24,6 +24,18 @@ pipeline {
 */
             }
         }
+        stage('Upload Lambdas') {
+            when {
+                branch 'aws'
+            }
+            steps {
+                dir('Duga') {
+                    sh './gradlew shadowJar'
+                    sh 'aws lambda update-function-code --function-name duga-hooks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
+                    sh 'aws lambda update-function-code --function-name duga-tasks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
+                }
+            }
+        }
         stage('Deploy') {
             when {
                 branch 'master'
