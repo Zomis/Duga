@@ -9,10 +9,18 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import javax.jms.Session
 import javax.jms.TextMessage
 import javax.jms.Message
+import java.security.MessageDigest
 
-data class DugaMessage(val room: String, val message: String)
+fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
+data class DugaMessage(val room: String, val message: String) {
+    fun md5(): String {
+        val bytesOfMessage = "$room$message".toByteArray(Charsets.UTF_8)
+        val md = MessageDigest.getInstance("MD5")
+        return md.digest(bytesOfMessage).toHexString()
+    }
+}
 
-class FetchMessage {
+class DugaSQS {
     val queueName = "Duga-Messages.fifo"
 
     fun connect(): SQSConnection {
@@ -66,27 +74,4 @@ class FetchMessage {
         return DugaMessage(room, textMessage.text)
     }
 
-    fun send() {
-        val connection = connect()
-        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
-
-        // Create a queue identity and specify the queue name to the session
-        val queue = session.createQueue(queueName)
-
-        // Create a producer for the 'MyQueue'
-        val producer = session.createProducer(queue)
-
-        // Create the text message
-        val message = session.createTextMessage("Hello from AWS!")
-        message.setStringProperty("JMSXGroupID", "16134")
-
-        // Send the message
-        producer.send(message)
-        println("JMS Message " + message.getJMSMessageID())
-    }
-
-}
-
-fun main(args: Array<String>) {
-    FetchMessage().send()
 }

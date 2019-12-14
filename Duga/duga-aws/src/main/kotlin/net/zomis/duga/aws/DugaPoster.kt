@@ -69,7 +69,7 @@ class DugaPoster : RequestHandler<Map<String, Any>, Map<String, Any>> {
     }
 
     private fun processSQSQueue(bot: ChatBot) {
-        FetchMessage().fetch { postMessage(bot, it) }
+        DugaSQS().fetch { postMessage(bot, it) }
     }
 
     private fun createBot(): StackExchangeChatBot {
