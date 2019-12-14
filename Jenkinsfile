@@ -31,8 +31,9 @@ pipeline {
             steps {
                 dir('Duga') {
                     sh './gradlew shadowJar'
-                    sh 'aws lambda update-function-code --function-name duga-hooks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
-                    sh 'aws lambda update-function-code --function-name duga-tasks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
+                    sh 'set +x aws lambda update-function-code --function-name duga-hooks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
+                    sh 'set +x aws lambda update-function-code --function-name duga-tasks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
+                    sh 'set +x aws lambda update-function-code --function-name duga-post-from-sqs --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
                 }
             }
         }
