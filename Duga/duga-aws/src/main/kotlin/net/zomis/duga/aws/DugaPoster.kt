@@ -9,9 +9,11 @@ import net.zomis.duga.chat.ChatBot
 import net.zomis.duga.chat.StackExchangeChatBot
 import net.zomis.duga.chat.events.DugaLoginEvent
 
-class DugaPoster : RequestHandler<String, String> {
+class DugaPoster : RequestHandler<Map<String, Any>, Map<String, Any>> {
 
-    override fun handleRequest(input: String?, context: Context?): String {
+    override fun handleRequest(input: Map<String, Any>?, context: Context?): Map<String, Any> {
+        val messages = readSQSTriggerInput(input!!)
+
         val dynamoDB = AmazonDynamoDBClientBuilder.standard()
             .withRegion(Regions.EU_CENTRAL_1)
             .build()
@@ -23,41 +25,51 @@ class DugaPoster : RequestHandler<String, String> {
             bot.load(state)
         }
         bot.registerListener(DugaLoginEvent::class.java) {
+            // Save state when bot successfully logs in, to reduce number of logins required
             val savedState = bot.saveState()
             DugaState.saveToDB(dynamoDB, savedState)
             println("Saved bot state")
         }
 
-        processMessages(bot)
+        if (messages != null) {
+            postMessages(bot, messages)
+        } else {
+            processSQSQueue(bot)
+        }
 
-        /*
-        Load 1 kb string
-        Apply string to bot if it exists
-        Send messages - if message fails, then login again.
-          When logging in again, save new state.
-        Empty queue and then terminate.
-        */
-
-/*
-        xxxxxxx start, wait for bot to login
-        store bot in global storage - outside this class, to potentially re-use it
-        look into this:
-        https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html
-        bot.start()
-        */
-        return "Done"
+        return mapOf("result" to "done")
     }
 
-    private fun processMessages(bot: ChatBot) {
-        FetchMessage().fetch {
-            val response = bot.postNow(bot.room(it.room).message(it.message))
-            if (response.hasException()) {
-                response.exception.printStackTrace()
-                throw Exception("Unable to post message", response.exception)
-            } else {
-                println("Posted id ${response.id} at ${response.time}: ${response.fullResponse}")
-            }
+    private fun readSQSTriggerInput(input: Map<String, Any>): List<DugaMessage>? {
+        if (input.isEmpty()) {
+            return null
         }
+        val messages = input["Records"] as List<Map<String, Any>>
+        val dugaMessages = messages.map {
+            val body = it["body"] as String
+            val attributes = it["attributes"] as Map<String, Any>
+            val room = attributes["MessageGroupId"] as String
+            DugaMessage(room, body)
+        }
+        return dugaMessages
+    }
+
+    private fun postMessages(bot: ChatBot, messages: List<DugaMessage>) {
+        messages.forEach { postMessage(bot, it) }
+    }
+
+    fun postMessage(bot: ChatBot, it: DugaMessage) {
+        val response = bot.postNow(bot.room(it.room).message(it.message))
+        if (response.hasException()) {
+            response.exception.printStackTrace()
+            throw Exception("Unable to post message", response.exception)
+        } else {
+            println("Posted id ${response.id} at ${response.time}: ${response.fullResponse}")
+        }
+    }
+
+    private fun processSQSQueue(bot: ChatBot) {
+        FetchMessage().fetch { postMessage(bot, it) }
     }
 
     private fun createBot(): StackExchangeChatBot {

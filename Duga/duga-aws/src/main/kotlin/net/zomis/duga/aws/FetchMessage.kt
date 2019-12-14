@@ -30,7 +30,6 @@ class FetchMessage {
     fun fetch(handler: (DugaMessage) -> Unit) {
         val connection = connect()
         val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
-        println("Creating queue '$queueName'...")
         val queue = session.createQueue(queueName)
         val consumer = session.createConsumer(queue)
 
@@ -39,12 +38,14 @@ class FetchMessage {
 
         var receivedMessage: Message?
         do {
+            println("Receiving message...")
             receivedMessage = consumer.receive(1000)
             val converted = convertMessage(receivedMessage)
             if (converted != null) {
                 handler(converted)
             }
         } while (receivedMessage != null)
+        println("No more messages to fetch")
         // Receive a message from 'MyQueue' and wait up to 1 second
 
         connection.close()
