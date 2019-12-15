@@ -3,6 +3,7 @@ package net.zomis.duga.tasks
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.zomis.duga.aws.Duga
 
 class TaskLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
 
@@ -11,8 +12,8 @@ class TaskLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
     override fun handleRequest(input: Map<String, Any>?, context: Context?): Map<String, Any> {
         val json = mapper.readTree(mapper.writeValueAsString(input))
 
-        // comments
-        val task: DugaTask? = when (json["type"].asText()) {
+        val type = json["type"].asText()
+        val task: DugaTask? = when (type) {
             "mess" -> MessageTask(json["room"]!!.asText(), json["message"]!!.asText())
             "questionScan" -> null
             "ratingdiff" -> RatingDiffTask(json["room"]!!.asText(),
@@ -26,9 +27,16 @@ class TaskLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
             else -> null
         }
 
-        task?.perform()
+        if (task == null) {
+            return mapOf("error" to "No such task: $type")
+        }
 
-        return mapOf()
+        val messages = task.perform()
+        if (!messages.isEmpty()) {
+            Duga().sendMany(messages)
+        }
+
+        return mapOf("messages" to messages)
     }
 
 }

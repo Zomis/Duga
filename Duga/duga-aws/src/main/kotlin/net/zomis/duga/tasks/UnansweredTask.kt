@@ -1,6 +1,5 @@
 package net.zomis.duga.tasks
 
-import net.zomis.duga.aws.Duga
 import net.zomis.duga.aws.DugaMessage
 import net.zomis.duga.utils.StackExchangeAPI
 import org.slf4j.LoggerFactory
@@ -12,8 +11,8 @@ class UnansweredTask(private val room: String, private val site: String, private
 
     private val api = StackExchangeAPI()
 
-    override fun perform() {
-        try {
+    override fun perform(): List<DugaMessage> {
+        return try {
             val result = api.apiCall("info", site, "default")
             val unanswered = result["items"][0]["total_unanswered"].asInt()
             val total = result["items"][0]["total_questions"].asInt()
@@ -22,9 +21,10 @@ class UnansweredTask(private val room: String, private val site: String, private
             var send = message
             send = send.replace("%unanswered%", unanswered.toString())
             send = send.replace("%percentage%", percentageStr)
-            Duga().send(DugaMessage(room, send))
+            listOf(DugaMessage(room, send))
         } catch (e: IOException) {
             logger.error("Error with StackExchange API Call", e)
+            listOf()
         }
     }
 
