@@ -73,6 +73,10 @@ class StatisticsTask(private val rooms: String, private val reset: Boolean) : Du
             .withValueMap(valueMap)
     }
 
+    private fun hasValues(item: Map<String, AttributeValue>): Boolean {
+        return item.minus(this.nonStatsItems).any { it.value.n != null && it.value.n != "0" }
+    }
+
     private fun resetItem(item: Map<String, AttributeValue>) {
         if (item.containsKey("commits")) {
             table.deleteItem(hashKeyName, item[hashKeyName]!!.s)
@@ -98,14 +102,17 @@ class StatisticsTask(private val rooms: String, private val reset: Boolean) : Du
             // Reset statistics on all secrets
             scan.items.map(this::resetItem)
         }
-        return listOf("***RELOAD!***").plus(scan.items.map(this::itemToMessage))
+        return listOf("***RELOAD!***").plus(scan.items.mapNotNull(this::itemToMessage))
     }
 
     private fun prettyPrintKey(key: String): String {
         return key.replace('_', ' ')
     }
 
-    private fun itemToMessage(item: Map<String, AttributeValue>): String {
+    private fun itemToMessage(item: Map<String, AttributeValue>): String? {
+        if (!hasValues(item)) {
+            return null
+        }
         val displayName = item[hashKeyName]!!.s
         val url = item[itemURL]?.s
         val prefix = if (url == null) "**[$displayName]**" else "**\\[[$displayName]($url)]**"
