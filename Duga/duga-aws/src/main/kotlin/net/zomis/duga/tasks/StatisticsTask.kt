@@ -73,7 +73,7 @@ class StatisticsTask(private val rooms: String) : DugaTask {
 
     private fun statsMessages(): List<String> {
         val scan = dynamoDB.scan(ScanRequest(tableName))
-        return scan.items.map(this::itemToMessage)
+        return listOf("***RELOAD!***").plus(scan.items.map(this::itemToMessage))
     }
 
     private fun prettyPrintKey(key: String): String {
