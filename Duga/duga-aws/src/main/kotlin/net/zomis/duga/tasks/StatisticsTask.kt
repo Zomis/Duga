@@ -12,10 +12,13 @@ import java.util.UUID
 
 class StatisticsTask(private val rooms: String) : DugaTask {
 
+    val sortReplace = mapOf("commits" to "0", "additions" to "1", "deletions" to "2", "issue_comments" to "zzzz")
+
     private val hashKeyName = "Identifier"
     private val secretKeyName = "SecretKey"
     private val secretKeyIndex = secretKeyName + "Index"
     private val tableName = "Duga-Stats"
+    private val itemURL = "displayUrl"
     private val dynamoDB = AmazonDynamoDBClientBuilder.standard()
         .withRegion(Regions.EU_CENTRAL_1)
         .build()
@@ -50,7 +53,7 @@ class StatisticsTask(private val rooms: String) : DugaTask {
     }
 
     private fun update(primaryKey: String, values: Map<String, Int>, repositoryUrl: String?): UpdateItemSpec {
-        val set = if (repositoryUrl != null) "SET $secretKeyName=:secretKey, displayUrl=:url" else ""
+        val set = if (repositoryUrl != null) "SET $secretKeyName=:secretKey, $itemURL=:url" else ""
 
         val updateExpression = "$set ADD " + values.entries.joinToString(", ") {
             "${it.key} :${it.key}"
@@ -69,11 +72,24 @@ class StatisticsTask(private val rooms: String) : DugaTask {
     }
 
     private fun statsMessages(): List<String> {
-        return listOf()
+        val scan = dynamoDB.scan(ScanRequest(tableName))
+        return scan.items.map(this::itemToMessage)
     }
 
-    private fun queryAndClear() {
-        dynamoDB.scan(ScanRequest(tableName))
+    private fun prettyPrintKey(key: String): String {
+        return key.replace('_', ' ')
+    }
+
+    private fun itemToMessage(item: Map<String, AttributeValue>): String {
+        val displayName = item[hashKeyName]!!.s
+        val url = item[itemURL]?.s
+        val prefix = if (url == null) "**[$displayName]**" else "**\\[[$displayName]($url)]**"
+
+        return "$prefix " + item.minus(listOf(hashKeyName, secretKeyName, itemURL)).entries
+            .sortedBy { sortReplace[it.key] ?: it.key }
+            .joinToString(". ") {
+            "${it.value.n} ${prettyPrintKey(it.key)}"
+        }
     }
 
     fun createTables(requests: List<CreateTableRequest>) {
@@ -120,6 +136,9 @@ fun main(args: Array<String>) {
 //    task.createTables(listOf(task.createTable()))
 
     task.statistic("testing", "super-secret", mapOf("AWS_Tests_Succeeded" to 1))
+    val result = task.perform()
+    println(result)
+    if (true) return
     task.repository("just/testing", "https://github.com/Zomis/test", mapOf(
         "commits" to 1,
         "opened_issues" to 1,
