@@ -1,4 +1,4 @@
-package net.zomis.duga.net.zomis.utils
+package net.zomis.duga.utils
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
