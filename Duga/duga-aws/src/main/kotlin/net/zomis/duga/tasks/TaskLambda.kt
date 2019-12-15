@@ -13,14 +13,15 @@ class TaskLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
         val json = mapper.readTree(mapper.writeValueAsString(input))
 
         val type = json["type"].asText()
+        val room = json["room"].asText()
         val task: DugaTask? = when (type) {
-            "mess" -> MessageTask(json["room"]!!.asText(), json["message"]!!.asText())
-            "questionScan" -> null
-            "ratingdiff" -> RatingDiffTask(json["room"]!!.asText(),
+            "mess" -> MessageTask(room, json["message"]!!.asText())
+            "questionScan" -> QuestionScanTask(room, json["site"]!!.asText())
+            "ratingdiff" -> RatingDiffTask(room,
                 json["site"]!!.asText(),
                 json["users"]!!.map { it.asText() }
             )
-            "unanswered" -> UnansweredTask(json["room"]!!.asText(),
+            "unanswered" -> UnansweredTask(room,
                 json["site"]!!.asText(),
                 json["message"]!!.asText()
             )

@@ -8,13 +8,7 @@ import java.util.zip.GZIPInputStream
 
 class StackExchangeAPI {
 
-    val stackAPI = System.getenv("STACKEXCHANGE_API")
-
-    fun fetchComments(site: String, fromDate: Long): JsonNode {
-        val filter = "!Fcb8.PVyNbcSSIFtmbqhHwtwVw"
-        return apiCall("comments?page=1&pagesize=100&fromdate=" + fromDate +
-                "&order=desc&sort=creation", site, filter)
-    }
+    private val stackAPI = System.getenv("STACKEXCHANGE_API")
 
     private fun buildURL(apiCall: String, site: String, filter: String, apiKey: String): URL {
         var call = apiCall

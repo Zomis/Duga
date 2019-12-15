@@ -7,7 +7,7 @@ import java.io.IOException
 
 class RatingDiffTask(private val room: String, private val site: String, private val users: List<String>) : DugaTask {
 
-    val stackApi = StackExchangeAPI()
+    private val stackApi = StackExchangeAPI()
 
     override fun perform(): List<DugaMessage> {
         try {
@@ -36,11 +36,7 @@ class RatingDiffTask(private val room: String, private val site: String, private
         }
     }
 
-    fun chatName(displayName: String): String {
-        return clearName(displayName).replace(" ", "");
-    }
-
-    fun clearName(dispName: String): String {
+    private fun clearName(dispName: String): String {
         var displayName = dispName
         while (displayName.contains("&#")) {
             var replacement = displayName.substring(displayName.indexOf("&#") + 2)
@@ -49,13 +45,13 @@ class RatingDiffTask(private val room: String, private val site: String, private
                 val ch = Integer.parseInt(replacement)
                 displayName = displayName.replaceFirst("&#\\d+;", ch.toChar().toString())
             } catch (ex: RuntimeException) {
-                displayName = displayName.replaceFirst("&#", "");
+                displayName = displayName.replaceFirst("&#", "")
             }
         }
         return displayName
     }
 
-    fun diffStr(str: StringBuilder, max: JsonNode, min: JsonNode, string: String, function: (JsonNode) -> Int) {
+    private fun diffStr(str: StringBuilder, max: JsonNode, min: JsonNode, string: String, function: (JsonNode) -> Int) {
         str.append(string)
         str.append(": ")
         val maxValue = function(max)
