@@ -7,8 +7,8 @@ import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap
 import com.amazonaws.services.dynamodbv2.model.*
 import net.zomis.duga.aws.DugaMessage
-import com.amazonaws.services.dynamodbv2.model.ReturnValue
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec
+import java.util.UUID
 
 class StatisticsTask(private val rooms: String) : DugaTask {
 
@@ -32,15 +32,6 @@ class StatisticsTask(private val rooms: String) : DugaTask {
     }
 
     fun statistic(application: String, secretKey: String, values: Map<String, Int>): Boolean {
-        val updateExpression = "ADD " + values.entries.joinToString(", ") {
-            "${it.key} :${it.key}"
-        }
-        val valueMap = values.entries.fold(ValueMap()) { r, entry ->
-            r.withNumber(":" + entry.key, entry.value)
-        }
-        println(updateExpression)
-        println(valueMap)
-
         val hashKeyQuery = QuerySpec().withHashKey(secretKeyName, secretKey)
         val hashKeyResult = table.getIndex(secretKeyIndex).query(hashKeyQuery)
         val identifier = hashKeyResult.firstOrNull()?.get(hashKeyName) as String?
@@ -49,30 +40,32 @@ class StatisticsTask(private val rooms: String) : DugaTask {
             return false
         }
 
-        val spec = UpdateItemSpec().withPrimaryKey(hashKeyName, identifier)
-            .withUpdateExpression(updateExpression)
-            .withValueMap(valueMap)
+        val spec = update(identifier, values, null)
         table.updateItem(spec)
         return true
     }
 
-    fun repository(name: String, values: Map<String, Int>) {
-        val set = "SET $secretKeyName=:secretKey"
+    fun repository(name: String, url: String, values: Map<String, Int>) {
+        table.updateItem(update(name, values, url))
+    }
+
+    private fun update(primaryKey: String, values: Map<String, Int>, repositoryUrl: String?): UpdateItemSpec {
+        val set = if (repositoryUrl != null) "SET $secretKeyName=:secretKey, displayUrl=:url" else ""
+
         val updateExpression = "$set ADD " + values.entries.joinToString(", ") {
             "${it.key} :${it.key}"
         }
-        val valueMap = values.entries.fold(ValueMap()) { r, entry ->
+        var valueMap = values.entries.fold(ValueMap()) { r, entry ->
             r.withNumber(":" + entry.key, entry.value)
-        }.withString(":secretKey", "this-is-my-secret")
-        println(updateExpression)
-        println(valueMap)
-        val spec = UpdateItemSpec().withPrimaryKey(hashKeyName, name)
+        }
+        if (repositoryUrl != null) {
+            valueMap = valueMap.withString(":secretKey", UUID.randomUUID().toString())
+                .withString(":url", repositoryUrl)
+        }
+
+        return UpdateItemSpec().withPrimaryKey(hashKeyName, primaryKey)
             .withUpdateExpression(updateExpression)
             .withValueMap(valueMap)
-            .withReturnValues(ReturnValue.UPDATED_NEW)
-        val result = table.updateItem(spec)
-        println(result)
-        println(result.updateItemResult)
     }
 
     private fun statsMessages(): List<String> {
@@ -126,10 +119,9 @@ fun main(args: Array<String>) {
     val task = StatisticsTask("20298")
 //    task.createTables(listOf(task.createTable()))
 
-    task.statistic("testing", "super-secret", mapOf("AWS_Lambdas_Deployed" to 2))
-    if (true) return
-    task.repository("just/testing", mapOf(
-        "commits" to 5,
+    task.statistic("testing", "super-secret", mapOf("AWS_Tests_Succeeded" to 1))
+    task.repository("just/testing", "https://github.com/Zomis/test", mapOf(
+        "commits" to 1,
         "opened_issues" to 1,
         "closed_issues" to 2,
         "issue_comments" to 7,
