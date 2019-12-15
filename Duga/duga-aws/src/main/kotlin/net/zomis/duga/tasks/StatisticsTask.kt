@@ -82,15 +82,12 @@ class StatisticsTask(private val rooms: String, private val reset: Boolean) : Du
             table.deleteItem(hashKeyName, item[hashKeyName]!!.s)
         } else {
             val values = item.minus(nonStatsItems)
-            val updateExpression = "SET " + values.entries.joinToString(", ") {
-                "${it.key} :${it.key}"
+            if (values.isEmpty()) {
+                return
             }
-            val valueMap = values.entries.fold(ValueMap()) { r, entry ->
-                r.withNumber(":" + entry.key, 0)
-            }
+            val updateExpression = "REMOVE " + values.keys.joinToString(", ")
             val update = UpdateItemSpec().withPrimaryKey(hashKeyName, item[hashKeyName]!!.s)
                 .withUpdateExpression(updateExpression)
-                .withValueMap(valueMap)
             table.updateItem(update)
         }
     }
@@ -100,7 +97,7 @@ class StatisticsTask(private val rooms: String, private val reset: Boolean) : Du
         if (reset) {
             // Remove all repositories
             // Reset statistics on all secrets
-            scan.items.map(this::resetItem)
+            scan.items.forEach(this::resetItem)
         }
         return listOf("***RELOAD!***").plus(scan.items.mapNotNull(this::itemToMessage))
     }
