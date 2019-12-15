@@ -1,5 +1,7 @@
 package net.zomis.duga.aws
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+import com.amazonaws.regions.Regions
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import javax.jms.Session
 import com.amazonaws.services.sqs.model.SendMessageBatchRequestEntry
@@ -24,7 +26,8 @@ class Duga {
                 }
             )
 
-        val sqs = AmazonSQSClientBuilder.defaultClient()
+        val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1)
+            .withCredentials(DefaultAWSCredentialsProviderChain()).build()
         sqs.sendMessageBatch(batch)
     }
 
@@ -41,7 +44,6 @@ class Duga {
         // Create the text message
         val jmsMessage = session.createTextMessage(message.message)
         jmsMessage.setStringProperty("JMSXGroupID", message.room)
-        println(message.md5())
         jmsMessage.setStringProperty("JMS_SQS_DeduplicationId", message.md5())
 
         // Send the message
