@@ -17,6 +17,7 @@ dependencies {
     compile(kotlin("stdlib-jdk8"))
 
     compile("org.slf4j", "slf4j-simple", "1.7.29")
+    compile("org.apache.commons", "commons-text", "1.8")
     compile("net.zomis", "duga-core", "0.4")
     compile("com.amazonaws", "aws-lambda-java-core", "1.2.0")
     compile("com.amazonaws", "aws-java-sdk-dynamodb", "1.11.675")
