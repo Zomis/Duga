@@ -10,7 +10,7 @@ import net.zomis.duga.aws.DugaMessage
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec
 import java.util.UUID
 
-class StatisticsTask(private val rooms: String) : DugaTask {
+class StatisticsTask(private val rooms: String, private val reset: Boolean) : DugaTask {
 
     val sortReplace = mapOf("commits" to "0", "additions" to "1", "deletions" to "2", "issue_comments" to "zzzz")
 
@@ -19,6 +19,8 @@ class StatisticsTask(private val rooms: String) : DugaTask {
     private val secretKeyIndex = secretKeyName + "Index"
     private val tableName = "Duga-Stats"
     private val itemURL = "displayUrl"
+    private val nonStatsItems = listOf(hashKeyName, secretKeyName, itemURL)
+
     private val dynamoDB = AmazonDynamoDBClientBuilder.standard()
         .withRegion(Regions.EU_CENTRAL_1)
         .build()
@@ -26,7 +28,7 @@ class StatisticsTask(private val rooms: String) : DugaTask {
     private val table = ddb.getTable(tableName)
 
     override fun perform(): List<DugaMessage> {
-        val messages = statsMessages()
+        val messages = statsMessages(reset)
         return rooms.split(",").flatMap { room ->
             messages.map { message ->
                 DugaMessage(room, message)
@@ -71,8 +73,31 @@ class StatisticsTask(private val rooms: String) : DugaTask {
             .withValueMap(valueMap)
     }
 
-    private fun statsMessages(): List<String> {
+    private fun resetItem(item: Map<String, AttributeValue>) {
+        if (item.containsKey("commits")) {
+            table.deleteItem(hashKeyName, item[hashKeyName]!!.s)
+        } else {
+            val values = item.minus(nonStatsItems)
+            val updateExpression = "SET " + values.entries.joinToString(", ") {
+                "${it.key} :${it.key}"
+            }
+            val valueMap = values.entries.fold(ValueMap()) { r, entry ->
+                r.withNumber(":" + entry.key, 0)
+            }
+            val update = UpdateItemSpec().withPrimaryKey(hashKeyName, item[hashKeyName]!!.s)
+                .withUpdateExpression(updateExpression)
+                .withValueMap(valueMap)
+            table.updateItem(update)
+        }
+    }
+
+    private fun statsMessages(reset: Boolean): List<String> {
         val scan = dynamoDB.scan(ScanRequest(tableName))
+        if (reset) {
+            // Remove all repositories
+            // Reset statistics on all secrets
+            scan.items.map(this::resetItem)
+        }
         return listOf("***RELOAD!***").plus(scan.items.map(this::itemToMessage))
     }
 
@@ -85,7 +110,7 @@ class StatisticsTask(private val rooms: String) : DugaTask {
         val url = item[itemURL]?.s
         val prefix = if (url == null) "**[$displayName]**" else "**\\[[$displayName]($url)]**"
 
-        return "$prefix " + item.minus(listOf(hashKeyName, secretKeyName, itemURL)).entries
+        return "$prefix " + item.minus(nonStatsItems).entries
             .sortedBy { sortReplace[it.key] ?: it.key }
             .joinToString(". ") {
             "${it.value.n} ${prettyPrintKey(it.key)}"
@@ -132,7 +157,7 @@ class StatisticsTask(private val rooms: String) : DugaTask {
 }
 
 fun main(args: Array<String>) {
-    val task = StatisticsTask("20298")
+    val task = StatisticsTask("20298", false)
 //    task.createTables(listOf(task.createTable()))
 
     task.statistic("testing", "super-secret", mapOf("AWS_Tests_Succeeded" to 1))
