@@ -21,6 +21,7 @@ class TaskLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
                 json["site"]!!.asText(),
                 json["users"]!!.map { it.asText() }
             )
+            "stats" -> StatisticsTask(room, json["reset"]!!.asBoolean())
             "unanswered" -> UnansweredTask(room,
                 json["site"]!!.asText(),
                 json["message"]!!.asText()
