@@ -3,7 +3,6 @@ package net.zomis.duga.tasks
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
-import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap
 import com.amazonaws.services.dynamodbv2.model.*
@@ -14,8 +13,8 @@ import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec
 class StatisticsTask(private val rooms: String) : DugaTask {
 
     private val hashKeyName = "Identifier"
-    private val sortKeyName = "Statistic"
     private val secretKeyName = "SecretKey"
+    private val secretKeyIndex = secretKeyName + "Index"
     private val tableName = "Duga-Stats"
     private val dynamoDB = AmazonDynamoDBClientBuilder.standard()
         .withRegion(Regions.EU_CENTRAL_1)
@@ -32,7 +31,7 @@ class StatisticsTask(private val rooms: String) : DugaTask {
         }
     }
 
-    fun statistic(application: String, secretKey: String, values: Map<String, Int>) {
+    fun statistic(application: String, secretKey: String, values: Map<String, Int>): Boolean {
         val updateExpression = "ADD " + values.entries.joinToString(", ") {
             "${it.key} :${it.key}"
         }
@@ -42,21 +41,19 @@ class StatisticsTask(private val rooms: String) : DugaTask {
         println(updateExpression)
         println(valueMap)
 
-        val qspec = QuerySpec().withHashKey(secretKeyName, secretKey).withRangeKeyCondition(RangeKeyCondition(sortKeyName).eq("unused"))
-        val r = table.getIndex(secretKeyName + "Index").query(qspec)
-        println("${r.accumulatedConsumedCapacity}, ${r.accumulatedItemCount}, ${r.accumulatedScannedCount}, ${r.pages().toList()}")
-        val identifier = r.firstOrNull()?.get(hashKeyName) as String?
+        val hashKeyQuery = QuerySpec().withHashKey(secretKeyName, secretKey)
+        val hashKeyResult = table.getIndex(secretKeyIndex).query(hashKeyQuery)
+        val identifier = hashKeyResult.firstOrNull()?.get(hashKeyName) as String?
         if (identifier != application) {
             println("Database identifier '$identifier' for secret '$secretKey' did not match '$application'")
-            return
+            return false
         }
 
-        val spec = UpdateItemSpec().withPrimaryKey(hashKeyName, identifier, sortKeyName, "unused")
+        val spec = UpdateItemSpec().withPrimaryKey(hashKeyName, identifier)
             .withUpdateExpression(updateExpression)
             .withValueMap(valueMap)
-            .withReturnValues(ReturnValue.UPDATED_NEW)
-        val result = table.updateItem(spec)
-        println(result)
+        table.updateItem(spec)
+        return true
     }
 
     fun repository(name: String, values: Map<String, Int>) {
@@ -69,12 +66,13 @@ class StatisticsTask(private val rooms: String) : DugaTask {
         }.withString(":secretKey", "this-is-my-secret")
         println(updateExpression)
         println(valueMap)
-        val spec = UpdateItemSpec().withPrimaryKey(hashKeyName, name, sortKeyName, "123")
+        val spec = UpdateItemSpec().withPrimaryKey(hashKeyName, name)
             .withUpdateExpression(updateExpression)
             .withValueMap(valueMap)
             .withReturnValues(ReturnValue.UPDATED_NEW)
         val result = table.updateItem(spec)
         println(result)
+        println(result.updateItemResult)
     }
 
     private fun statsMessages(): List<String> {
@@ -99,19 +97,17 @@ class StatisticsTask(private val rooms: String) : DugaTask {
 
         val attributeDefinitions = listOf(
             AttributeDefinition(hashKeyName, ScalarAttributeType.S),
-            AttributeDefinition(sortKeyName, ScalarAttributeType.S),
             AttributeDefinition(secretKeyName, ScalarAttributeType.S)
         )
 
         val ks = ArrayList<KeySchemaElement>()
         ks.add(KeySchemaElement(hashKeyName, KeyType.HASH))
-        ks.add(KeySchemaElement(sortKeyName, KeyType.RANGE))
 
         val secondaryIndex = GlobalSecondaryIndex()
             .withIndexName(secretKeyName + "Index")
             .withProjection(Projection().withProjectionType(ProjectionType.KEYS_ONLY))
             .withProvisionedThroughput(ProvisionedThroughput(2L, 2L))
-        secondaryIndex.setKeySchema(listOf(KeySchemaElement(secretKeyName, KeyType.HASH), KeySchemaElement(sortKeyName, KeyType.RANGE)))
+        secondaryIndex.setKeySchema(listOf(KeySchemaElement(secretKeyName, KeyType.HASH)))
 
         val provisionedThroughput = ProvisionedThroughput(2L, 2L)
 
@@ -128,6 +124,8 @@ class StatisticsTask(private val rooms: String) : DugaTask {
 
 fun main(args: Array<String>) {
     val task = StatisticsTask("20298")
+//    task.createTables(listOf(task.createTable()))
+
     task.statistic("testing", "super-secret", mapOf("AWS_Lambdas_Deployed" to 2))
     if (true) return
     task.repository("just/testing", mapOf(
@@ -138,5 +136,4 @@ fun main(args: Array<String>) {
         "additions" to 209,
         "deletions" to 59
     ))
-//    task.createTables(listOf(task.createTable()))
 }
