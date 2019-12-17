@@ -11,11 +11,13 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     maven(url = "http://www.zomis.net/maven/")
+    maven(url = "http://repo.spring.io/libs-release/") // Fuel
 }
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
 
+    compile("com.github.kittinunf.fuel", "fuel", "2.0.1")
     compile("org.slf4j", "slf4j-simple", "1.7.29")
     compile("org.apache.commons", "commons-text", "1.8")
     compile("net.zomis", "duga-core", "0.4")
