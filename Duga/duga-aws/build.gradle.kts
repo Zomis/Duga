@@ -16,6 +16,9 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.11")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
 
     compile("com.github.kittinunf.fuel", "fuel", "2.0.1")
     compile("org.slf4j", "slf4j-simple", "1.7.29")
@@ -24,6 +27,13 @@ dependencies {
     compile("com.amazonaws", "aws-lambda-java-core", "1.2.0")
     compile("com.amazonaws", "aws-java-sdk-dynamodb", "1.11.675")
     compile("com.amazonaws", "amazon-sqs-java-messaging-lib", "1.0.4")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 tasks.withType<KotlinCompile> {

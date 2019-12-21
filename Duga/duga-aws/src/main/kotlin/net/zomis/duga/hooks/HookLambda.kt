@@ -6,6 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import net.zomis.duga.aws.Duga
 import net.zomis.duga.aws.DugaMessage
 
+fun Map<String, Any>.path(path: String): Any? {
+    val paths = path.split('.')
+    var current: Any? = this
+    for (next in paths) {
+        if (current == null) {
+            return null
+        }
+        current = (current as Map<String, Any>)[next]
+    }
+    return current
+}
+
 class HookLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
     private val mapper = ObjectMapper()
 
@@ -17,6 +29,10 @@ class HookLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
 
         val hook: DugaWebhook? = when (type) {
             "/splunk" -> SplunkHook()
+            "/github" -> GitHubHook(input.path("headers.X-GitHub-Event") as String)
+//            "/appveyor" -> AppVeyorHook()
+//            "/bitbucket" -> BitBucketHook()
+//            "/sonarqube" -> SonarQubeHook()
             else -> null
         }
         val messages = hook?.handle(body)?.map { DugaMessage(roomId, it) }
