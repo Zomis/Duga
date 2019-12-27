@@ -25,7 +25,14 @@ class HookLambda : RequestHandler<Map<String, Any>, Map<String, Any>> {
         println(input!!)
         val type = input["path"] as String? ?: return response(400, "error" to "No type specified")
         val body = mapper.readTree(input["body"] as String)
-        val roomId = (input["queryStringParameters"] as Map<*, *>)["roomId"] as String? ?: "16134"
+        if (input["queryStringParameters"] == null) {
+            return response(400, "error" to "You must specify the roomId at the end of the URL using for example `?roomId=20298`")
+        }
+        val queryParameters = input["queryStringParameters"] as Map<*, *>
+        if (!queryParameters.containsKey("roomId")) {
+            return response(400, "error" to "You must specify the roomId at the end of the URL using for example `?roomId=20298`")
+        }
+        val roomId = queryParameters["roomId"] as String
 
         val hook: DugaWebhook? = when (type) {
             "/splunk" -> SplunkHook()
