@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import java.io.File
+import java.util.Scanner
 
 class GitHubWebhook(private val repository: String, jsonNode: JsonNode) {
 
@@ -20,6 +21,13 @@ class GitHubWebhook(private val repository: String, jsonNode: JsonNode) {
         return "GitHubWebhook(repository='$repository', url='$url', events=$events, configDomain=$configDomain, destinationUrl=$destinationUrl, contentType=$contentType, insecureSSL=$insecureSSL)"
     }
 
+    fun isOldDugaHook(): Boolean {
+        if (this.destinationUrl == null) {
+            return false
+        }
+        return this.destinationUrl.contains("zomis.net") && this.destinationUrl.contains("GithubHookSEChatService")
+    }
+
     fun isDugaHook(): Boolean {
         if (this.destinationUrl == null) {
             return false
@@ -28,6 +36,13 @@ class GitHubWebhook(private val repository: String, jsonNode: JsonNode) {
             return true
         }
         return this.destinationUrl.contains("zomis.net") && this.destinationUrl.contains("GithubHookSEChatService")
+    }
+
+    fun isNewDugaHook(): Boolean {
+        if (this.destinationUrl == null) {
+            return false
+        }
+        return this.destinationUrl.startsWith("https://duga.zomis.net/github")
     }
 
 }
@@ -56,7 +71,7 @@ class HookEditor(token: String) {
 //        reposAndAdmin.filter { !it.second }.map { it.first }.forEach { println("Not admin for $it") }
             yieldAll(reposAndAdmin.filter { it.second }.map { it.first })
             if (repos.second.header("Link").any { it.contains("rel=\"next\"") }) {
-//                yieldAll(listMyRepos(page + 1))
+                yieldAll(listMyRepos(page + 1))
             }
         }.toList()
     }
@@ -97,14 +112,17 @@ class HookEditor(token: String) {
 fun main(args: Array<String>) {
     val str = File("c:/Users/Simon/Desktop/duga-hook.key").readText(Charsets.UTF_8).trim()
     val hookEditor = HookEditor(str)
-//    val repos = hookEditor.listMyRepos()
-    val repos = arrayOf("Zomis/test")
+    val repos = hookEditor.listMyRepos()
+    val scanner = Scanner(System.`in`)
+//    val repos = arrayOf("Zomis/test")
     repos.forEach {repo ->
         println(repo)
         val hooks = hookEditor.listWebhooks(repo)
         hooks.forEach { println("  $it") }
         val dugaHook = hooks.find { it.isDugaHook() }
-        hookEditor.fixDugaWebhook("16134", repo, dugaHook)
+        if (hooks.none { it.isNewDugaHook() } && scanner.nextLine() == "y") {
+            hookEditor.fixDugaWebhook("16134", repo, dugaHook)
+        }
     }
-
+    scanner.close()
 }
