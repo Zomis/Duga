@@ -16,19 +16,23 @@ class Duga {
     }
 
     fun sendMany(messages: List<DugaMessage>) {
-        val batch = SendMessageBatchRequest()
-            .withQueueUrl(queueUrl)
-            .withEntries(
-                messages.mapIndexed { index, dugaMessage ->
-                    SendMessageBatchRequestEntry(index.toString(), dugaMessage.message)
-                        .withMessageGroupId(dugaMessage.room)
-                        .withMessageDeduplicationId(dugaMessage.md5())
-                }
-            )
+        val chunks = messages.chunked(10)
+        chunks.forEach {chunk ->
+            val batch = SendMessageBatchRequest()
+                .withQueueUrl(queueUrl)
+                .withEntries(
+                    chunk.mapIndexed { index, dugaMessage ->
+                        SendMessageBatchRequestEntry(index.toString(), dugaMessage.message)
+                            .withMessageGroupId(dugaMessage.room)
+                            .withMessageDeduplicationId(dugaMessage.md5())
+                    }
+                )
 
-        val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1)
-            .withCredentials(DefaultAWSCredentialsProviderChain()).build()
-        sqs.sendMessageBatch(batch)
+            val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.EU_CENTRAL_1)
+                .withCredentials(DefaultAWSCredentialsProviderChain()).build()
+            val result = sqs.sendMessageBatch(batch)
+            println(result)
+        }
     }
 
     fun send(message: DugaMessage) {
