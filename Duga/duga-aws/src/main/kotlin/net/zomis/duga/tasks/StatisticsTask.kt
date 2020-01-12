@@ -51,7 +51,7 @@ class StatisticsTask(private val rooms: String, private val reset: Boolean) : Du
     }
 
     fun repository(name: String, url: String, values: Map<String, Int>) {
-        table.updateItem(update(name, values, url))
+        table.updateItem(update(name, values.mapKeys { it.key.replace(' ', '_') }, url))
     }
 
     private fun update(primaryKey: String, values: Map<String, Int>, repositoryUrl: String?): UpdateItemSpec {
