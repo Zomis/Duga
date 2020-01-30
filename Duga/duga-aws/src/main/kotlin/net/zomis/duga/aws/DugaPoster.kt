@@ -61,8 +61,9 @@ class DugaPoster : RequestHandler<Map<String, Any>, Map<String, Any>> {
     fun postMessage(bot: ChatBot, it: DugaMessage) {
         val response = bot.postNow(bot.room(it.room).message(it.message))
         if (response.hasException()) {
+            println("AWS ERROR: ${response.exception} for message: $it")
             response.exception.printStackTrace()
-            throw Exception("Unable to post message", response.exception)
+//            throw Exception("Unable to post message", response.exception)
         } else {
             println("Posted id ${response.id} at ${response.time}: ${response.fullResponse}")
         }
