@@ -20,6 +20,7 @@ object DugaMain {
         DugaServer(poster).start()
 
         runBlocking {
+            poster.postMessage("20298", "Ktor bot started")
         }
 
         Tasks.schedule("REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "REFRESH!") }
