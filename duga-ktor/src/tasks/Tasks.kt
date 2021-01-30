@@ -17,20 +17,35 @@ object Tasks {
     // val schedule = Schedule.parse("every minute")
 
     fun schedule(name: String, schedule: Schedule, task: suspend () -> Unit): Job {
-        val times = schedule.iterate(ZonedDateTime.now())
+        val times = schedule.iterate(ZonedDateTime.now()).iterator()
         return GlobalScope.launch {
-            while (true) {
-                sleepUntil(name, times.next())
+            for (time in times) {
+                sleepUntil(name, time)
                 logger.info("Task $name: Executing")
                 task()
             }
         }
     }
 
+    fun once(name: String, task: suspend () -> Unit): Job {
+        return GlobalScope.launch {
+            logger.info("Task $name: Executing")
+            task()
+        }
+    }
+
     private suspend fun sleepUntil(name: String, next: ZonedDateTime) {
-        val duration = Duration.between(ZonedDateTime.now(), next)
+        val now = ZonedDateTime.now()
+        val duration = Duration.between(now, next)
+        if (duration.isNegative) {
+            throw IllegalStateException("Trying to sleep for a negative amount of time: $duration between $now and $next")
+        }
         println("Task $name: Next is at $next, sleeping for $duration")
         delay(duration.toMillis())
+    }
+
+    fun daily(hour: Int, minute: Int): Schedule {
+        return Schedule.at(LocalTime.of(hour, minute)).everyDay()
     }
 
 }
