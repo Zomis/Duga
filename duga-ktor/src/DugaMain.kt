@@ -8,8 +8,6 @@ import java.io.File
 
 object DugaMain {
     fun start() {
-//        DugaServer.start()
-
         val client = DugaClient(jacksonObjectMapper().readValue(File("bot.secret"), BotConfig::class.java))
         val bot = DugaBot(client.client, client.config) { httpClient, botConfig ->
             val se = StackExchangeLogin(httpClient, botConfig)
@@ -17,13 +15,12 @@ object DugaMain {
                 se.fkeyReal()
             } else throw RuntimeException()
         }
+        val poster = DugaPoster(bot)
         runBlocking {
-            val tasks = Tasks(DugaPoster(bot))
-//            tasks.startTask()
-            tasks.midnight()
-
-//            DugaPoster(bot).postMessage("16134", "Hello!")
         }
+
+        Tasks.schedule("REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "REFRESH!") }
+        println("Done")
     }
 }
 

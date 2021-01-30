@@ -1,40 +1,36 @@
 package net.zomis.duga.tasks
 
 import com.github.shyiko.skedule.Schedule
-import io.ktor.util.date.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import net.zomis.duga.chat.DugaPoster
+import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 import java.time.*
 import java.time.temporal.ChronoUnit
 
-class Tasks(val dugaPoster: DugaPoster) {
+object Tasks {
 
-    suspend fun schedule(schedule: Schedule, task: () -> Unit) {
-    }
+    private val logger = LoggerFactory.getLogger(Tasks::class.java)
 
-    suspend fun midnight() {
-        val now = ZonedDateTime.now()
-        val s = Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()))).everyDay().iterate(now)
-        sleepUntil(s.next())
+    val utcMidnight = Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()))).everyDay()
+    // val schedule = Schedule.parse("every minute")
 
-    }
-
-    suspend fun sleepUntil(next: ZonedDateTime) {
-        val duration = Duration.between(ZonedDateTime.now(), next)
-        println("Next is at $next, sleeping $duration")
-        delay(duration.toMillis())
-    }
-
-    suspend fun startTask() {
-        while (true) {
-            val now = ZonedDateTime.now()
-            val instant = Instant.now().truncatedTo(ChronoUnit.DAYS).toGMTDate()
-            println(instant)
-            println(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault())))
-
-            val next = Schedule.at(LocalDateTime.now().toLocalDate().atStartOfDay().toLocalTime()).everyDay().next(now)
-//                        val next = Schedule.parse("every minute").next(now)
+    fun schedule(name: String, schedule: Schedule, task: suspend () -> Unit): Job {
+        val times = schedule.iterate(ZonedDateTime.now())
+        return GlobalScope.launch {
+            while (true) {
+                sleepUntil(name, times.next())
+                logger.info("Task $name: Executing")
+                task()
+            }
         }
+    }
+
+    private suspend fun sleepUntil(name: String, next: ZonedDateTime) {
+        val duration = Duration.between(ZonedDateTime.now(), next)
+        println("Task $name: Next is at $next, sleeping for $duration")
+        delay(duration.toMillis())
     }
 
 }
