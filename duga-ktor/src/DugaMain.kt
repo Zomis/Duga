@@ -3,6 +3,7 @@ package net.zomis.duga
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.runBlocking
 import net.zomis.duga.chat.*
+import net.zomis.duga.server.DugaServer
 import net.zomis.duga.tasks.Tasks
 import java.io.File
 
@@ -16,6 +17,8 @@ object DugaMain {
             } else throw RuntimeException()
         }
         val poster = DugaPoster(bot)
+        DugaServer(poster).start()
+
         runBlocking {
         }
 

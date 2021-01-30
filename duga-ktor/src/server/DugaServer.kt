@@ -7,9 +7,10 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import net.zomis.duga.chat.DugaPoster
 import org.slf4j.event.Level
 
-object DugaServer {
+class DugaServer(val poster: DugaPoster) {
 
     fun start() {
         embeddedServer(Netty, port = 8042) {
