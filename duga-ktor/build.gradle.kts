@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val logback_version: String by project
@@ -8,9 +7,10 @@ val kotlin_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.4.21"
+    id("com.github.johnrengelman.shadow").version("5.2.0")
 }
 
-group = "com.example"
+group = "net.zomis.duga"
 version = "0.0.1-SNAPSHOT"
 
 application {

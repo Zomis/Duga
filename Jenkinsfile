@@ -9,48 +9,51 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'cp /home/zomis/duga.groovy src/main/resources/'
-                sh './gradlew duga-core:install build'
-            }
-        }
-        stage('Results') {
-            steps {
-                junit allowEmptyResults: true, testResults: '**/build/test-results/test/TEST-*.xml'
-/*
-                withSonarQubeEnv('My SonarQube Server') {
-                    // requires SonarQube Scanner for Maven 3.2+
-                    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
-                }
-*/
-            }
-        }
-        stage('Upload Lambdas') {
-            when {
-                branch 'aws'
-            }
-            steps {
-                dir('Duga') {
+                dir('duga-ktor') {
                     sh './gradlew shadowJar'
-                    sh 'set +x aws lambda update-function-code --function-name duga-hooks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
-                    sh 'set +x aws lambda update-function-code --function-name duga-tasks --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
-                    sh 'set +x aws lambda update-function-code --function-name duga-post-from-sqs --zip-file fileb://duga-aws/build/libs/duga-aws-1.0-SNAPSHOT-all.jar'
                 }
             }
         }
-        stage('Deploy') {
+
+        stage('Docker Image') {
             when {
-                branch 'master'
+                branch 'ktor'
             }
             steps {
-                sh 'sudo service tomcat8 stop'
-                sh 'sudo rm -rf /var/lib/tomcat8/webapps/GithubHookSEChatService*'
-                sh 'sudo cp build/libs/*.war /var/lib/tomcat8/webapps/GithubHookSEChatService.war'
-                sh 'sudo service tomcat8 start'
+                script {
+                    // Stop running containers
+                    sh 'docker ps -q --filter name="duga_bot" | xargs -r docker stop'
+
+                    // Deploy
+                    dir('duga-ktor') {
+                        sh 'docker build . -t duga_bot'
+                    }
+                    withCredentials([usernamePassword(
+                          credentialsId: 'AWS_CREDENTIALS',
+                          passwordVariable: 'AWS_SECRET_ACCESS_KEY',
+                          usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                        withEnv(["ENV_AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}", "ENV_AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"]) {
+                            def result = sh(script: """docker run -d --rm --name duga_bot -p 3842:3842 \
+                              -e TZ=Europe/Amsterdam \
+                              -e AWS_SECRET_ACCESS_KEY=$ENV_AWS_SECRET_ACCESS_KEY \
+                              -e AWS_ACCESS_KEY_ID=$ENV_AWS_ACCESS_KEY_ID \
+                              -v /etc/letsencrypt:/etc/letsencrypt \
+                              -v /home/zomis/jenkins/duga_bot:/data/logs \
+                              -v /etc/localtime:/etc/localtime:ro \
+                              -w /data/logs duga_bot""",
+                                returnStdout: true)
+                            println(result)
+                        }
+                    }
+                }
             }
         }
     }
 
     post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/build/test-results/junit-platform/TEST-*.xml'
+        }
         success {
             zpost(0)
         }
