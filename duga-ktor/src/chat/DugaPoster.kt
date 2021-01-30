@@ -38,7 +38,7 @@ class DugaPoster(val duga: DugaBot) {
         }
     }
 
-    suspend fun editMessage(messageId: Long, newText: String) {
+    suspend fun editMessage(messageId: Long, newText: String): Boolean {
         val result = duga.httpClient.post<String>(duga.chatUrl + "/messages/$messageId") {
             body = FormDataContent(Parameters.build {
                 append("text", newText)
@@ -46,6 +46,7 @@ class DugaPoster(val duga: DugaBot) {
             })
         }
         logger.info("Edit $messageId to '$newText': $result")
+        return result.trim() == "ok"
     }
 
     suspend fun getMessage(messageId: Long): String {
