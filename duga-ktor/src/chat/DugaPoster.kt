@@ -38,6 +38,16 @@ class DugaPoster(val duga: DugaBot) {
         }
     }
 
+    suspend fun editMessage(messageId: Long, newText: String) {
+        val result = duga.httpClient.post<String>(duga.chatUrl + "/messages/$messageId") {
+            body = FormDataContent(Parameters.build {
+                append("text", newText)
+                append("fkey", duga.fkey())
+            })
+        }
+        logger.info("Edit $messageId to '$newText': $result")
+    }
+
     suspend fun getMessage(messageId: Long): String {
         return duga.httpClient.get(duga.chatUrl + "/message/$messageId?plain=true") // &_=timestampMs
     }
