@@ -14,7 +14,7 @@ group = "net.zomis.duga"
 version = "0.0.1-SNAPSHOT"
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClassName = "net.zomis.duga.DugaMainKt"
 }
 
 repositories {
