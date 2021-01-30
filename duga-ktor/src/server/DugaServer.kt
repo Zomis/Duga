@@ -13,7 +13,7 @@ import org.slf4j.event.Level
 class DugaServer(val poster: DugaPoster) {
 
     fun start() {
-        embeddedServer(Netty, port = 8042) {
+        embeddedServer(Netty, port = 3842) {
             install(CallLogging) {
                 level = Level.INFO
                 filter { call -> call.request.path().startsWith("/") }
