@@ -33,11 +33,10 @@ pipeline {
                           passwordVariable: 'AWS_SECRET_ACCESS_KEY',
                           usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                         withEnv(["ENV_AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}", "ENV_AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"]) {
-                            def result = sh(script: """docker run -d --rm --name duga_bot -p 3842:3842 \
+                            def result = sh(script: """docker run -d --rm --name duga_bot -p 3843:3842 \
                               -e TZ=Europe/Amsterdam \
                               -e AWS_SECRET_ACCESS_KEY=$ENV_AWS_SECRET_ACCESS_KEY \
                               -e AWS_ACCESS_KEY_ID=$ENV_AWS_ACCESS_KEY_ID \
-                              -v /etc/letsencrypt:/etc/letsencrypt \
                               -v /home/zomis/jenkins/duga_bot:/data/logs \
                               -v /etc/localtime:/etc/localtime:ro \
                               -w /data/logs duga_bot""",
