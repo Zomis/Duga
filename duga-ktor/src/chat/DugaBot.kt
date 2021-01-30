@@ -13,9 +13,13 @@ class DugaBot(
 
     suspend fun fkey(): String {
         if (fkey == null) {
-            fkey = fkeyFunction(httpClient, config)
+            refreshFKey()
         }
         return this.fkey!!
+    }
+
+    suspend fun refreshFKey() {
+        fkey = fkeyFunction(httpClient, config)
     }
 
 }
