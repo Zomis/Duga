@@ -38,4 +38,8 @@ class DugaPoster(val duga: DugaBot) {
         }
     }
 
+    suspend fun getMessage(messageId: Long): String {
+        return duga.httpClient.get(duga.chatUrl + "/message/$messageId?plain=true") // &_=timestampMs
+    }
+
 }
