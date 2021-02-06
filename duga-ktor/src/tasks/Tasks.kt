@@ -41,7 +41,7 @@ object Tasks {
         if (duration.isNegative) {
             throw IllegalStateException("Trying to sleep for a negative amount of time: $duration between $now and $next")
         }
-        println("Task $name: Next is at $next, sleeping for $duration")
+        logger.info("Task $name: Next is at $next, sleeping for $duration")
         delay(duration.toMillis())
     }
 
