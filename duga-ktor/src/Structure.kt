@@ -17,8 +17,14 @@ StackExchange
 
 Utils
 - HookStringification
+- GitHub: Fetch additions and deletions for a specific commit
 - Tasks
-  - Detect edits
+  - StackExchange
+    - Detect edits
+    - Reputation races
+    - Comments scanning
   - GitHub
-  - Daily reload
+    - Star-races
+    - Newly-created repositories, or commits to other repositories
+  - Daily reload, with stats
 */

@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.time.*
+import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
 object Tasks {
@@ -46,6 +47,13 @@ object Tasks {
 
     fun daily(hour: Int, minute: Int): Schedule {
         return Schedule.at(LocalTime.of(hour, minute)).everyDay()
+    }
+
+    fun dailyUTC(hour: Int, minute: Int): Schedule {
+        return Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS)
+            .plus(hour.toLong(), ChronoUnit.HOURS)
+            .plus(minute.toLong(), ChronoUnit.MINUTES)
+            .atZone(ZoneId.systemDefault()))).everyDay()
     }
 
 }
