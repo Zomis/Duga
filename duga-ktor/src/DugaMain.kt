@@ -40,6 +40,10 @@ object DugaMain {
             poster.postMessage("16134", "Ktor bot started")
         }
 
+        Tasks.schedule("Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.FRIDAY))) {
+            poster.postMessage("16134", "Has @Simon posted his weekly update?")
+        }
+
         Tasks.schedule("VBA star race", Tasks.dailyUTC(23, 45)) {
             val rubberDuck = hookString.repo("rubberduck-vba/Rubberduck") to gitHubApi.stars("rubberduck-vba/Rubberduck")
             val oletools = hookString.repo("decalage2/oletools") to gitHubApi.stars("decalage2/oletools")

@@ -56,4 +56,12 @@ object Tasks {
             .atZone(ZoneId.systemDefault()))).everyDay()
     }
 
+    fun weeklyUTC(hour: Int, minute: Int, weekDays: Set<DayOfWeek>): Schedule {
+        return Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS)
+                .plus(hour.toLong(), ChronoUnit.HOURS)
+                .plus(minute.toLong(), ChronoUnit.MINUTES)
+                .atZone(ZoneId.systemDefault()))).every(weekDays)
+    }
+
+
 }
