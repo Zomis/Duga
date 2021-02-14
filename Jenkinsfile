@@ -10,7 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('duga-ktor') {
-                    sh './gradlew shadowJar'
+                    sh './gradlew shadowJar --stacktrace'
                 }
             }
         }
