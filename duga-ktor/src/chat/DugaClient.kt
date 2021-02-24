@@ -3,6 +3,7 @@ package net.zomis.duga.chat
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.*
+import io.ktor.client.features.compression.*
 import io.ktor.client.features.cookies.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.features.websocket.*
@@ -10,6 +11,9 @@ import io.ktor.client.features.websocket.*
 class DugaClient(val config: BotConfig) {
 
     val client = HttpClient(Apache) {
+        install(ContentEncoding) {
+            gzip()
+        }
         install(WebSockets)
         install(Logging) {
             logger = Logger.DEFAULT

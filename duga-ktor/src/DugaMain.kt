@@ -8,6 +8,7 @@ import net.zomis.duga.server.DugaServer
 import net.zomis.duga.tasks.Tasks
 import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
+import net.zomis.duga.utils.stackexchange.StackExchangeApi
 import net.zomis.duga.utils.stats.DugaStatsNoOp
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -33,6 +34,7 @@ object DugaMain {
         DugaServer(poster).start()
 
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
+        val stackExchangeApi = StackExchangeApi(client.client, readSecret("stackexchange"))
         val hookString = HookString(DugaStatsNoOp())
 
         // Instance-specific instructions
