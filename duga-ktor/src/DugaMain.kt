@@ -13,10 +13,7 @@ import net.zomis.duga.utils.stats.DugaStatsNoOp
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.DayOfWeek
-import java.time.LocalTime
-import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 
 object DugaMain {
     private val logger = LoggerFactory.getLogger(DugaMain::class.java)
@@ -36,6 +33,7 @@ object DugaMain {
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
         val stackExchangeApi = StackExchangeApi(client.client, readSecret("stackexchange"))
         val hookString = HookString(DugaStatsNoOp())
+        val dugaTasks = DugaTasks(poster, stackExchangeApi)
 
         // Instance-specific instructions
         runBlocking {
