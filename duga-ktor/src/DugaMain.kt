@@ -42,7 +42,7 @@ object DugaMain {
             poster.postMessage("16134", "Ktor bot started")
         }
 
-        Tasks.schedule("Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.FRIDAY))) {
+        Tasks.schedule("Weekly update", Tasks.weeklyUTC(17, 0, setOf(DayOfWeek.THURSDAY))) {
             poster.postMessage("16134", "Has @Simon posted his weekly update?")
         }
 
