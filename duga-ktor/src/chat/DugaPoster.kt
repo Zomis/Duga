@@ -5,15 +5,51 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
+import java.time.Instant
 
-class DugaPoster(val duga: DugaBot) {
+interface RoomPoster {
+    suspend fun post(message: String)
+    fun postAsync(message: String)
+}
+
+class DugaRoomPoster(private val poster: DugaPoster, val room: String): RoomPoster {
+    override suspend fun post(message: String) {
+        poster.postMessage(room, message)
+    }
+
+    override fun postAsync(message: String) {
+        GlobalScope.launch {
+            post(message)
+        }
+    }
+}
+
+interface DugaPoster {
+    suspend fun postMessage(room: String, message: String): PostResult?
+    fun room(room: String) = DugaRoomPoster(this, room)
+
+}
+
+class LoggingPoster: DugaPoster {
+    private val logger = LoggerFactory.getLogger(LoggingPoster::class.java)
+
+    override suspend fun postMessage(room: String, message: String): PostResult? {
+        logger.info("$room: $message")
+        return PostResult(0, Instant.now().epochSecond)
+    }
+
+}
+
+data class PostResult(val id: Long, val time: Long)
+class DugaPosterImpl(val duga: DugaBot): DugaPoster {
 
     private val logger = LoggerFactory.getLogger(DugaPoster::class.java)
     private val mapper = jacksonObjectMapper()
 
-    data class PostResult(val id: Long, val time: Long)
     private suspend fun internalPost(room: String, message: String): PostResult? {
         try {
             val result = duga.httpClient.post<String>(duga.chatUrl + "/chats/$room/messages/new") {
@@ -37,7 +73,7 @@ class DugaPoster(val duga: DugaBot) {
         }
     }
 
-    suspend fun postMessage(room: String, message: String): PostResult? {
+    override suspend fun postMessage(room: String, message: String): PostResult? {
         return try {
             internalPost(room, message)
         } catch (e: Exception) {

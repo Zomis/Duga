@@ -34,11 +34,6 @@ class StackExchangeApi(val httpClient: HttpClient, val apiKey: String?) {
 
             }
             return mapper.readTree(s)
-
-//            val connection = url.openConnection()
-//            connection.setRequestProperty("Accept-Encoding", "identity")
-//            val stream = GZIPInputStream(connection.getInputStream())
-//            return mapper.readTree(stream)
         } catch (ex: IOException) {
             val copy = IOException(ex.message?.replace(apiKey, "xxxxxxxxxxxxxxxx"), ex.cause)
             copy.stackTrace = ex.stackTrace
