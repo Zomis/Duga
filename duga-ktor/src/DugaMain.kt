@@ -27,7 +27,8 @@ object DugaMain {
                 se.fkeyReal()
             } else throw RuntimeException()
         }
-        val poster = DugaPoster(bot)
+        val poster = DugaPosterImpl(bot)
+//        val poster = LoggingPoster()
         DugaServer(poster).start()
 
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
