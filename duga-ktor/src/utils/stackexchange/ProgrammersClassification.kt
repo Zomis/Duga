@@ -19,7 +19,7 @@ object ProgrammersClassification {
     private val logger = LoggerFactory.getLogger(ProgrammersClassification::class.java)
 
     private val PROG_LINK = Pattern.compile(Pattern.quote("<a href=\"http") + "s?"
-            + Pattern.quote("://programmers.stackexchange.com")
+            + Pattern.quote("://softwareengineering.stackexchange.com")
             + "(/|/help/.*)?" + Pattern.quote("\">"))
 
     private class ConvergenceIterations(private var count: Int): Predicate<DoubleArray> {
@@ -98,6 +98,9 @@ object ProgrammersClassification {
         text = text.replace("programmers.stackexchange.com/q", "(progs-question) ")
         text = text.replace("programmers.stackexchange.com/t", "(progs-tag) ")
         text = text.replace("programmers.stackexchange.com/a", "(progs-answer) ")
+        text = text.replace("softwareengineering.stackexchange.com/q", "(progs-question) ")
+        text = text.replace("softwareengineering.stackexchange.com/t", "(progs-tag) ")
+        text = text.replace("softwareengineering.stackexchange.com/a", "(progs-answer) ")
         text = text.replace("(http|https)://[^\\s]*", "(unclassified-httpaddr)")
         text = text.replace("[\\.?!,]", " ")
         text = text.replace("\\(number\\) (secs?|mins?) ago", "")
