@@ -29,12 +29,12 @@ object DugaMain {
         }
         val poster = DugaPosterImpl(bot)
 //        val poster = LoggingPoster()
-        DugaServer(poster).start()
 
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
         val stackExchangeApi = StackExchangeApi(client.client, readSecret("stackexchange"))
         val hookString = HookString(DugaStatsNoOp())
         val dugaTasks = DugaTasks(poster, stackExchangeApi)
+        DugaServer(poster, gitHubApi, hookString).start()
 
         // Instance-specific instructions
         runBlocking {
