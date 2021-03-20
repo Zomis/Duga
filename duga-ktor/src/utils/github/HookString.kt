@@ -81,8 +81,8 @@ class HookString(private val stats: DugaStats) {
             return ""
         }
         var username = json.text("login")
-        username = username.replace("\\[", "\\\\[")
-        username = username.replace("]", "\\\\]")
+        username = username.replace("[", "\\[")
+        username = username.replace("]", "\\]")
         return "[**$username**](${json.text("html_url")})"
     }
 
