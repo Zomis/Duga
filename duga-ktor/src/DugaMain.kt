@@ -9,6 +9,7 @@ import net.zomis.duga.tasks.Tasks
 import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
 import net.zomis.duga.utils.stackexchange.StackExchangeApi
+import net.zomis.duga.utils.stats.DugaStatsInternalMap
 import net.zomis.duga.utils.stats.DugaStatsNoOp
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -20,11 +21,15 @@ object DugaMain {
 
     class ArgumentsCheck(private val args: Collection<String>) {
         fun check(arg: String, block: () -> Unit) {
-            val found = args.contains(arg)
-            logger.info("Checking for argument \"{}\", found? {}", arg, found)
-            if (found) {
+            if (contains(arg)) {
                 block()
             }
+        }
+
+        fun contains(arg: String): Boolean {
+            val found = args.contains(arg)
+            logger.info("Checking for argument \"{}\", found? {}", arg, found)
+            return found
         }
     }
 
@@ -38,15 +43,13 @@ object DugaMain {
                 se.fkeyReal()
             } else throw RuntimeException()
         }
-        val poster = DugaPosterImpl(bot)
-//        val poster = LoggingPoster()
+        val poster = if (args.contains("duga-poster")) DugaPosterImpl(bot) else LoggingPoster()
+        val stats = if (args.contains("local-stats")) DugaStatsInternalMap() else DugaStatsNoOp()
 
-        val stats = DugaStatsNoOp()
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
         val stackExchangeApi = StackExchangeApi(client.client, readSecret("stackexchange"))
         val hookString = HookString(stats, gitHubApi)
         val dugaTasks = DugaTasks(poster, stackExchangeApi)
-        DugaServer(poster, gitHubApi, hookString).start()
 
         // Instance-specific instructions
         args.check("hello-world") {
@@ -81,6 +84,8 @@ object DugaMain {
         args.check("answer-invalidation") {
             Tasks.schedule("Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)
         }
+
+        DugaServer(poster, gitHubApi, hookString).start()
 
         logger.info("Ready")
     }
