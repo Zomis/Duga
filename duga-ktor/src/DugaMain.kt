@@ -84,6 +84,14 @@ object DugaMain {
         args.check("answer-invalidation") {
             Tasks.schedule("Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)
         }
+        args.check("unanswered") {
+            Tasks.schedule("Unanswered CR", Tasks.utcMidnight) {
+                val siteStats = stackExchangeApi.unanswered("codereview")
+                val percentageStr = String.format("%.4f", siteStats.percentageAnswered() * 100)
+                val message = "***REFRESH!*** There are ${siteStats.unanswered} unanswered questions ($percentageStr answered)"
+                poster.postMessage("8595", message)
+            }
+        }
         args.check("daily-stats") {
             Tasks.schedule("Daily stats", Tasks.utcMidnight) {
                 val allStats = stats.allStats()

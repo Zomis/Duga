@@ -41,4 +41,16 @@ class StackExchangeApi(val httpClient: HttpClient, val apiKey: String?) {
         }
     }
 
+    data class StackExchangeSiteStats(val unanswered: Int, val total: Int) {
+        fun percentageAnswered(): Double = (total - unanswered) / total.toDouble()
+    }
+    suspend fun unanswered(site: String): StackExchangeSiteStats {
+        val apiResult = apiCall("info", site, "default")
+        val item = apiResult?.get("items")?.get(0)
+
+        val unanswered = item?.get("total_unanswered")?.asInt() ?: 0
+        val total = item?.get("total_questions")?.asInt() ?: 1
+        return StackExchangeSiteStats(unanswered, total)
+    }
+
 }
