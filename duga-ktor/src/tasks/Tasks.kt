@@ -20,18 +20,26 @@ object Tasks {
     fun schedule(name: String, schedule: Schedule, task: suspend () -> Unit): Job {
         val times = schedule.iterate(ZonedDateTime.now()).iterator()
         return GlobalScope.launch {
-            for (time in times) {
-                sleepUntil(name, time)
-                logger.info("Task $name: Executing")
-                task()
+            try {
+                for (time in times) {
+                    sleepUntil(name, time)
+                    logger.info("Task $name: Executing")
+                    task()
+                }
+            } catch (e: Exception) {
+                logger.error("Task Exception in $name", e)
             }
         }
     }
 
     fun once(name: String, task: suspend () -> Unit): Job {
         return GlobalScope.launch {
-            logger.info("Task $name: Executing")
-            task()
+            try {
+                logger.info("Task $name: Executing")
+                task()
+            } catch (e: Exception) {
+                logger.error("Task Exception in $name", e)
+            }
         }
     }
 
