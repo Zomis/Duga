@@ -1,6 +1,8 @@
 package net.zomis.duga.utils.github
 
 import com.fasterxml.jackson.databind.JsonNode
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.zomis.duga.utils.stats.DugaStats
 import org.slf4j.LoggerFactory
 
@@ -20,7 +22,7 @@ fun JsonNode.textIf(path: String): String? {
 }
 
 private const val MAX_DISTINCT_COMMITS = 10
-class HookString(private val stats: DugaStats) {
+class HookString(private val stats: DugaStats, private val gitHubApi: GitHubApi) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -332,6 +334,17 @@ class HookString(private val stats: DugaStats) {
         }
 
         stats.addCommits(json, distinctCommits)
+        GlobalScope.launch {
+            var additions = 0
+            var deletions = 0
+            var repository = distinctCommits.firstOrNull()
+            distinctCommits.forEach {
+                val details = gitHubApi.commitDetails(json["repository"], it)
+                additions += details?.additions ?: 0
+                deletions += details?.deletions ?: 0
+            }
+            stats.addAdditionsDeletions(repository, additions, deletions)
+        }
 
         if (distinctCommits.size > MAX_DISTINCT_COMMITS) {
             // if there's too many commits, not all should be informed about
