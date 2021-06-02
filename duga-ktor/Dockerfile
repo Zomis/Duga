@@ -7,4 +7,12 @@ ADD build/libs/*-all.jar /duga-bot/
 
 VOLUME /data/logs/
 
-CMD java -jar /duga-bot/ktor-demo-0.0.1-SNAPSHOT-all.jar
+CMD java -jar /duga-bot/ktor-demo-0.0.1-SNAPSHOT-all.jar \
+    unanswered \
+    answer-invalidation comment-scan \
+    vba-star-race \
+    weekly-update-reminder \
+    hello-world \
+    local-stats \
+    daily-stats
+#    duga-poster \
