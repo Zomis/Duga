@@ -26,6 +26,7 @@ object Tasks {
                     logger.info("Task $name: Executing")
                     task()
                 }
+                logger.info("Task $name: Finished")
             } catch (e: Exception) {
                 logger.error("Task Exception in $name", e)
             }
