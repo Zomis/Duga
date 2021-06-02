@@ -17,7 +17,7 @@ class DugaClient(val config: BotConfig) {
         install(WebSockets)
         install(Logging) {
             logger = Logger.DEFAULT
-            level = LogLevel.HEADERS
+            level = LogLevel.BODY
         }
         install(HttpCookies) {
             storage = AcceptAllCookiesStorage()
