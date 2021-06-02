@@ -76,13 +76,32 @@ object DugaMain {
         }
 
         args.check("refresh") {
-            Tasks.schedule("***REFRESH***", Tasks.utcMidnight) { poster.postMessage("16134", "REFRESH!") }
+            Tasks.schedule("REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "***REFRESH!***") }
         }
         args.check("comment-scan") {
             Tasks.schedule("Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), dugaTasks::commentScan)
         }
         args.check("answer-invalidation") {
             Tasks.schedule("Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)
+        }
+        args.check("daily-stats") {
+            Tasks.schedule("Daily stats", Tasks.utcMidnight) {
+                val allStats = stats.allStats()
+                val messages = allStats.map { stat ->
+                    val values = stat.reset()
+                    val group = stat.group
+                    val url = stat.url
+                    "\\[[**$group**]($url)\\] $values"
+                }
+                val rooms = listOf("16134", "14929")
+                rooms.forEach { room ->
+                    val roomPoster = poster.room(room)
+                    roomPoster.post("***REFRESH!***")
+                    messages.forEach { message ->
+                        roomPoster.post(message)
+                    }
+                }
+            }
         }
 
         DugaServer(poster, gitHubApi, hookString).start()
