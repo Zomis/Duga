@@ -32,9 +32,9 @@ class StackExchangeApi(val httpClient: HttpClient, val apiKey: String?) {
         if (apiKey == null) return null
         try {
             val url = buildURL(apiCall, site, filter, apiKey)
-            val s: String = httpClient.get(url) {
-
-            }
+            logger.info("Stack Exchange API Call: $url")
+            val s: String = httpClient.get(url)
+            logger.info("Stack Exchange API Call done")
             return mapper.readTree(s)
         } catch (ex: IOException) {
             val copy = IOException(ex.message?.replace(apiKey, "xxxxxxxxxxxxxxxx"), ex.cause)
