@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.shyiko.skedule.Schedule
 import kotlinx.coroutines.runBlocking
 import net.zomis.duga.chat.*
+import net.zomis.duga.server.ArgumentsCheck
 import net.zomis.duga.server.DugaServer
 import net.zomis.duga.tasks.Tasks
 import net.zomis.duga.utils.github.GitHubApi
@@ -18,20 +19,6 @@ import java.time.temporal.ChronoUnit
 
 object DugaMain {
     private val logger = LoggerFactory.getLogger(DugaMain::class.java)
-
-    class ArgumentsCheck(private val args: Collection<String>) {
-        fun check(arg: String, block: () -> Unit) {
-            if (contains(arg)) {
-                block()
-            }
-        }
-
-        fun contains(arg: String): Boolean {
-            val found = args.contains(arg)
-            logger.info("Checking for argument \"{}\", found? {}", arg, found)
-            return found
-        }
-    }
 
     fun start(params: Array<String>) {
         // Dependencies and basic setup
@@ -49,71 +36,8 @@ object DugaMain {
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
         val stackExchangeApi = StackExchangeApi(client.client, readSecret("stackexchange"))
         val hookString = HookString(stats, gitHubApi)
-        val dugaTasks = DugaTasks(poster, stackExchangeApi)
 
-        // Instance-specific instructions
-        args.check("hello-world") {
-            runBlocking {
-                poster.postMessage("16134", "Ktor bot started")
-            }
-        }
-
-        args.check("weekly-update-reminder") {
-            Tasks.schedule("Weekly update", Tasks.weeklyUTC(17, 0, setOf(DayOfWeek.TUESDAY))) {
-                poster.postMessage("16134", "Has @Simon posted his weekly update?")
-            }
-        }
-
-        args.check("vba-star-race") {
-            Tasks.schedule("VBA star race", Tasks.dailyUTC(23, 45)) {
-                val rubberDuck = hookString.repo("rubberduck-vba/Rubberduck") to gitHubApi.stars("rubberduck-vba/Rubberduck")
-                val oletools = hookString.repo("decalage2/oletools") to gitHubApi.stars("decalage2/oletools")
-                val list = listOf(rubberDuck, oletools).joinToString(" vs. ") {
-                    it.first + ": ${it.second} stars"
-                }
-                poster.postMessage("14929", list)
-            }
-        }
-
-        args.check("refresh") {
-            Tasks.schedule("REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "***REFRESH!***") }
-        }
-        args.check("comment-scan") {
-            Tasks.schedule("Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), dugaTasks::commentScan)
-        }
-        args.check("answer-invalidation") {
-            Tasks.schedule("Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)
-        }
-        args.check("unanswered") {
-            Tasks.schedule("Unanswered CR", Tasks.utcMidnight) {
-                val siteStats = stackExchangeApi.unanswered("codereview")
-                val percentageStr = String.format("%.4f", siteStats.percentageAnswered() * 100)
-                val message = "***REFRESH!*** There are ${siteStats.unanswered} unanswered questions ($percentageStr answered)"
-                poster.postMessage("8595", message)
-            }
-        }
-        args.check("daily-stats") {
-            Tasks.schedule("Daily stats", Tasks.utcMidnight) {
-                val allStats = stats.allStats()
-                val messages = allStats.map { stat ->
-                    val values = stat.reset()
-                    val group = stat.group
-                    val url = stat.url
-                    "\\[[**$group**]($url)\\] $values"
-                }
-                val rooms = listOf("16134", "14929")
-                rooms.forEach { room ->
-                    val roomPoster = poster.room(room)
-                    roomPoster.post("***REFRESH!***")
-                    messages.forEach { message ->
-                        roomPoster.post(message)
-                    }
-                }
-            }
-        }
-
-        DugaServer(poster, gitHubApi, hookString).start()
-
+        DugaServer(poster, gitHubApi, stackExchangeApi, stats, hookString).start(args)
         logger.info("Ready")
     }
 
