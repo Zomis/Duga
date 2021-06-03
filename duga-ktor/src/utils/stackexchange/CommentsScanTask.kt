@@ -10,7 +10,11 @@ import net.zomis.duga.chat.DugaPoster
 import net.zomis.machlearn.text.TextClassification
 import org.slf4j.LoggerFactory
 
-class CommentsScanTask(val stackAPI: StackExchangeApi, val programmersClassification: TextClassification, val poster: DugaPoster) {
+class CommentsScanTask(
+	private val stackAPI: StackExchangeApi,
+	private val programmersClassification: TextClassification,
+	poster: DugaPoster
+) {
     private val logger = LoggerFactory.getLogger(CommentsScanTask::class.java)
     
     private var nextFetch = Instant.now()
@@ -23,75 +27,70 @@ class CommentsScanTask(val stackAPI: StackExchangeApi, val programmersClassifica
 	private val programmers = poster.room("21")
 	private val softwareRecs = poster.room("20298")
 
-	fun isInterestingCommentCR(comment: JsonNode): Boolean {
-		val commentText = comment.get("body_markdown").asText().toLowerCase()
-    	return commentText.contains("code review") || commentText.contains("codereview")
-	}
-
 	suspend fun run() {
     	if (!Instant.now().isAfter(nextFetch)) {
     		return;
     	}
 
-    	try {
-    		val comments = stackAPI.fetchComments("stackoverflow", fromDate)
-			if (comments == null) {
-				logger.error("Unable to get comments from $fromDate")
-				return
+		val comments = stackAPI.fetchComments("stackoverflow", fromDate)
+		if (comments == null) {
+			logger.error("Unable to get comments from $fromDate")
+			return
+		}
+		val currentQuota = comments.get("quota_remaining").asLong()
+		if (currentQuota > remainingQuota && fromDate != 0L) {
+			debug.post(Instant.now().toString() + " Quota has been reset. Was " +
+				remainingQuota + " is now " + currentQuota)
+		}
+		remainingQuota = currentQuota
+
+		if (comments.get("backoff") != null) {
+			nextFetch = Instant.now().plusSeconds(comments.get("backoff").asLong() + 10)
+			debug.post(Instant.now().toString() +
+					" Next fetch: " + nextFetch + " because of backoff " + comments.get("backoff"))
+			return
+		}
+
+		val items = comments.get("items") ?: return
+		if (items.size() >= 100) {
+			debug.post(Instant.now().toString() + " Warning: Retrieved 100 comments. Might have missed some.")
+		}
+
+		val previousLastComment = lastComment
+		for (comment in items.reversed()) {
+			if (comment.get("comment_id").asLong() <= previousLastComment) {
+				continue;
 			}
-    		val currentQuota = comments.get("quota_remaining").asLong()
-    		if (currentQuota > remainingQuota && fromDate != 0L) {
-				debug.post(Instant.now().toString() + " Quota has been reset. Was " +
-					remainingQuota + " is now " + currentQuota)
-    		}
-    		remainingQuota = currentQuota
-
-			if (comments.get("backoff") != null) {
-				nextFetch = Instant.now().plusSeconds(comments.get("backoff").asLong() + 10)
-				debug.post(Instant.now().toString() +
-						" Next fetch: " + nextFetch + " because of backoff " + comments.get("backoff"))
-				return
+			lastComment = Math.max(comment.get("comment_id").asLong(), lastComment)
+			fromDate = Math.max(comment.get("creation_date").asLong(), fromDate)
+			if (isInterestingCommentCR(comment)) {
+				logComment(comment, "Code Review")
+				codeReview.post(comment.get("link").asText())
 			}
 
-    		val items = comments.get("items") ?: return
-			if (items.size() >= 100) {
-				debug.post(Instant.now().toString() + " Warning: Retrieved 100 comments. Might have missed some.")
+			classifyProgrammers(comment)
+
+			val softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment)
+
+			if (softwareCertainty >= CommentClassification.REAL) {
+				softwareRecs.post(comment.get("link").asText())
 			}
-
-			val previousLastComment = lastComment
-			for (comment in items.reversed()) {
-				if (comment.get("comment_id").asLong() <= previousLastComment) {
-					continue;
-				}
-				lastComment = Math.max(comment.get("comment_id").asLong(), lastComment)
-				fromDate = Math.max(comment.get("creation_date").asLong(), fromDate)
-				if (isInterestingCommentCR(comment)) {
-					logComment(comment, "Code Review")
-					codeReview.post(comment.get("link").asText())
-				}
-
-				classifyProgrammers(comment)
-
-				val softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment)
-
-				if (softwareCertainty >= CommentClassification.REAL) {
-					softwareRecs.post(comment.get("link").asText())
-				}
-			}
-    	} catch (e: Exception) {
-    		logger.error("Error retrieving comments", e);
-    		debug.post(Instant.now().toString() + " Exception in comment task " + e)
-    	}
+		}
     }
 
-	fun logComment(comment: JsonNode, site: String) {
+	private fun logComment(comment: JsonNode, site: String) {
 		logger.info("$site comment $comment.comment_id " +
 				"on $comment.post_type $comment.post_id " +
 				"posted by $comment.owner.display_name " +
 				"with $comment.owner.reputation reputation: $comment.body_markdown")
 	}
 
-	fun classifyProgrammers(comment: JsonNode) {
+	private fun isInterestingCommentCR(comment: JsonNode): Boolean {
+		val commentText = comment.get("body_markdown").asText().toLowerCase()
+		return commentText.contains("code review") || commentText.contains("codereview")
+	}
+
+	private fun classifyProgrammers(comment: JsonNode) {
         val oldClassification = CommentClassification.calcInterestingLevelProgrammers(comment);
         val programmersMLscore = programmersMLscore(comment)
 
@@ -111,10 +110,10 @@ class CommentsScanTask(val stackAPI: StackExchangeApi, val programmersClassifica
         }
     }
 
-    fun programmersMLscore(comment: JsonNode): Double {
-        val text = comment.get("body_markdown").asText()
-        if (!text.toLowerCase().contains("programmers") && !text.toLowerCase().contains("softwareeng")
-	     && !text.toLowerCase().contains("software eng")) {
+    private fun programmersMLscore(comment: JsonNode): Double {
+        val text = comment.get("body_markdown").asText().toLowerCase()
+        if (!text.contains("programmers") && !text.contains("softwareeng")
+	     && !text.contains("software eng")) {
             // No need to check with the Machine Learning system in this case
             return -1.0
         }
