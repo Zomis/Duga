@@ -6,11 +6,13 @@ import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.features.get
 import io.ktor.client.request.*
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.net.URL
 
 class StackExchangeApi(val httpClient: HttpClient, val apiKey: String?) {
 
+    private val logger = LoggerFactory.getLogger(StackExchangeApi::class.java)
     private val mapper = jacksonObjectMapper()
 
     suspend fun fetchComments(site: String, fromDate: Long): JsonNode? {

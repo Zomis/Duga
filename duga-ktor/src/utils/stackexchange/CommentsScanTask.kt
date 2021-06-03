@@ -28,7 +28,9 @@ class CommentsScanTask(
 	private val softwareRecs = poster.room("20298")
 
 	suspend fun run() {
-    	if (!Instant.now().isAfter(nextFetch)) {
+		val now = Instant.now()
+    	if (!now.isAfter(nextFetch)) {
+    		logger.info("Comments scan next fetch is at $nextFetch and now is $now, need to wait a bit more, returning.")
     		return;
     	}
 
