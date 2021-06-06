@@ -25,11 +25,15 @@ object Tasks {
                         logger.info("Task $name interrupted")
                         return@launch
                     }
-                    task()
+                    try {
+                        task()
+                    } catch (e: Exception) {
+                        logger.error("Task Exception in $name, trying again next time", e)
+                    }
                 }
                 logger.info("Task $name: Finished")
             } catch (e: Exception) {
-                logger.error("Task Exception in $name", e)
+                logger.error("Task Error in $name, aborting task", e)
             }
         }
     }
