@@ -8,6 +8,7 @@ plugins {
     application
     kotlin("jvm") version "1.4.21"
     id("com.github.johnrengelman.shadow").version("5.2.0")
+    id("com.github.ben-manes.versions") version "0.39.0"
 }
 
 group = "net.zomis.duga"
@@ -30,7 +31,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("net.zomis:machlearn:0.1.0-SNAPSHOT")
     implementation("org.apache.commons:commons-text:1.9")
-    implementation("org.apache.logging.log4j:log4j-core:2.14.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.14.1")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.14.0")
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-core-jvm:$ktor_version")
