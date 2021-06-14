@@ -2,7 +2,6 @@ package net.zomis.duga.utils.stackexchange
 
 import com.fasterxml.jackson.databind.JsonNode
 import net.zomis.duga.chat.DugaPoster
-import net.zomis.duga.utils.stackexchange.StackExchangeApi
 import org.apache.commons.text.StringEscapeUtils
 import org.slf4j.LoggerFactory
 import java.time.Instant
@@ -29,9 +28,9 @@ object AnswerInvalidationCheck {
                 logger.info("edited: $questionId")
                 val edits = stackExchangeAPI.apiCall(editCall(questionId), "codereview", "!9YdnS7lAD")
                     ?: throw IllegalStateException("Unable to get edits for $questionId")
-                poster.postMessage("20298", "Edits fetched for $questionId: ${edits.get("items").size()}. quota remaining $edits.quota_remaining")
+                poster.postMessage("20298", "Edits fetched for $questionId: ${edits.get("items").size()}. quota remaining ${edits.get("quota_remaining")}")
                 val possibleInvalidations = codeChanges(edits, lastCheck)
-                if (!possibleInvalidations.isEmpty()) {
+                if (possibleInvalidations.isNotEmpty()) {
                     val link = questionLink.replace(Regex("/questions/.*"), "/posts/$questionId/revisions")
                     val editor = possibleInvalidations
                         .map { formatDisplayName(it.get("user").get("display_name").asText()) }

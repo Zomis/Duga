@@ -84,7 +84,7 @@ class CommentsScanTask(
 		logger.info("$site comment $comment.comment_id " +
 				"on $comment.post_type $comment.post_id " +
 				"posted by $comment.owner.display_name " +
-				"with $comment.owner.reputation reputation: $comment.body_markdown")
+				"with $comment.owner.reputation reputation: ${comment.get("body_markdown")}")
 	}
 
 	private fun isInterestingCommentCR(comment: JsonNode): Boolean {

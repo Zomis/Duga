@@ -40,7 +40,7 @@ object CommentClassification {
 	}
 	
 	fun calcInterestingLevelProgrammers(commentOriginal: String): Float {
-		var comment = commentOriginal.toLowerCase()
+		val comment = commentOriginal.toLowerCase()
 		if (!comment.contains("programmers")) {
 			return 0f
 		}
