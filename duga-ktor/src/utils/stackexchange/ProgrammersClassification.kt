@@ -59,7 +59,7 @@ object ProgrammersClassification {
         val learnedT = GradientDescent.gradientDescent(
                 DoubleMatrix(trainingSet.xs), DoubleMatrix(trainingSet.y),
                 ConvergenceIterations(20000),
-                doubleArrayOf(data.numFeaturesWithZero().toDouble()), 0.01)
+                DoubleArray(data.numFeaturesWithZero()) { 0.0 }, 0.01)
         val learnedTheta = learnedT.toArray()
         val weights = TextFeatureWeights(mapper.getFeatures(), learnedTheta)
         weights.getMapByValue().forEach { obj -> logger.info(obj.toString()) }
