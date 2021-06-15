@@ -26,8 +26,8 @@ object ProgrammersClassification {
         override fun test(doubles: DoubleArray): Boolean = count-- == 0
     }
 
-    fun machineLearning(lines: List<String>?): TextClassification {
-        if (lines == null || lines.isEmpty()) {
+    fun machineLearning(lines: List<String>): TextClassification {
+        if (lines.isEmpty()) {
             // Return a classifier that is only classifying as false and giving -1 score
             return TextClassification({it}, TextFeatureMapper("programmers"), doubleArrayOf(-1.0, 0.0), 0.5)
         }

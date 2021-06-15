@@ -18,7 +18,7 @@ class DugaTasks(poster: DugaPoster, stackApi: StackExchangeApi) {
             val trainingData = this::class.java.classLoader.getResource("trainingset-programmers-comments.txt")
             val source = trainingData?.readText()
             val lines = source?.split("\n")
-            ProgrammersClassification.machineLearning(lines)
+            ProgrammersClassification.machineLearning(lines ?: emptyList())
         } catch (e: Exception) {
             LoggerFactory.getLogger(DugaTasks::class.java).warn("Unable to load machine learning classification", e)
             ProgrammersClassification.machineLearning(emptyList())
