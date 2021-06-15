@@ -8,7 +8,7 @@ import net.zomis.duga.utils.stackexchange.QuestionScanTask
 import net.zomis.machlearn.text.TextClassification
 import org.slf4j.LoggerFactory
 
-class DugaTasks(private poster: DugaPoster, private stackApi: StackExchangeApi) {
+class DugaTasks(poster: DugaPoster, stackApi: StackExchangeApi) {
     private val questionScanTask = QuestionScanTask(poster, stackApi, "codereview")
     private val programmersClassification: TextClassification
     private val commentsScanTask: CommentsScanTask
