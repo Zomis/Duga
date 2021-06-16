@@ -75,9 +75,7 @@ class DugaServer(
             launch {
                 // Instance-specific instructions
                 args.check("hello-world") {
-                    runBlocking {
-                        poster.postMessage("16134", "Ktor bot started")
-                    }
+                    poster.postMessage("16134", "Ktor bot started")
                 }
 
                 args.check("weekly-update-reminder") {
