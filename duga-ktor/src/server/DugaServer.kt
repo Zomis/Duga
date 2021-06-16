@@ -68,7 +68,7 @@ class DugaServer(
                 }
                 SplunkWebhook.route(this, poster)
                 AppVeyorWebhook.route(this, poster)
-                StatsWebhook.route(this, stats, poster)
+                StatsWebhook.route(this, stats)
                 GitHubWebhook(poster, gitHubApi, hookString).route(this)
             }
 
