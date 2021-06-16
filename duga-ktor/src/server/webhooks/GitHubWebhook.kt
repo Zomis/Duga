@@ -11,12 +11,15 @@ import kotlinx.coroutines.launch
 import net.zomis.duga.chat.DugaPoster
 import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
+import org.slf4j.LoggerFactory
 
 class GitHubWebhook(
     private val poster: DugaPoster,
     private val gitHubApi: GitHubApi,
     private val hookString: HookString
 ) {
+
+    private val logger = LoggerFactory.getLogger(GitHubWebhook::class.java)
 
     suspend fun post(call: ApplicationCall, room: String?, gitHubEvent: String, jsonNode: JsonNode) {
         if (room == null) {
@@ -37,10 +40,17 @@ class GitHubWebhook(
     }
 
     fun route(routing: Routing) {
+        routing.post("/github") {
+            val room = this.call.parameters["room"]
+            val node = this.call.receive<JsonNode>()
+            val gitHubEvent = call.request.header("X-GitHub-Event")
+            logger.warn("Incoming GitHub without room in URL: $gitHubEvent $room $node")
+        }
         routing.post("/github/{room}") {
             val room = this.call.parameters["room"]
             val node = this.call.receive<JsonNode>()
             val gitHubEvent = call.request.header("X-GitHub-Event")
+            logger.info("Incoming $gitHubEvent $room $node")
             if (gitHubEvent == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing 'X-GitHub-Event' header")
                 return@post
