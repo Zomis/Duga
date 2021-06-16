@@ -5,11 +5,16 @@ import io.ktor.application.*
 import io.ktor.request.*
 import io.ktor.routing.*
 import net.zomis.duga.chat.DugaPoster
+import org.slf4j.LoggerFactory
 
 object SplunkWebhook {
 
+    private val logger = LoggerFactory.getLogger(SplunkWebhook::class.java)
+
     suspend fun post(poster: DugaPoster, room: String, node: JsonNode) {
-        poster.postMessage(room, node.toString())
+        logger.info("Splunk webhook $room: $node")
+        val message = node["result"]?.get("message")?.asText() ?: "Splunk Alert: " + node["search_name"].asText()
+        poster.postMessage(room, message)
         // ${json.search_name} - ${json.result}
     }
 
@@ -19,8 +24,8 @@ object SplunkWebhook {
                 // read headers, read params, read body
                 post(poster, call.parameters["room"]!!, call.receive())
             }
-            post("{room}") {
-
+            post("/splunk/{room}") {
+                post(poster, call.parameters["room"]!!, call.receive())
             }
         }
     }
