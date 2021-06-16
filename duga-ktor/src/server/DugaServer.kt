@@ -17,6 +17,7 @@ import net.zomis.duga.chat.DugaPoster
 import net.zomis.duga.server.webhooks.AppVeyorWebhook
 import net.zomis.duga.server.webhooks.GitHubWebhook
 import net.zomis.duga.server.webhooks.SplunkWebhook
+import net.zomis.duga.server.webhooks.StatsWebhook
 import net.zomis.duga.tasks.Tasks
 import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
@@ -67,6 +68,7 @@ class DugaServer(
                 }
                 SplunkWebhook.route(this, poster)
                 AppVeyorWebhook.route(this, poster)
+                StatsWebhook.route(this, stats, poster)
                 GitHubWebhook(poster, gitHubApi, hookString).route(this)
             }
 
