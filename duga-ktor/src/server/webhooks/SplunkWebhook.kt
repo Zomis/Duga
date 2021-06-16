@@ -3,6 +3,7 @@ package net.zomis.duga.server.webhooks
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.application.*
 import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import net.zomis.duga.chat.DugaPoster
 import org.slf4j.LoggerFactory
@@ -27,9 +28,11 @@ object SplunkWebhook {
             post {
                 // read headers, read params, read body
                 post(poster, call.parameters["room"]!!, call.receive())
+                call.respond("OK")
             }
             post("/splunk/{room}") {
                 post(poster, call.parameters["room"]!!, call.receive())
+                call.respond("OK")
             }
         }
     }
