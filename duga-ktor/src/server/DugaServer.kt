@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import net.zomis.duga.DugaMain
 import net.zomis.duga.DugaTasks
 import net.zomis.duga.chat.DugaPoster
+import net.zomis.duga.server.webhooks.AppVeyorWebhook
 import net.zomis.duga.server.webhooks.GitHubWebhook
 import net.zomis.duga.server.webhooks.SplunkWebhook
 import net.zomis.duga.tasks.Tasks
@@ -65,6 +66,7 @@ class DugaServer(
                     call.respondText("Hello, Ktor!")
                 }
                 SplunkWebhook.route(this, poster)
+                AppVeyorWebhook.route(this, poster)
                 GitHubWebhook(poster, gitHubApi, hookString).route(this)
             }
 
