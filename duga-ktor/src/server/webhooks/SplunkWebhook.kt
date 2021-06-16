@@ -8,10 +8,8 @@ import net.zomis.duga.chat.DugaPoster
 
 object SplunkWebhook {
 
-    fun post(poster: DugaPoster, room: String?, node: JsonNode) {
-        println(room)
-        println(node)
-
+    suspend fun post(poster: DugaPoster, room: String, node: JsonNode) {
+        poster.postMessage(room, node.toString())
         // ${json.search_name} - ${json.result}
     }
 
@@ -19,7 +17,7 @@ object SplunkWebhook {
         routing.route("/splunk") {
             post {
                 // read headers, read params, read body
-                SplunkWebhook.post(poster, call.parameters["room"], call.receive<JsonNode>())
+                post(poster, call.parameters["room"]!!, call.receive())
             }
             post("{room}") {
 
