@@ -12,9 +12,13 @@ object SplunkWebhook {
     private val logger = LoggerFactory.getLogger(SplunkWebhook::class.java)
 
     suspend fun post(poster: DugaPoster, room: String, node: JsonNode) {
-        logger.info("Splunk webhook $room: $node")
-        val message = node["result"]?.get("message")?.asText() ?: "Splunk Alert: " + node["search_name"].asText()
-        poster.postMessage(room, message)
+        try {
+            logger.info("Splunk webhook $room: $node")
+            val message = node["result"]?.get("message")?.asText() ?: "Splunk Alert: " + node["search_name"].asText()
+            poster.postMessage(room, message)
+        } catch (e: Exception) {
+            logger.warn("Unable to post Splunk webhook $room: $node", e)
+        }
         // ${json.search_name} - ${json.result}
     }
 
