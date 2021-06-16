@@ -17,6 +17,11 @@ object AppVeyorWebhook {
                 post(poster, call.parameters["room"]!!, call.receive())
             }
         }
+        routing.route("/appveyor/{room}") {
+            post {
+                post(poster, call.parameters["room"]!!, call.receive())
+            }
+        }
     }
 
     suspend fun post(poster: DugaPoster, room: String, node: JsonNode) {
