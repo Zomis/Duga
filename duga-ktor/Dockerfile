@@ -14,5 +14,5 @@ CMD java -jar /duga-bot/ktor-demo-0.0.1-SNAPSHOT-all.jar \
     weekly-update-reminder \
     hello-world \
     local-stats \
+    duga-poster \
     daily-stats
-#    duga-poster \
