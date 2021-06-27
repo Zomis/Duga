@@ -10,7 +10,6 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.zomis.duga.DugaMain
 import net.zomis.duga.DugaTasks
 import net.zomis.duga.chat.DugaPoster
@@ -117,7 +116,8 @@ class DugaServer(
                     Tasks.schedule(this, "Daily stats", Tasks.utcMidnight) {
                         val allStats = stats.allStats()
                         val messages = allStats.map { stat ->
-                            val values = stat.reset()
+                            val values = stat.reset().toList()
+                                .joinToString(". ") { "${it.second} ${it.first}" }
                             val group = stat.group
                             val url = stat.url
                             "\\[[**$group**]($url)\\] $values"
