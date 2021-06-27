@@ -51,6 +51,7 @@ class DugaPosterImpl(val duga: DugaBot): DugaPoster {
     private val mapper = jacksonObjectMapper()
 
     private suspend fun internalPost(room: String, message: String): PostResult? {
+        logger.info("Message to room $room: $message")
         try {
             val result = duga.httpClient.post<String>(duga.chatUrl + "/chats/$room/messages/new") {
                 body = FormDataContent(Parameters.build {
