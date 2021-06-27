@@ -89,7 +89,7 @@ class DugaServer(
                         val rubberDuck = hookString.repo("rubberduck-vba/Rubberduck") to gitHubApi.stars("rubberduck-vba/Rubberduck")
                         val oletools = hookString.repo("decalage2/oletools") to gitHubApi.stars("decalage2/oletools")
                         val list = listOf(rubberDuck, oletools).joinToString(" vs. ") {
-                            it.first + ": ${it.second} stars"
+                            it.first + " ${it.second} stars"
                         }
                         poster.postMessage("14929", list)
                     }
