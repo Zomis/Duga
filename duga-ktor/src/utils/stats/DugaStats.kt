@@ -64,7 +64,7 @@ class DugaStatsInternalMap: DugaStats {
     }
 
     override fun addIssueComment(comment: JsonNode) {
-        this.add(comment.text("repository.full_name"), comment.text("repository.html_url"), "issue_comments", 1)
+        this.add(comment.text("repository.full_name"), comment.text("repository.html_url"), "issue comments", 1)
     }
 
     override fun addCommits(json: JsonNode, commits: List<JsonNode>) {
