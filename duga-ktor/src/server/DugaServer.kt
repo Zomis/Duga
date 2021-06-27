@@ -55,6 +55,7 @@ class DugaServer(
 
     fun start(args: ArgumentsCheck) {
         embeddedServer(Netty, port = 3842) {
+            val application = this
             install(ContentNegotiation) {
                 jackson()
             }
@@ -69,7 +70,7 @@ class DugaServer(
                 SplunkWebhook.route(this, poster)
                 AppVeyorWebhook.route(this, poster)
                 StatsWebhook.route(this, stats)
-                GitHubWebhook(poster, gitHubApi, hookString).route(this)
+                GitHubWebhook(poster, hookString).route(this, application)
             }
 
             launch {

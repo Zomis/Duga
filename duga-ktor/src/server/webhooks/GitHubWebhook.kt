@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.zomis.duga.chat.DugaPoster
@@ -15,19 +16,21 @@ import org.slf4j.LoggerFactory
 
 class GitHubWebhook(
     private val poster: DugaPoster,
-    private val gitHubApi: GitHubApi,
     private val hookString: HookString
 ) {
 
     private val logger = LoggerFactory.getLogger(GitHubWebhook::class.java)
 
-    suspend fun post(call: ApplicationCall, room: String?, gitHubEvent: String, jsonNode: JsonNode) {
+    suspend fun post(
+        call: ApplicationCall, coroutineScope: CoroutineScope,
+        room: String?, gitHubEvent: String, jsonNode: JsonNode
+    ) {
         if (room == null) {
             call.respond(HttpStatusCode.BadRequest, "Missing room")
             return
         }
         val result = hookString.postGithub(gitHubEvent, jsonNode)
-        GlobalScope.launch {
+        coroutineScope.launch {
             result.forEach {
                 poster.postMessage(room, it)
             }
@@ -39,7 +42,7 @@ class GitHubWebhook(
         }
     }
 
-    fun route(routing: Routing) {
+    fun route(routing: Routing, coroutineScope: CoroutineScope) {
         routing.post("/github") {
             val room = this.call.parameters["room"]
             val node = this.call.receive<JsonNode>()
@@ -55,7 +58,7 @@ class GitHubWebhook(
                 call.respond(HttpStatusCode.BadRequest, "Missing 'X-GitHub-Event' header")
                 return@post
             }
-            post(call, room, gitHubEvent, node)
+            post(call, coroutineScope, room, gitHubEvent, node)
         }
     }
 
