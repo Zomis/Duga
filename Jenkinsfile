@@ -17,7 +17,7 @@ pipeline {
 
         stage('Docker Image') {
             when {
-                branch 'ktor'
+                branch 'main'
             }
             steps {
                 script {
