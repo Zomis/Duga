@@ -45,7 +45,8 @@ interface DugaStats {
     fun addCommits(json: JsonNode, commits: List<JsonNode>) {
         this.add(json.text("repository.full_name"), json.text("repository.html_url"), "commits", commits.size)
     }
-    fun allStats(): List<DugaStat>
+    fun currentStats(): List<DugaStat>
+    fun clearStats(): List<DugaStat>
     fun addAdditionsDeletions(repository: JsonNode?, additions: Int, deletions: Int) {
         if (repository == null) return
         this.add(repository.text("full_name"), repository.text("html_url"), "additions", additions)
@@ -54,7 +55,8 @@ interface DugaStats {
 }
 class DugaStatsNoOp: DugaStats {
     override fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {}
-    override fun allStats(): List<DugaStat> = emptyList()
+    override fun currentStats(): List<DugaStat> = emptyList()
+    override fun clearStats(): List<DugaStat> = emptyList()
 }
 
 class DugaStatsInternalMap: DugaStats {
@@ -72,11 +74,17 @@ class DugaStatsInternalMap: DugaStats {
         stat.add(category, value)
     }
 
-    override fun allStats(): List<DugaStat> {
+    override fun clearStats(): List<DugaStat> {
         synchronized(lock) {
             val current = stats.values.toList()
             stats.clear()
             return current
+        }
+    }
+
+    override fun currentStats(): List<DugaStat> {
+        synchronized(lock) {
+            return stats.values.toList()
         }
     }
 
@@ -118,7 +126,10 @@ class DugaStatsDynamoDB: DugaStats {
         }
     }
 
-    override fun allStats(): List<DugaStat> {
+    override fun currentStats(): List<DugaStat> = allStats(clear = false)
+    override fun clearStats(): List<DugaStat> = allStats(clear = true)
+
+    private fun allStats(clear: Boolean): List<DugaStat> {
         val scanResponse = dynamoDb.scan(ScanRequest.builder().tableName(tableName).build())
         val results = scanResponse.items().map { item ->
             logger.info("scanResponse returned {}", item)
@@ -128,6 +139,10 @@ class DugaStatsDynamoDB: DugaStats {
             }
             stat
         }
+        if (!clear) {
+            return results
+        }
+
         val remove = scanResponse.items().map {
             DeleteItemRequest.builder().tableName(tableName).key(it.filter { e -> e.key in setOf(fieldKey, fieldDisplayName) }).build()
         }
