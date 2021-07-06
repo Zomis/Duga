@@ -120,7 +120,7 @@ class DugaServer(
                 }
                 args.check("daily-stats") {
                     Tasks.schedule(this, "Daily stats", Tasks.utcMidnight) {
-                        val allStats = stats.allStats()
+                        val allStats = stats.clearStats()
                         val messages = allStats.map { stat ->
                             val values = stat.reset().toList()
                                 .joinToString(". ") { "${it.second} ${it.first}" }

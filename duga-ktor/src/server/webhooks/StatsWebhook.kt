@@ -21,6 +21,9 @@ object StatsWebhook {
 
     fun route(routing: Routing, stats: DugaStats, config: Config) {
         routing.route("/stats") {
+            get {
+                call.respond(HttpStatusCode.OK, stats.currentStats())
+            }
             post {
                 val currentStats = saveStats(stats, call.receive(), config)
                 if (currentStats) {
