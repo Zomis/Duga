@@ -1,5 +1,6 @@
 package net.zomis.duga.server
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.shyiko.skedule.Schedule
 import io.ktor.application.*
 import io.ktor.features.*
@@ -12,6 +13,7 @@ import io.ktor.server.netty.*
 import kotlinx.coroutines.launch
 import net.zomis.duga.DugaMain
 import net.zomis.duga.DugaTasks
+import net.zomis.duga.chat.BotConfig
 import net.zomis.duga.chat.DugaPoster
 import net.zomis.duga.server.webhooks.AppVeyorWebhook
 import net.zomis.duga.server.webhooks.GitHubWebhook
@@ -24,6 +26,7 @@ import net.zomis.duga.utils.stackexchange.StackExchangeApi
 import net.zomis.duga.utils.stats.DugaStats
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
+import java.io.File
 import java.time.DayOfWeek
 import java.time.temporal.ChronoUnit
 
@@ -68,7 +71,10 @@ class DugaServer(
                 }
                 SplunkWebhook.route(this, poster)
                 AppVeyorWebhook.route(this, poster)
-                StatsWebhook.route(this, stats)
+                val statsConfig = File("stats.secret").let {
+                    if (it.exists()) jacksonObjectMapper().readValue(it, StatsWebhook.Config::class.java) else StatsWebhook.Config()
+                }
+                StatsWebhook.route(this, stats, statsConfig)
                 GitHubWebhook(poster, hookString).route(this, application)
             }
 
