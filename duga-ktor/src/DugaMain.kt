@@ -10,6 +10,7 @@ import net.zomis.duga.tasks.Tasks
 import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
 import net.zomis.duga.utils.stackexchange.StackExchangeApi
+import net.zomis.duga.utils.stats.DugaStatsDynamoDB
 import net.zomis.duga.utils.stats.DugaStatsInternalMap
 import net.zomis.duga.utils.stats.DugaStatsNoOp
 import org.slf4j.LoggerFactory
@@ -32,7 +33,11 @@ object DugaMain {
             } else throw RuntimeException()
         }
         val poster = if (args.contains("duga-poster")) DugaPosterImpl(bot) else LoggingPoster()
-        val stats = if (args.contains("local-stats")) DugaStatsInternalMap() else DugaStatsNoOp()
+        val stats = when {
+            args.contains("stats-local") -> DugaStatsInternalMap()
+            args.contains("stats-dynamodb") -> DugaStatsDynamoDB()
+            else -> DugaStatsNoOp()
+        }
 
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
         val stackExchangeApi = StackExchangeApi(client.client, readSecret("stackexchange"))

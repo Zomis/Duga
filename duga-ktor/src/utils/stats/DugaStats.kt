@@ -2,6 +2,14 @@ package net.zomis.duga.utils.stats
 
 import com.fasterxml.jackson.databind.JsonNode
 import net.zomis.duga.utils.github.text
+import org.slf4j.LoggerFactory
+import software.amazon.awssdk.http.apache.ApacheHttpClient
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest
 
 data class DugaStat(val key: String, val displayName: String, val url: String) {
     private val values = mutableMapOf<String, Int>()
@@ -72,4 +80,60 @@ class DugaStatsInternalMap: DugaStats {
         }
     }
 
+}
+
+class DugaStatsDynamoDB: DugaStats {
+    val tableName = "Duga-Stats"
+    val fieldKey = "Key"
+    val fieldDisplayName = "DisplayName"
+    val fieldUrl = "Url"
+
+    private val logger = LoggerFactory.getLogger(DugaStatsDynamoDB::class.java)
+
+    private val dynamoDb = DynamoDbClient.builder()
+            .region(Region.EU_CENTRAL_1)
+            .httpClient(ApacheHttpClient.builder().build())
+            .build()
+
+    override fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {
+        val itemValues = mapOf(
+            fieldKey to AttributeValue.builder().s(key).build(),
+            fieldDisplayName to AttributeValue.builder().s(displayName).build()
+        )
+        val item = dynamoDb.getItem { it.tableName(tableName).key(itemValues) }
+        logger.info("addKey returned {}", item)
+
+        if (item.hasItem()) {
+            dynamoDb.putItem(PutItemRequest.builder().tableName(tableName).item(
+                item.item().toMutableMap().also {
+                    val newValue = it[category]!!.n().toInt() + value
+                    it[category] = AttributeValue.builder().n(newValue.toString()).build()
+                }
+            ).build())
+        } else {
+            dynamoDb.putItem(PutItemRequest.builder().tableName(tableName).item(itemValues + mapOf(
+                fieldUrl to AttributeValue.builder().s(url).build(),
+                category to AttributeValue.builder().n(value.toString()).build()
+            )).build())
+        }
+    }
+
+    override fun allStats(): List<DugaStat> {
+        val scanResponse = dynamoDb.scan(ScanRequest.builder().tableName(tableName).build())
+        val results = scanResponse.items().map { item ->
+            logger.info("scanResponse returned {}", item)
+            val stat = DugaStat(item.getValue(fieldKey).s(), item.getValue(fieldDisplayName).s(), item.getValue(fieldUrl).s())
+            item.filter { e -> e.key !in setOf(fieldKey, fieldDisplayName, fieldUrl) }.forEach { e ->
+                stat.add(e.key, e.value.n().toInt())
+            }
+            stat
+        }
+        val remove = scanResponse.items().filter { it.getValue(fieldKey).s().startsWith("github/") }.map {
+            DeleteItemRequest.builder().tableName(tableName).key(it.filter { e -> e.key in setOf(fieldKey, fieldDisplayName) }).build()
+        }
+        remove.forEach {
+            dynamoDb.deleteItem(it)
+        }
+        return results
+    }
 }

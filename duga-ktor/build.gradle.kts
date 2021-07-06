@@ -50,6 +50,11 @@ dependencies {
     implementation("io.ktor:ktor-server-host-common:$ktor_version")
     implementation("org.jsoup:jsoup:1.13.1")
     implementation("com.github.shyiko.skedule:skedule:0.4.0")
+
+    implementation("software.amazon.awssdk:dynamodb-enhanced:2.16.80")
+    implementation("software.amazon.awssdk:apache-client:2.16.80")
+    implementation("software.amazon.awssdk:sdk-core:2.16.80")
+
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 
