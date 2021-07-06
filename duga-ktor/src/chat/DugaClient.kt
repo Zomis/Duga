@@ -8,7 +8,7 @@ import io.ktor.client.features.cookies.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.features.websocket.*
 
-class DugaClient(val config: BotConfig) {
+class DugaClient {
 
     val client = HttpClient(Apache) {
         install(ContentEncoding) {

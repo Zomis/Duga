@@ -23,9 +23,10 @@ object DugaMain {
     fun start(params: Array<String>) {
         // Dependencies and basic setup
         val args = ArgumentsCheck(params.toSet())
-        val client = DugaClient(jacksonObjectMapper().readValue(File("bot.secret"), BotConfig::class.java))
-        val bot = DugaBot(client.client, client.config) { httpClient, botConfig ->
-            val se = StackExchangeLogin(httpClient, botConfig)
+        val botConfig = jacksonObjectMapper().readValue(File("bot.secret"), BotConfig::class.java)
+        val client = DugaClient()
+        val bot = DugaBot(client.client, botConfig) { httpClient, config ->
+            val se = StackExchangeLogin(httpClient, config)
             if (se.login()) {
                 se.fkeyReal()
             } else throw RuntimeException()
