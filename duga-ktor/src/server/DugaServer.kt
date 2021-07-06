@@ -85,7 +85,7 @@ class DugaServer(
                 }
 
                 args.check("weekly-update-reminder") {
-                    Tasks.schedule(this, "Weekly update", Tasks.weeklyUTC(17, 0, setOf(DayOfWeek.TUESDAY))) {
+                    Tasks.schedule(this, "Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.MONDAY))) {
                         poster.postMessage("16134", "Has @Simon posted his weekly update?")
                     }
                 }
