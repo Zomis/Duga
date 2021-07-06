@@ -33,7 +33,7 @@ pipeline {
                           passwordVariable: 'AWS_SECRET_ACCESS_KEY',
                           usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                         withEnv(["ENV_AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}", "ENV_AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"]) {
-                            def result = sh(script: """docker run -d --rm --name duga_bot -p 3843:3842 \
+                            def result = sh(script: """docker run --network host -d --rm --name duga_bot \
                               -e TZ=Europe/Amsterdam \
                               -e AWS_SECRET_ACCESS_KEY=$ENV_AWS_SECRET_ACCESS_KEY \
                               -e AWS_ACCESS_KEY_ID=$ENV_AWS_ACCESS_KEY_ID \
