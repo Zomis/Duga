@@ -21,9 +21,19 @@ data class DugaStat(val group: String, val url: String) {
 }
 interface DugaStats {
     fun add(group: String, url: String, category: String, value: Int) {}
-    fun addIssue(issue: JsonNode, change: Int)
-    fun addIssueComment(comment: JsonNode)
-    fun addCommits(json: JsonNode, commits: List<JsonNode>)
+    fun addIssue(issue: JsonNode, change: Int) {
+        if (change > 0) {
+            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues opened", 1)
+        } else {
+            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues closed", 1)
+        }
+    }
+    fun addIssueComment(comment: JsonNode) {
+        this.add(comment.text("repository.full_name"), comment.text("repository.html_url"), "issue comments", 1)
+    }
+    fun addCommits(json: JsonNode, commits: List<JsonNode>) {
+        this.add(json.text("repository.full_name"), json.text("repository.html_url"), "commits", commits.size)
+    }
     fun allStats(): List<DugaStat>
     fun addAdditionsDeletions(repository: JsonNode?, additions: Int, deletions: Int) {
         if (repository == null) return
@@ -32,15 +42,7 @@ interface DugaStats {
     }
 }
 class DugaStatsNoOp: DugaStats {
-
     override fun add(group: String, url: String, category: String, value: Int) {}
-
-    override fun addIssue(issue: JsonNode, change: Int) {}
-
-    override fun addIssueComment(comment: JsonNode) {}
-
-    override fun addCommits(json: JsonNode, commits: List<JsonNode>) {}
-
     override fun allStats(): List<DugaStat> = emptyList()
 }
 
@@ -57,22 +59,6 @@ class DugaStatsInternalMap: DugaStats {
     override fun add(group: String, url: String, category: String, value: Int) {
         val stat = stat(group, url)
         stat.add(category, value)
-    }
-
-    override fun addIssue(issue: JsonNode, change: Int) {
-        if (change > 0) {
-            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues opened", 1)
-        } else {
-            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues closed", 1)
-        }
-    }
-
-    override fun addIssueComment(comment: JsonNode) {
-        this.add(comment.text("repository.full_name"), comment.text("repository.html_url"), "issue comments", 1)
-    }
-
-    override fun addCommits(json: JsonNode, commits: List<JsonNode>) {
-        this.add(json.text("repository.full_name"), json.text("repository.html_url"), "commits", 1)
     }
 
     override fun allStats(): List<DugaStat> {
