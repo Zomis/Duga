@@ -30,7 +30,7 @@ object SplunkWebhook {
                 post(poster, call.parameters["room"]!!, call.receive())
                 call.respond("OK")
             }
-            post("/splunk/{room}") {
+            post("/{room}") {
                 post(poster, call.parameters["room"]!!, call.receive())
                 call.respond("OK")
             }
