@@ -128,7 +128,7 @@ class DugaStatsDynamoDB: DugaStats {
             }
             stat
         }
-        val remove = scanResponse.items().filter { it.getValue(fieldKey).s().startsWith("github/") }.map {
+        val remove = scanResponse.items().map {
             DeleteItemRequest.builder().tableName(tableName).key(it.filter { e -> e.key in setOf(fieldKey, fieldDisplayName) }).build()
         }
         remove.forEach {
