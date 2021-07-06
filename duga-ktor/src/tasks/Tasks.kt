@@ -11,7 +11,7 @@ object Tasks {
 
     private val logger = LoggerFactory.getLogger(Tasks::class.java)
 
-    val utcMidnight = Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()))).everyDay()
+    val utcMidnight: Schedule = Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()))).everyDay()
     // val schedule = Schedule.parse("every minute")
 
     suspend fun schedule(scope: CoroutineScope, name: String, schedule: Schedule, task: suspend () -> Unit): Job {
