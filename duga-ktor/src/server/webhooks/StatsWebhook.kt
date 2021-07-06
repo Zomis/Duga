@@ -22,7 +22,13 @@ object StatsWebhook {
     fun route(routing: Routing, stats: DugaStats, config: Config) {
         routing.route("/stats") {
             get {
-                call.respond(HttpStatusCode.OK, stats.currentStats())
+                call.respond(HttpStatusCode.OK, stats.currentStats().associate {
+                    it.displayName to mapOf(
+                        "name" to it.displayName,
+                        "url" to it.url,
+                        "values" to it.current()
+                    )
+                })
             }
             post {
                 val currentStats = saveStats(stats, call.receive(), config)

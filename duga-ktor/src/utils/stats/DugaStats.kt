@@ -14,6 +14,12 @@ import software.amazon.awssdk.services.dynamodb.model.ScanRequest
 data class DugaStat(val key: String, val displayName: String, val url: String) {
     private val values = mutableMapOf<String, Int>()
 
+    fun current(): Map<String, Int> {
+        synchronized(values) {
+            return values.toMap()
+        }
+    }
+
     fun reset(): Map<String, Int> {
         synchronized(values) {
             val current = values.toMap()
