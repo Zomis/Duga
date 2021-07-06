@@ -13,6 +13,6 @@ CMD java -jar /duga-bot/ktor-demo-0.0.1-SNAPSHOT-all.jar \
     vba-star-race \
     weekly-update-reminder \
     hello-world \
-    local-stats \
+    stats-dynamodb \
     duga-poster \
     daily-stats
