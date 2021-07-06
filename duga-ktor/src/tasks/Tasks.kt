@@ -1,24 +1,77 @@
 package net.zomis.duga.tasks
 
 import com.github.shyiko.skedule.Schedule
+import io.ktor.application.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.time.*
-import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
-object Tasks {
+class TaskExecutions {
+    data class TaskExecutionData(val name: String, var next: ZonedDateTime? = null, var last: ZonedDateTime? = null, var count: Int = 0)
+    private val tasks: MutableMap<String, TaskExecutionData> = mutableMapOf()
+    private val lock = Any()
+
+    fun get(): Map<String, TaskExecutionData> {
+        synchronized(lock) {
+            return tasks.toMap()
+        }
+    }
+
+    fun next(name: String, time: ZonedDateTime) {
+        synchronized(lock) {
+            tasks.computeIfAbsent(name) { TaskExecutionData(name) }
+            tasks.getValue(name).next = time
+        }
+    }
+
+    fun add(name: String) {
+        synchronized(lock) {
+            tasks.computeIfAbsent(name) { TaskExecutionData(name) }
+            val taskData = tasks.getValue(name)
+            taskData.count++
+            taskData.last = ZonedDateTime.now()
+        }
+    }
+}
+
+class Tasks {
+
+    companion object {
+        val utcMidnight: Schedule = Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()))).everyDay()
+
+        fun daily(hour: Int, minute: Int): Schedule {
+            return Schedule.at(LocalTime.of(hour, minute)).everyDay()
+        }
+
+        fun dailyUTC(hour: Int, minute: Int): Schedule {
+            return Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS)
+                .plus(hour.toLong(), ChronoUnit.HOURS)
+                .plus(minute.toLong(), ChronoUnit.MINUTES)
+                .atZone(ZoneId.systemDefault()))).everyDay()
+        }
+
+        fun weeklyUTC(hour: Int, minute: Int, weekDays: Set<DayOfWeek>): Schedule {
+            return Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS)
+                .plus(hour.toLong(), ChronoUnit.HOURS)
+                .plus(minute.toLong(), ChronoUnit.MINUTES)
+                .atZone(ZoneId.systemDefault()))).every(weekDays)
+        }
+    }
+
+    private val taskExecutions: TaskExecutions = TaskExecutions()
 
     private val logger = LoggerFactory.getLogger(Tasks::class.java)
-
-    val utcMidnight: Schedule = Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS).atZone(ZoneId.systemDefault()))).everyDay()
-    // val schedule = Schedule.parse("every minute")
 
     suspend fun schedule(scope: CoroutineScope, name: String, schedule: Schedule, task: suspend () -> Unit): Job {
         val times = schedule.iterate(ZonedDateTime.now()).iterator()
         return scope.launch {
             try {
                 for (time in times) {
+                    taskExecutions.next(name, time)
                     sleepUntil(name, time)
                     logger.info("Task $name: Executing")
                     if (!this.isActive) {
@@ -27,6 +80,7 @@ object Tasks {
                     }
                     try {
                         task()
+                        taskExecutions.add(name)
                     } catch (e: Exception) {
                         logger.error("Task Exception in $name, trying again next time", e)
                     }
@@ -59,23 +113,19 @@ object Tasks {
         delay(duration.toMillis())
     }
 
-    fun daily(hour: Int, minute: Int): Schedule {
-        return Schedule.at(LocalTime.of(hour, minute)).everyDay()
+    fun route(routing: Routing) {
+        routing.route("/tasks") {
+            get {
+                call.respond(taskExecutions.get().mapValues {
+                    mapOf(
+                        "name" to it.value.name,
+                        "count" to it.value.count,
+                        "last" to it.value.last?.toEpochSecond(),
+                        "next" to it.value.next?.toEpochSecond()
+                    )
+                })
+            }
+        }
     }
-
-    fun dailyUTC(hour: Int, minute: Int): Schedule {
-        return Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS)
-            .plus(hour.toLong(), ChronoUnit.HOURS)
-            .plus(minute.toLong(), ChronoUnit.MINUTES)
-            .atZone(ZoneId.systemDefault()))).everyDay()
-    }
-
-    fun weeklyUTC(hour: Int, minute: Int, weekDays: Set<DayOfWeek>): Schedule {
-        return Schedule.at(LocalTime.from(Instant.now().truncatedTo(ChronoUnit.DAYS)
-                .plus(hour.toLong(), ChronoUnit.HOURS)
-                .plus(minute.toLong(), ChronoUnit.MINUTES)
-                .atZone(ZoneId.systemDefault()))).every(weekDays)
-    }
-
 
 }

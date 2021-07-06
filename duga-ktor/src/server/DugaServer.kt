@@ -58,6 +58,7 @@ class DugaServer(
     fun start(args: ArgumentsCheck) {
         embeddedServer(Netty, port = 3842) {
             val application = this
+            val tasks = Tasks()
             install(ContentNegotiation) {
                 jackson()
             }
@@ -69,6 +70,7 @@ class DugaServer(
                 get("/") {
                     call.respondText("Hello, Ktor!")
                 }
+                tasks.route(this)
                 SplunkWebhook.route(this, poster)
                 AppVeyorWebhook.route(this, poster)
                 val statsConfig = File("stats.secret").let {
@@ -85,13 +87,13 @@ class DugaServer(
                 }
 
                 args.check("weekly-update-reminder") {
-                    Tasks.schedule(this, "Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.MONDAY))) {
+                    tasks.schedule(this, "Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.MONDAY))) {
                         poster.postMessage("16134", "Has @Simon posted his weekly update?")
                     }
                 }
 
                 args.check("vba-star-race") {
-                    Tasks.schedule(this, "VBA star race", Tasks.dailyUTC(23, 45)) {
+                    tasks.schedule(this, "VBA star race", Tasks.dailyUTC(23, 45)) {
                         val rubberDuck = hookString.repo("rubberduck-vba/Rubberduck") to gitHubApi.stars("rubberduck-vba/Rubberduck")
                         val oletools = hookString.repo("decalage2/oletools") to gitHubApi.stars("decalage2/oletools")
                         val list = listOf(rubberDuck, oletools).joinToString(" vs. ") {
@@ -102,16 +104,16 @@ class DugaServer(
                 }
 
                 args.check("refresh") {
-                    Tasks.schedule(this, "REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "***REFRESH!***") }
+                    tasks.schedule(this, "REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "***REFRESH!***") }
                 }
                 args.check("comment-scan") {
-                    Tasks.schedule(this, "Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), dugaTasks::commentScan)
+                    tasks.schedule(this, "Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), dugaTasks::commentScan)
                 }
                 args.check("answer-invalidation") {
-                    Tasks.schedule(this, "Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)
+                    tasks.schedule(this, "Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)
                 }
                 args.check("unanswered") {
-                    Tasks.schedule(this, "Unanswered CR", Tasks.utcMidnight) {
+                    tasks.schedule(this, "Unanswered CR", Tasks.utcMidnight) {
                         val siteStats = stackExchangeApi.unanswered("codereview")
                         val percentageStr = String.format("%.4f", siteStats.percentageAnswered() * 100)
                         val message = "***REFRESH!*** There are ${siteStats.unanswered} unanswered questions ($percentageStr answered)"
@@ -119,7 +121,7 @@ class DugaServer(
                     }
                 }
                 args.check("daily-stats") {
-                    Tasks.schedule(this, "Daily stats", Tasks.utcMidnight) {
+                    tasks.schedule(this, "Daily stats", Tasks.utcMidnight) {
                         val allStats = stats.clearStats()
                         val messages = allStats.map { stat ->
                             val values = stat.reset().toList()
