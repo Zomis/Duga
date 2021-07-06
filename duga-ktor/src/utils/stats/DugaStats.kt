@@ -106,7 +106,7 @@ class DugaStatsDynamoDB: DugaStats {
         if (item.hasItem()) {
             dynamoDb.putItem(PutItemRequest.builder().tableName(tableName).item(
                 item.item().toMutableMap().also {
-                    val newValue = it[category]!!.n().toInt() + value
+                    val newValue = (it[category]?.n()?.toInt() ?: 0) + value
                     it[category] = AttributeValue.builder().n(newValue.toString()).build()
                 }
             ).build())
