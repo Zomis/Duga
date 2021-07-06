@@ -3,7 +3,7 @@ package net.zomis.duga.utils.stats
 import com.fasterxml.jackson.databind.JsonNode
 import net.zomis.duga.utils.github.text
 
-data class DugaStat(val group: String, val url: String) {
+data class DugaStat(val key: String, val displayName: String, val url: String) {
     private val values = mutableMapOf<String, Int>()
 
     fun reset(): Map<String, Int> {
@@ -20,7 +20,10 @@ data class DugaStat(val group: String, val url: String) {
     }
 }
 interface DugaStats {
-    fun add(group: String, url: String, category: String, value: Int) {}
+    fun addKey(key: String, displayName: String, url: String, category: String, value: Int)
+    fun add(group: String, url: String, category: String, value: Int) {
+        this.addKey("github/$group", group, url, category, value)
+    }
     fun addIssue(issue: JsonNode, change: Int) {
         if (change > 0) {
             this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues opened", 1)
@@ -42,7 +45,7 @@ interface DugaStats {
     }
 }
 class DugaStatsNoOp: DugaStats {
-    override fun add(group: String, url: String, category: String, value: Int) {}
+    override fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {}
     override fun allStats(): List<DugaStat> = emptyList()
 }
 
@@ -50,14 +53,14 @@ class DugaStatsInternalMap: DugaStats {
     private val stats: MutableMap<String, DugaStat> = mutableMapOf()
     private val lock = Any()
 
-    private fun stat(group: String, url: String): DugaStat {
+    private fun stat(key: String, displayName: String, url: String): DugaStat {
         synchronized(lock) {
-            return stats.computeIfAbsent(group) { DugaStat(group, url) }
+            return stats.computeIfAbsent(key) { DugaStat(key, displayName, url) }
         }
     }
 
-    override fun add(group: String, url: String, category: String, value: Int) {
-        val stat = stat(group, url)
+    override fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {
+        val stat = stat(key, displayName, url)
         stat.add(category, value)
     }
 

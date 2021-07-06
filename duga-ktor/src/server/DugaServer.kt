@@ -118,7 +118,7 @@ class DugaServer(
                         val messages = allStats.map { stat ->
                             val values = stat.reset().toList()
                                 .joinToString(". ") { "${it.second} ${it.first}" }
-                            val group = stat.group
+                            val group = stat.displayName
                             val url = stat.url
                             "\\[[**$group**]($url)\\] $values"
                         }
