@@ -60,7 +60,11 @@ class DugaStatsInternalMap: DugaStats {
     }
 
     override fun addIssue(issue: JsonNode, change: Int) {
-        this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues", 1)
+        if (change > 0) {
+            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues opened", 1)
+        } else {
+            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues closed", 1)
+        }
     }
 
     override fun addIssueComment(comment: JsonNode) {
