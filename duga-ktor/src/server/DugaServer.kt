@@ -107,7 +107,8 @@ class DugaServer(
                     tasks.schedule(this, "REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "***REFRESH!***") }
                 }
                 args.check("comment-scan") {
-                    tasks.schedule(this, "Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), dugaTasks::commentScan)
+                    val commentsScanTask = dugaTasks.commentsScanTask()
+                    tasks.schedule(this, "Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), commentsScanTask::run)
                 }
                 args.check("answer-invalidation") {
                     tasks.schedule(this, "Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)
