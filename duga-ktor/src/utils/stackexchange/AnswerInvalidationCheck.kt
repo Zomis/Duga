@@ -30,6 +30,7 @@ object AnswerInvalidationCheck {
                     ?: throw IllegalStateException("Unable to get edits for $questionId")
                 poster.postMessage("20298", "Edits fetched for $questionId: ${edits.get("items").size()}. quota remaining ${edits.get("quota_remaining")}")
                 val possibleInvalidations = codeChanges(edits, lastCheck)
+                logger.info("Question {} has possible invalidations: {}", questionId, possibleInvalidations.size)
                 if (possibleInvalidations.isNotEmpty()) {
                     val link = questionLink.replace(Regex("/questions/.*"), "/posts/$questionId/revisions")
                     val editor = possibleInvalidations
@@ -53,18 +54,27 @@ object AnswerInvalidationCheck {
         val result = mutableListOf<JsonNode>()
         edits.get("items").forEach {
             val lastBody = it.get("last_body")
+            val postId = it.get("post_id")?.asText() ?: "unknown_post_id"
+            val revisionNumber = it.get("revision_number")?.asText() ?: "unknown_revision_number"
+            val editString = "Post $postId rev $revisionNumber:"
             if (lastBody == null || lastBody.isNull) {
+                logger.warn("$editString lastBody is null")
                 return@forEach
             }
-            if (it.get("creation_date").asLong() < lastCheck.epochSecond) {
+            val creationDate = it.get("creation_date").asLong()
+            if (creationDate < lastCheck.epochSecond) {
+                logger.info("$editString Creation date {} is less than epoch second {}", creationDate, lastCheck.epochSecond)
                 return@forEach
             }
             if (it.get("is_rollback").asBoolean()) {
+                logger.info("$editString Edit is a rollback")
                 return@forEach
             }
             val code = stripNonCode(it.get("body").asText())
             val codeBefore = stripNonCode(it.get("last_body").asText())
-            if (!code.equals(codeBefore)) {
+            val codeDifference = code != codeBefore
+            logger.info("$editString Edit has code difference: {}", codeDifference)
+            if (codeDifference) {
                 result.add(it)
             }
         }
