@@ -161,7 +161,7 @@ class HookString(private val stats: DugaStats, private val gitHubApi: GitHubApi)
             "opened" -> {
                 result.add(format(json, "%repository% %sender% opened issue $issue"))
                 val issueBody = json.textIf("issue.body")
-                if (issueBody != null && !issueBody.isNotEmpty()) {
+                if (issueBody != null && issueBody.isNotEmpty()) {
                     result.add("> " + truncate(issueBody))
                 }
                 stats.addIssue(json, 1)
