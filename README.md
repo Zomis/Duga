@@ -1,4 +1,4 @@
-GithubHookSEChatService
+Duga
 =======================
 
 [A bot named Duga](http://codereview.stackexchange.com/users/51786/duga) for chat rooms on the Stack Exchange network. Responsibilities include:
@@ -8,8 +8,9 @@ GithubHookSEChatService
 - Uses the Stack Exchange API to check comments refering users to Code Review and Programmers. Posts these comments in The 2nd Monitor and The Whiteboard, respectively.
 - Listens for chat commands in Duga's Playground.
 
-Configuration
+Old Groovy Configuration
 -------------
+This is obsolete and `duga-ktor` should be used instead.
 
 In the directory `grails-app/conf`, create a file named `duga.groovy`
 
@@ -44,27 +45,6 @@ In order to run a StackExchange account as a chat bot, you need to follow the fo
 4. Earn 20 reputation, following the rules of the particular site
 5. Log in to https://chat.stackexchange.com
 6. Confirm that you can talk
-
-Import project into IntelliJ
-----------------------------
-
-On Mac OS X, you might get this error when trying to import the project from `build.gradle`:
-
-> Unsupported major.minor version 51.0
-> asset/pipeline/gradle/AssetPipelinePlugin : invalid plugin
-
-A workaround is to have Gradle generate IntelliJ's files:
-
-    ./gradlew idea
-
-Select **File / Open...**, and select the directory of the project.
-
-IntelliJ might still pop-up a window to import as a Gradle project,
-which may result in the same error. I had no choice to cancel that import,
-but actually everything worked fine.
-
-If you still experience problems, this page might help:
-https://github.com/libgdx/libgdx/wiki/Gradle-and-Intellij-IDEA
 
 Build and run tests
 -------------------
