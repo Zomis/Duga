@@ -1,7 +1,7 @@
 package net.zomis.duga.utils.github
 
 import com.fasterxml.jackson.databind.JsonNode
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.zomis.duga.utils.stats.DugaStats
 import org.slf4j.LoggerFactory
@@ -22,7 +22,11 @@ fun JsonNode.textIf(path: String): String? {
 }
 
 private const val MAX_DISTINCT_COMMITS = 10
-class HookString(private val stats: DugaStats, private val gitHubApi: GitHubApi) {
+class HookString(
+    private val stats: DugaStats,
+    private val gitHubApi: GitHubApi,
+    private val scope: CoroutineScope
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -334,10 +338,10 @@ class HookString(private val stats: DugaStats, private val gitHubApi: GitHubApi)
         }
 
         stats.addCommits(json, distinctCommits)
-        GlobalScope.launch {
+        scope.launch {
             var additions = 0
             var deletions = 0
-            var repository = distinctCommits.firstOrNull()
+            val repository = distinctCommits.firstOrNull()
             distinctCommits.forEach {
                 val details = gitHubApi.commitDetails(json["repository"], it)
                 additions += details?.additions ?: 0

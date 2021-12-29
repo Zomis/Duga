@@ -1,7 +1,7 @@
 package net.zomis.duga.utils.stackexchange
 
 import com.fasterxml.jackson.databind.JsonNode
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 import java.time.Instant;
@@ -11,6 +11,7 @@ import net.zomis.machlearn.text.TextClassification
 import org.slf4j.LoggerFactory
 
 class CommentsScanTask(
+	private val scope: CoroutineScope,
 	private val stackAPI: StackExchangeApi,
 	private val programmersClassification: TextClassification,
 	poster: DugaPoster
@@ -97,7 +98,7 @@ class CommentsScanTask(
         val programmersMLscore = programmersMLscore(comment)
 
         if (programmersMLscore >= CommentClassification.ML_THRESHOLD) {
-            programmers.postAsync(comment.get("link").asText())
+            programmers.postAsync(scope, comment.get("link").asText())
         }
 
         if (programmersMLscore >= CommentClassification.DEBUG) {
@@ -105,7 +106,7 @@ class CommentsScanTask(
             val certaintyLevelMessage =
                     "ML Classification " + programmersMLscore +
                             " (Old classification " + oldClassification + ")";
-			GlobalScope.launch {
+			scope.launch {
 				debug.post(certaintyLevelMessage)
 				debug.post(comment.get("link").asText())
 			}

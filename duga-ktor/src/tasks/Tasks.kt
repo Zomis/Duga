@@ -2,7 +2,6 @@ package net.zomis.duga.tasks
 
 import com.github.shyiko.skedule.Schedule
 import io.ktor.application.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import kotlinx.coroutines.*
@@ -88,17 +87,6 @@ class Tasks {
                 logger.info("Task $name: Finished")
             } catch (e: Exception) {
                 logger.error("Task Error in $name, aborting task", e)
-            }
-        }
-    }
-
-    fun once(name: String, task: suspend () -> Unit): Job {
-        return GlobalScope.launch {
-            try {
-                logger.info("Task $name: Executing")
-                task()
-            } catch (e: Exception) {
-                logger.error("Task Exception in $name", e)
             }
         }
     }

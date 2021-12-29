@@ -5,7 +5,7 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
@@ -13,7 +13,7 @@ import java.time.Instant
 
 interface RoomPoster {
     suspend fun post(message: String)
-    fun postAsync(message: String)
+    fun postAsync(scope: CoroutineScope, message: String)
 }
 
 class DugaRoomPoster(private val poster: DugaPoster, val room: String): RoomPoster {
@@ -21,8 +21,8 @@ class DugaRoomPoster(private val poster: DugaPoster, val room: String): RoomPost
         poster.postMessage(room, message)
     }
 
-    override fun postAsync(message: String) {
-        GlobalScope.launch {
+    override fun postAsync(scope: CoroutineScope, message: String) {
+        scope.launch {
             post(message)
         }
     }

@@ -7,10 +7,8 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.zomis.duga.chat.DugaPoster
-import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
 import org.slf4j.LoggerFactory
 

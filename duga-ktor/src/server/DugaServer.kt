@@ -13,7 +13,6 @@ import io.ktor.server.netty.*
 import kotlinx.coroutines.launch
 import net.zomis.duga.DugaMain
 import net.zomis.duga.DugaTasks
-import net.zomis.duga.chat.BotConfig
 import net.zomis.duga.chat.DugaPoster
 import net.zomis.duga.server.webhooks.AppVeyorWebhook
 import net.zomis.duga.server.webhooks.GitHubWebhook
@@ -50,14 +49,15 @@ class DugaServer(
     private val poster: DugaPoster,
     private val gitHubApi: GitHubApi,
     private val stackExchangeApi: StackExchangeApi,
-    private val stats: DugaStats,
-    private val hookString: HookString
+    private val stats: DugaStats
 ) {
     val dugaTasks = DugaTasks(poster, stackExchangeApi)
 
     fun start(args: ArgumentsCheck) {
         embeddedServer(Netty, port = 3842) {
             val application = this
+            val hookString = HookString(stats, gitHubApi, application)
+
             val tasks = Tasks()
             install(ContentNegotiation) {
                 jackson()
@@ -107,7 +107,7 @@ class DugaServer(
                     tasks.schedule(this, "REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "***REFRESH!***") }
                 }
                 args.check("comment-scan") {
-                    val commentsScanTask = dugaTasks.commentsScanTask()
+                    val commentsScanTask = dugaTasks.commentsScanTask(this)
                     tasks.schedule(this, "Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), commentsScanTask::run)
                 }
                 args.check("answer-invalidation") {

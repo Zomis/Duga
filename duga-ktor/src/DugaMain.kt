@@ -36,9 +36,8 @@ object DugaMain {
 
         val gitHubApi = GitHubApi(client.client, readSecret("github"))
         val stackExchangeApi = StackExchangeApi(client.client, readSecret("stackexchange"))
-        val hookString = HookString(stats, gitHubApi)
 
-        DugaServer(poster, gitHubApi, stackExchangeApi, stats, hookString).start(args)
+        DugaServer(poster, gitHubApi, stackExchangeApi, stats).start(args)
         logger.info("Ready")
     }
 
