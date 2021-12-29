@@ -342,9 +342,9 @@ class HookString(
             try {
                 var additions = 0
                 var deletions = 0
-                val repository = distinctCommits.firstOrNull()
+                val repository = json["repository"]
                 distinctCommits.forEach {
-                    val details = gitHubApi.commitDetails(json["repository"], it)
+                    val details = gitHubApi.commitDetails(repository, it)
                     additions += details?.additions ?: 0
                     deletions += details?.deletions ?: 0
                 }
