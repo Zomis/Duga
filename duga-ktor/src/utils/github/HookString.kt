@@ -339,15 +339,19 @@ class HookString(
 
         stats.addCommits(json, distinctCommits)
         scope.launch {
-            var additions = 0
-            var deletions = 0
-            val repository = distinctCommits.firstOrNull()
-            distinctCommits.forEach {
-                val details = gitHubApi.commitDetails(json["repository"], it)
-                additions += details?.additions ?: 0
-                deletions += details?.deletions ?: 0
+            try {
+                var additions = 0
+                var deletions = 0
+                val repository = distinctCommits.firstOrNull()
+                distinctCommits.forEach {
+                    val details = gitHubApi.commitDetails(json["repository"], it)
+                    additions += details?.additions ?: 0
+                    deletions += details?.deletions ?: 0
+                }
+                stats.addAdditionsDeletions(repository, additions, deletions)
+            } catch (e: Exception) {
+                logger.error("Unable to get details for $result", e)
             }
-            stats.addAdditionsDeletions(repository, additions, deletions)
         }
 
         if (distinctCommits.size > MAX_DISTINCT_COMMITS) {
