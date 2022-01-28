@@ -60,7 +60,7 @@ class DugaServer(
 
             val tasks = Tasks()
             install(CORS) {
-                host("stats.zomis.net")
+                host("stats.zomis.net", listOf("https"))
             }
             install(ContentNegotiation) {
                 jackson()
