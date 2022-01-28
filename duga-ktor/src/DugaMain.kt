@@ -5,7 +5,6 @@ import net.zomis.duga.chat.*
 import net.zomis.duga.server.ArgumentsCheck
 import net.zomis.duga.server.DugaServer
 import net.zomis.duga.utils.github.GitHubApi
-import net.zomis.duga.utils.github.HookString
 import net.zomis.duga.utils.stackexchange.StackExchangeApi
 import net.zomis.duga.utils.stats.DugaStatsDynamoDB
 import net.zomis.duga.utils.stats.DugaStatsInternalMap

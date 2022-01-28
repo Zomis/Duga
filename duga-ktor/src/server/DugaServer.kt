@@ -59,6 +59,9 @@ class DugaServer(
             val hookString = HookString(stats, gitHubApi, application)
 
             val tasks = Tasks()
+            install(CORS) {
+                host("stats.zomis.net")
+            }
             install(ContentNegotiation) {
                 jackson()
             }
