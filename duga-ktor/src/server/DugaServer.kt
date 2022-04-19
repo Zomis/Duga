@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.io.File
 import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.Month
 import java.time.temporal.ChronoUnit
 
 class ArgumentsCheck(private val args: Collection<String>) {
@@ -91,7 +93,9 @@ class DugaServer(
 
                 args.check("weekly-update-reminder") {
                     tasks.schedule(this, "Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.MONDAY))) {
-                        poster.postMessage("16134", "Has @Simon posted his weekly update?")
+                        val days = ChronoUnit.DAYS.between(LocalDate.of(1986, Month.SEPTEMBER, 22), LocalDate.now())
+                        val week = days / 7
+                        poster.postMessage("16134", "Has @Simon posted his weekly update? (Week $week, $days days)")
                     }
                 }
 
