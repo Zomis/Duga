@@ -138,7 +138,7 @@ class DugaServer(
                             val url = stat.url
                             "\\[[**$group**]($url)\\] $values"
                         }
-                        val rooms = listOf("16134", "14929")
+                        val rooms = listOf("16134")
                         rooms.forEach { room ->
                             val roomPoster = poster.room(room)
                             roomPoster.post("***REFRESH!***")
