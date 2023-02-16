@@ -10,7 +10,6 @@ VOLUME /data/logs/
 CMD java -jar /duga-bot/ktor-demo-0.0.1-SNAPSHOT-all.jar \
     unanswered \
     answer-invalidation comment-scan \
-    vba-star-race \
     weekly-update-reminder \
     hello-world \
     stats-dynamodb \
