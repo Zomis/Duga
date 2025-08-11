@@ -25,7 +25,7 @@ class CommentsScanTask(
     
 	private val codeReview = poster.room("8595")
 	private val debug = poster.room("20298")
-	private val programmers = poster.room("21")
+	private val programmers = poster.room("160979")
 	private val softwareRecs = poster.room("20298")
 
 	suspend fun run() {
