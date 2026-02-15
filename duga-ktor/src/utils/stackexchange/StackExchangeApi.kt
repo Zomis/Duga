@@ -3,8 +3,7 @@ package net.zomis.duga.utils.stackexchange
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
-import io.ktor.client.features.*
-import io.ktor.client.features.get
+import io.ktor.client.call.body
 import io.ktor.client.request.*
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -33,7 +32,7 @@ class StackExchangeApi(val httpClient: HttpClient, val apiKey: String?) {
         try {
             val url = buildURL(apiCall, site, filter, apiKey)
             logger.info("Stack Exchange API Call: $url")
-            val s: String = httpClient.get(url)
+            val s: String = httpClient.get(url).body()
             logger.info("Stack Exchange API Call done")
             return mapper.readTree(s)
         } catch (ex: IOException) {

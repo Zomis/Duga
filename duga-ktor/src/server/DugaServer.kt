@@ -2,14 +2,17 @@ package net.zomis.duga.server
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.shyiko.skedule.Schedule
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.jackson.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.install
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.calllogging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.request.path
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import kotlinx.coroutines.launch
 import net.zomis.duga.DugaMain
 import net.zomis.duga.DugaTasks
@@ -62,7 +65,7 @@ class DugaServer(
 
             val tasks = Tasks()
             install(CORS) {
-                host("stats.zomis.net", listOf("https"))
+                allowHost("stats.zomis.net", schemes = listOf("https"))
             }
             install(ContentNegotiation) {
                 jackson()
@@ -149,7 +152,7 @@ class DugaServer(
                     }
                 }
             }
-        }.start(false)
+        }.start(true)
     }
 
 }

@@ -1,14 +1,17 @@
 package net.zomis.duga.unused
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.routing.*
 import io.ktor.http.*
 import com.fasterxml.jackson.databind.*
-import io.ktor.jackson.*
-import io.ktor.features.*
-import io.ktor.locations.*
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.ktor.server.engine.*
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -21,16 +24,15 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    install(Locations) {
-    }
+//    install(Locations) {
+//    }
 
     install(CORS) {
-        method(HttpMethod.Options)
-        method(HttpMethod.Put)
-        method(HttpMethod.Delete)
-        method(HttpMethod.Patch)
-        header(HttpHeaders.Authorization)
-        header("MyCustomHeader")
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Patch)
+        allowHeader(HttpHeaders.Authorization)
         allowCredentials = true
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
@@ -50,7 +52,7 @@ fun Application.module(testing: Boolean = false) {
         */
     }
 
-    install(ShutDownUrl.ApplicationCallFeature) {
+    install(ShutDownUrl.ApplicationCallPlugin) {
         // The URL that will be intercepted (you can also use the application.conf's ktor.deployment.shutdown.url key)
         shutDownUrl = "/ktor/application/shutdown"
         // A function that will be executed to get the exit code of the process
@@ -66,40 +68,44 @@ fun Application.module(testing: Boolean = false) {
             call.respond(mapOf("hello" to "world"))
         }
 
-        get<MyLocation> {
-            call.respondText("Location: name=${it.name}, arg1=${it.arg1}, arg2=${it.arg2}")
-        }
+//        get<MyLocation> {
+//            call.respondText("Location: name=${it.name}, arg1=${it.arg1}, arg2=${it.arg2}")
+//        }
         // Register nested routes
-        get<Type.Edit> {
-            call.respondText("Inside $it")
-        }
-        get<Type.List> {
-            call.respondText("Inside $it")
-        }
+//        get<Type.Edit> {
+//            call.respondText("Inside $it")
+//        }
+//        get<Type.List> {
+//            call.respondText("Inside $it")
+//        }
 
-        install(StatusPages) {
-            exception<AuthenticationException> { cause ->
-                call.respond(HttpStatusCode.Unauthorized)
-            }
-            exception<AuthorizationException> { cause ->
-                call.respond(HttpStatusCode.Forbidden)
-            }
-
-        }
+//        install(StatusPages) {
+//    exception<Throwable> { call, cause ->
+//        call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
+//    }
+//        } {
+//            exception<AuthenticationException> { cause ->
+//                call.respond(HttpStatusCode.Unauthorized)
+//            }
+//            exception<AuthorizationException> { cause ->
+//                call.respond(HttpStatusCode.Forbidden)
+//            }
+//
+//        }
     }
 }
 
 data class JsonSampleClass(val hello: String)
 
-@Location("/location/{name}")
+//@Location("/location/{name}")
 class MyLocation(val name: String, val arg1: Int = 42, val arg2: String = "default")
 
-@Location("/type/{name}")
+//@Location("/type/{name}")
 data class Type(val name: String) {
-    @Location("/edit")
+//    @Location("/edit")
     data class Edit(val type: Type)
 
-    @Location("/list/{page}")
+//    @Location("/list/{page}")
     data class List(val type: Type, val page: Int)
 }
 

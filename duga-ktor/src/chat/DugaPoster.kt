@@ -1,7 +1,12 @@
 package net.zomis.duga.chat
 
+import aws.sdk.kotlin.services.sqs.SqsClient
+import aws.sdk.kotlin.services.sqs.model.MessageAttributeValue
+import aws.sdk.kotlin.services.sqs.sendMessage
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.client.features.*
+import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
@@ -44,23 +49,45 @@ class LoggingPoster: DugaPoster {
 
 }
 
+class SqsPoster(private val sqsQueue: String) : DugaPoster {
+
+    override suspend fun postMessage(room: String, message: String): PostResult? {
+        SqsClient { region = "eu-central-1" }.use { sqs ->
+            val response = sqs.sendMessage {
+                queueUrl = sqsQueue
+                messageGroupId = room
+                messageAttributes = mapOf(
+                    "room" to MessageAttributeValue {
+                        dataType = "String"
+                        stringValue = room
+                    }
+                )
+                messageBody = message
+            }
+//            response.messageId
+            return PostResult(0, Instant.now().epochSecond)
+        }
+    }
+
+}
+
 data class PostResult(val id: Long, val time: Long)
 class DugaPosterImpl(val duga: DugaBot): DugaPoster {
 
     private val logger = LoggerFactory.getLogger(DugaPoster::class.java)
     private val mapper = jacksonObjectMapper()
 
+    private suspend fun chatFormParams(message: String) = Parameters.build {
+        append("text", message)
+        append("fkey", duga.fkey())
+    }
+
     private suspend fun internalPost(room: String, message: String): PostResult? {
         logger.info("Message to room $room: $message")
         try {
-            val result = duga.httpClient.post<String>(duga.chatUrl + "/chats/$room/messages/new") {
-                body = FormDataContent(Parameters.build {
-                    append("text", message)
-                    append("fkey", duga.fkey())
-                })
-            }
+            val result = duga.httpClient.submitForm(duga.chatUrl + "/chats/$room/messages/new", chatFormParams(message))
             logger.info("Post result: $result")
-            return mapper.readValue(result, PostResult::class.java)
+            return result.body<PostResult>()
         } catch (e: ClientRequestException) {
             if (e.message?.contains("You can perform this action again in") == true) {
                 val performAgainIn = e.message!!.substringAfter("You can perform this action again in").trim()
@@ -91,18 +118,13 @@ class DugaPosterImpl(val duga: DugaBot): DugaPoster {
     }
 
     suspend fun editMessage(messageId: Long, newText: String): Boolean {
-        val result = duga.httpClient.post<String>(duga.chatUrl + "/messages/$messageId") {
-            body = FormDataContent(Parameters.build {
-                append("text", newText)
-                append("fkey", duga.fkey())
-            })
-        }
+        val result = duga.httpClient.submitForm(duga.chatUrl + "/messages/$messageId", chatFormParams(newText))
         logger.info("Edit $messageId to '$newText': $result")
-        return result.trim() == "ok"
+        return result.body<String>().trim() == "ok"
     }
 
     suspend fun getMessage(messageId: Long): String {
-        return duga.httpClient.get(duga.chatUrl + "/message/$messageId?plain=true") // &_=timestampMs
+        return duga.httpClient.get(duga.chatUrl + "/message/$messageId?plain=true").body() // &_=timestampMs
     }
 
 }

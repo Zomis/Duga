@@ -3,6 +3,7 @@ package net.zomis.duga.utils.github
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.*
 import org.slf4j.LoggerFactory
 
@@ -13,10 +14,10 @@ class GitHubApi(val client: HttpClient, gitHubKey: String?) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     private suspend fun apiCall(url: String, page: Int = 1): JsonNode {
-        val response = client.get<String>("https://api.github.com/$url?page=$page") {
+        val response = client.get("https://api.github.com/$url?page=$page") {
             authHeader?.also { headers.append(it.first, it.second) }
         }
-        return mapper.readTree(response)
+        return mapper.readTree(response.body<String>())
     }
 
     data class GitHubCommitDetails(val additions: Int, val deletions: Int)

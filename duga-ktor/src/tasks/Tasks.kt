@@ -1,9 +1,10 @@
 package net.zomis.duga.tasks
 
 import com.github.shyiko.skedule.Schedule
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Routing
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.time.*

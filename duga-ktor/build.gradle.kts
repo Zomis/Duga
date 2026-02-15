@@ -35,6 +35,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-client-apache:$ktor_version")
     implementation("io.ktor:ktor-client-json-jvm:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-client-gson:$ktor_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
@@ -42,9 +43,13 @@ dependencies {
     implementation("io.ktor:ktor-client-encoding:$ktor_version")
     implementation("io.ktor:ktor-client-websockets:$ktor_version")
     implementation("io.ktor:ktor-client-logging-jvm:$ktor_version")
-    implementation("io.ktor:ktor-jackson:$ktor_version")
-    implementation("io.ktor:ktor-locations:$ktor_version")
-    implementation("io.ktor:ktor-metrics:$ktor_version")
+    implementation("io.ktor:ktor-serialization-jackson:${ktor_version}")
+    implementation("io.ktor:ktor-server-cors:${ktor_version}")
+    implementation("io.ktor:ktor-server-content-negotiation:${ktor_version}")
+    implementation("io.ktor:ktor-server-call-logging:${ktor_version}")
+
+    //    implementation("io.ktor:ktor-locations:$ktor_version")
+    //    implementation("io.ktor:ktor-metrics:$ktor_version")
     implementation("io.ktor:ktor-server-host-common:$ktor_version")
     implementation("org.jsoup:jsoup:1.15.3")
     implementation("com.github.shyiko.skedule:skedule:0.4.0")
@@ -52,11 +57,16 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.0")
     implementation("org.slf4j:slf4j-api:2.0.17")
 
+    implementation("aws.sdk.kotlin:dynamodb:1.6.17")
+    implementation("aws.sdk.kotlin:sqs:1.6.17")
+    implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
+
     implementation("software.amazon.awssdk:dynamodb-enhanced:2.16.80")
     implementation("software.amazon.awssdk:apache-client:2.16.80")
     implementation("software.amazon.awssdk:sdk-core:2.16.80")
+    implementation("io.ktor:ktor-server-status-pages:3.4.0")
 
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+//    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
@@ -64,3 +74,9 @@ kotlin.sourceSets["test"].kotlin.srcDirs("test")
 
 sourceSets["main"].resources.srcDirs("resources")
 sourceSets["test"].resources.srcDirs("testresources")
+
+tasks.shadowJar {
+    archiveBaseName.set("duga")
+    archiveVersion.set("")
+    archiveClassifier.set("")
+}

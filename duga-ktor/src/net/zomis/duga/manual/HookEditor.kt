@@ -1,5 +1,5 @@
 package net.zomis.duga.manual
-
+/*
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel
@@ -12,26 +12,20 @@ class GitHubWebhook(private val repository: String, jsonNode: JsonNode) {
 
     val url: String = jsonNode["url"].asText()
     private val events: List<String> = jsonNode["events"].map { it.asText() }
-    private val configDomain: String? = jsonNode["config"]?.get("domain")?.asText() ?: ""
-    val destinationUrl: String? = jsonNode["config"]?.get("url")?.asText() ?: ""
-    private val contentType: String? = jsonNode["config"]?.get("content_type")?.asText() ?: ""
-    private val insecureSSL: String? = jsonNode["config"]?.get("insecure_ssl")?.asText() ?: ""
+    private val configDomain: String = jsonNode["config"]?.get("domain")?.asText() ?: ""
+    val destinationUrl: String = jsonNode["config"]?.get("url")?.asText() ?: ""
+    private val contentType: String = jsonNode["config"]?.get("content_type")?.asText() ?: ""
+    private val insecureSSL: String = jsonNode["config"]?.get("insecure_ssl")?.asText() ?: ""
 
     override fun toString(): String {
         return "GitHubWebhook(repository='$repository', url='$url', events=$events, configDomain=$configDomain, destinationUrl=$destinationUrl, contentType=$contentType, insecureSSL=$insecureSSL)"
     }
 
     fun isOldDugaHook(): Boolean {
-        if (this.destinationUrl == null) {
-            return false
-        }
         return this.destinationUrl.contains("zomis.net") && this.destinationUrl.contains("GithubHookSEChatService")
     }
 
     fun isDugaHook(): Boolean {
-        if (this.destinationUrl == null) {
-            return false
-        }
         if (this.destinationUrl.startsWith("https://duga.zomis.net/github")) {
             return true
         }
@@ -39,9 +33,6 @@ class GitHubWebhook(private val repository: String, jsonNode: JsonNode) {
     }
 
     fun isNewDugaHook(): Boolean {
-        if (this.destinationUrl == null) {
-            return false
-        }
         return this.destinationUrl.startsWith("https://duga.zomis.net/github")
     }
 
@@ -126,3 +117,4 @@ fun main(args: Array<String>) {
     }
     scanner.close()
 }
+*/

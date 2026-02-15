@@ -1,9 +1,10 @@
 package net.zomis.duga.server.webhooks
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.ktor.application.*
-import io.ktor.request.*
-import io.ktor.routing.*
+import io.ktor.server.request.receive
+import io.ktor.server.routing.Routing
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import net.zomis.duga.chat.DugaPoster
 import org.slf4j.LoggerFactory
 

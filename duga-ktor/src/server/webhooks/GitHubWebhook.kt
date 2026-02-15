@@ -1,11 +1,13 @@
 package net.zomis.duga.server.webhooks
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.request.header
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Routing
+import io.ktor.server.routing.post
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.zomis.duga.chat.DugaPoster
