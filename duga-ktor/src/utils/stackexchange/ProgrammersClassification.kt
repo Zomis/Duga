@@ -88,7 +88,7 @@ object ProgrammersClassification {
     }
 
     private fun preprocessProgrammers(textOriginal: String): String {
-        var text = textOriginal.toLowerCase()
+        var text = textOriginal.lowercase()
         text = PROG_LINK.matcher(text).replaceAll("(link-to-programmers)")
         text = text.replace("<a href=\"([^\"]+)\">", "$1 ") // Extract links
         text = text.replace("<[^<>]+>", " ") // Remove HTML

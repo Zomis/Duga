@@ -89,7 +89,7 @@ class CommentsScanTask(
 	}
 
 	private fun isInterestingCommentCR(comment: JsonNode): Boolean {
-		val commentText = comment.get("body_markdown").asText().toLowerCase()
+		val commentText = comment.get("body_markdown").asText().lowercase()
 		return commentText.contains("code review") || commentText.contains("codereview")
 	}
 
@@ -114,7 +114,7 @@ class CommentsScanTask(
     }
 
     private fun programmersMLscore(comment: JsonNode): Double {
-        val text = comment.get("body_markdown").asText().toLowerCase()
+        val text = comment.get("body_markdown").asText().lowercase()
         if (!text.contains("programmers") && !text.contains("softwareeng")
 	     && !text.contains("software eng")) {
             // No need to check with the Machine Learning system in this case

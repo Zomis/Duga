@@ -15,7 +15,7 @@ class StackExchangeLogin(private val httpClient: HttpClient, private val config:
 
     suspend fun login(): Boolean {
         val loginPage: String = httpClient.get("${config.rootUrl}/users/login")
-        val fkey = Jsoup.parse(loginPage).selectFirst("input[name='fkey']").attr("value")
+        val fkey = Jsoup.parse(loginPage).selectFirst("input[name='fkey']")!!.attr("value")
         println(fkey)
 
         val r = httpClient.post<String>(config.rootUrl + "/users/login") {
@@ -40,7 +40,7 @@ class StackExchangeLogin(private val httpClient: HttpClient, private val config:
     suspend fun fkeyReal(): String {
         val favoriteChatsHtml: String = httpClient.get<String>(config.chatUrl + "/chats/join/favorite")
         val jsoup = Jsoup.parse(favoriteChatsHtml)
-        val fkey = jsoup.select("form").last().selectFirst("#fkey").attr("value")
+        val fkey = jsoup.select("form").last()!!.selectFirst("#fkey")!!.attr("value")
         println(jsoup.select(".topbar-menu-links"))
         println("----------")
 
