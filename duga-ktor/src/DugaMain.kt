@@ -44,5 +44,9 @@ object DugaMain {
 }
 
 fun main(args: Array<String>) {
-    DugaMain.start(args)
+    if (args.getOrNull(0) == "lambda") {
+        DugaLambda().execute(args.drop(1))
+    } else {
+        DugaMain.start(args)
+    }
 }
