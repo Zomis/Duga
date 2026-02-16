@@ -1,6 +1,7 @@
 package net.zomis.duga.server.webhooks
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.http.*
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.header
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 import net.zomis.duga.chat.DugaPoster
 import net.zomis.duga.utils.github.HookString
 import org.slf4j.LoggerFactory
+import java.io.OutputStream
 
 class GitHubWebhook(
     private val poster: DugaPoster,
@@ -39,6 +41,36 @@ class GitHubWebhook(
             call.respond("OK")
         } else {
             call.respond(HttpStatusCode.NoContent)
+        }
+    }
+
+    suspend fun lambdaPost(
+        mapper: ObjectMapper,
+        output: OutputStream,
+        room: String?, gitHubEvent: String, jsonNode: JsonNode
+    ) {
+        fun writeResponse(statusCode: Int, payload: Any) {
+            println("Response $statusCode: $payload")
+            val response = mapOf(
+                "statusCode" to statusCode,
+                "headers" to mapOf("Content-Type" to "application/json"),
+                "body" to mapper.writeValueAsString(payload)
+            )
+            mapper.writeValue(output, response)
+        }
+        if (room == null) {
+            writeResponse(HttpStatusCode.BadRequest.value, "Missing room")
+            return
+        }
+        val result = hookString.postGithub(gitHubEvent, jsonNode)
+        println("Received result of size ${result.size}")
+        result.forEach {
+            poster.postMessage(room, it)
+        }
+        if (result.isNotEmpty()) {
+            writeResponse(200, "OK")
+        } else {
+            writeResponse(HttpStatusCode.NoContent.value, "")
         }
     }
 

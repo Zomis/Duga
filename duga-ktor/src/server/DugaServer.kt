@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import net.zomis.duga.DugaMain
 import net.zomis.duga.DugaTasks
 import net.zomis.duga.chat.DugaPoster
+import net.zomis.duga.features.DugaFeatures
+import net.zomis.duga.features.StackExchange
 import net.zomis.duga.server.webhooks.AppVeyorWebhook
 import net.zomis.duga.server.webhooks.GitHubWebhook
 import net.zomis.duga.server.webhooks.SplunkWebhook
@@ -96,7 +98,7 @@ class DugaServer(
 
                 args.check("weekly-update-reminder") {
                     tasks.schedule(this, "Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.MONDAY))) {
-                        val days = ChronoUnit.DAYS.between(LocalDate.of(1986, Month.SEPTEMBER, 22), LocalDate.now())
+                        StackExchange(poster).weeklyUpdate()
                         val week = days / 7
                         poster.postMessage("16134", "Has @Simon posted his weekly update? (Week $week, $days days)")
                     }
@@ -104,7 +106,7 @@ class DugaServer(
 
                 args.check("vba-star-race") {
                     tasks.schedule(this, "VBA star race", Tasks.dailyUTC(23, 45)) {
-                        val rubberDuck = hookString.repo("rubberduck-vba/Rubberduck") to gitHubApi.stars("rubberduck-vba/Rubberduck")
+                        StackExchange(poster).starRace(hookString, gitHubApi, listOf("rubberduck-vba/Rubberduck", "decalage2/oletools"))
                         val oletools = hookString.repo("decalage2/oletools") to gitHubApi.stars("decalage2/oletools")
                         val list = listOf(rubberDuck, oletools).joinToString(" vs. ") {
                             it.first + " ${it.second} stars"
@@ -125,7 +127,7 @@ class DugaServer(
                 }
                 args.check("unanswered") {
                     tasks.schedule(this, "Unanswered CR", Tasks.utcMidnight) {
-                        val siteStats = stackExchangeApi.unanswered("codereview")
+                        StackExchange(poster).codeReviewUnanswered(stackExchangeApi)
                         val percentageStr = String.format("%.4f", siteStats.percentageAnswered() * 100)
                         val message = "***REFRESH!*** There are ${siteStats.unanswered} unanswered questions ($percentageStr answered)"
                         poster.postMessage("8595", message)
@@ -133,7 +135,7 @@ class DugaServer(
                 }
                 args.check("daily-stats") {
                     tasks.schedule(this, "Daily stats", Tasks.utcMidnight) {
-                        val allStats = stats.clearStats()
+                        DugaFeatures(poster).dailyStats(stats, clearStats = true)
                         val messages = allStats.map { stat ->
                             val values = stat.reset().toList()
                                 .joinToString(". ") { "${it.second} ${it.first}" }
