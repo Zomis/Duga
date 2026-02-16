@@ -19,7 +19,7 @@ resource "aws_s3_object" "lambda_jar" {
 
 resource "aws_lambda_function" "duga_lambda" {
   function_name = "duga-lambda"
-  role          = aws_iam_role.lambda_role.arn
+  role          = aws_iam_role.duga_lambda_role.arn
 
   runtime = "java17"
   handler = "net.zomis.duga.DugaLambda::handleRequest"
@@ -35,6 +35,7 @@ resource "aws_lambda_function" "duga_lambda" {
   environment {
     variables = {
       SQS_QUEUE = aws_sqs_queue.duga_messages.url
+      SQS_WEBHOOK_QUEUE = aws_sqs_queue.duga_incoming_webhook.url
       GITHUB_API = local.github_api_key
       STACK_EXCHANGE_API = local.stack_exchange_api_key
     }
@@ -43,4 +44,72 @@ resource "aws_lambda_function" "duga_lambda" {
   depends_on = [
     aws_s3_object.lambda_jar
   ]
+}
+
+resource "aws_iam_role" "duga_lambda_role" {
+  name = "duga-lambda-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# IAM policy for Lambda to access SQS, DynamoDB, etc.
+resource "aws_iam_role_policy" "duga_lambda_policy" {
+  name = "duga-lambda-policy"
+  role = aws_iam_role.duga_lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:GetQueueAttributes",
+          "sqs:SendMessage",
+          "sqs:SendMessageBatch"
+        ]
+        Resource = aws_sqs_queue.duga_messages.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ]
+        Resource = aws_sqs_queue.duga_incoming_webhook.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ]
+        Resource = aws_dynamodb_table.duga_state.arn
+      }
+    ]
+  })
 }

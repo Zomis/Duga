@@ -43,7 +43,7 @@ resource "aws_lambda_function" "duga_poster" {
   source_code_hash = data.archive_file.duga_poster.output_base64sha256
   filename         = ".zip/duga-poster.zip"
   function_name    = "duga-poster"
-  role            = aws_iam_role.lambda_role.arn
+  role            = aws_iam_role.poster_lambda_role.arn
   handler         = "poster.lambda_handler"
   runtime         = "python3.11"
   timeout         = 30
@@ -51,26 +51,18 @@ resource "aws_lambda_function" "duga_poster" {
 
   layers = [aws_lambda_layer_version.chatexchange.arn]
 
-  # Uncomment when you have the deployment package ready:
-  # source_code_hash = filebase64sha256("duga-poster.zip")
-
   environment {
     variables = {
-      ENVIRONMENT = "production"
       USER_EMAIL = local.email
       USER_PASSWORD = local.password
     }
   }
 
-  tags = {
-    Environment = "production"
-    ManagedBy   = "tofu"
-  }
 }
 
 # IAM role for Lambda function
-resource "aws_iam_role" "lambda_role" {
-  name = "duga-lambda-role"
+resource "aws_iam_role" "poster_lambda_role" {
+  name = "duga-poster-lambda-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -86,10 +78,9 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-# IAM policy for Lambda to access SQS, DynamoDB, etc.
-resource "aws_iam_role_policy" "lambda_policy" {
-  name = "duga-lambda-policy"
-  role = aws_iam_role.lambda_role.id
+resource "aws_iam_role_policy" "poster_lambda_policy" {
+  name = "duga-poster-lambda-policy"
+  role = aws_iam_role.poster_lambda_role.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -108,23 +99,9 @@ resource "aws_iam_role_policy" "lambda_policy" {
         Action = [
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes",
-          "sqs:SendMessage",
-          "sqs:SendMessageBatch"
+          "sqs:GetQueueAttributes"
         ]
         Resource = aws_sqs_queue.duga_messages.arn
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem",
-          "dynamodb:Query",
-          "dynamodb:Scan"
-        ]
-        Resource = aws_dynamodb_table.duga_state.arn
       }
     ]
   })

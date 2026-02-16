@@ -99,19 +99,12 @@ class DugaServer(
                 args.check("weekly-update-reminder") {
                     tasks.schedule(this, "Weekly update", Tasks.weeklyUTC(16, 0, setOf(DayOfWeek.MONDAY))) {
                         StackExchange(poster).weeklyUpdate()
-                        val week = days / 7
-                        poster.postMessage("16134", "Has @Simon posted his weekly update? (Week $week, $days days)")
                     }
                 }
 
                 args.check("vba-star-race") {
                     tasks.schedule(this, "VBA star race", Tasks.dailyUTC(23, 45)) {
                         StackExchange(poster).starRace(hookString, gitHubApi, listOf("rubberduck-vba/Rubberduck", "decalage2/oletools"))
-                        val oletools = hookString.repo("decalage2/oletools") to gitHubApi.stars("decalage2/oletools")
-                        val list = listOf(rubberDuck, oletools).joinToString(" vs. ") {
-                            it.first + " ${it.second} stars"
-                        }
-                        poster.postMessage("14929", list)
                     }
                 }
 
@@ -128,29 +121,11 @@ class DugaServer(
                 args.check("unanswered") {
                     tasks.schedule(this, "Unanswered CR", Tasks.utcMidnight) {
                         StackExchange(poster).codeReviewUnanswered(stackExchangeApi)
-                        val percentageStr = String.format("%.4f", siteStats.percentageAnswered() * 100)
-                        val message = "***REFRESH!*** There are ${siteStats.unanswered} unanswered questions ($percentageStr answered)"
-                        poster.postMessage("8595", message)
                     }
                 }
                 args.check("daily-stats") {
                     tasks.schedule(this, "Daily stats", Tasks.utcMidnight) {
                         DugaFeatures(poster).dailyStats(stats, clearStats = true)
-                        val messages = allStats.map { stat ->
-                            val values = stat.reset().toList()
-                                .joinToString(". ") { "${it.second} ${it.first}" }
-                            val group = stat.displayName
-                            val url = stat.url
-                            "\\[[**$group**]($url)\\] $values"
-                        }
-                        val rooms = listOf("16134")
-                        rooms.forEach { room ->
-                            val roomPoster = poster.room(room)
-                            roomPoster.post("***REFRESH!***")
-                            messages.forEach { message ->
-                                roomPoster.post(message)
-                            }
-                        }
                     }
                 }
             }
