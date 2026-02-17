@@ -11,46 +11,42 @@ import net.zomis.machlearn.text.TextClassification
 import org.slf4j.LoggerFactory
 
 class CommentsScanTask(
-	private val scope: CoroutineScope,
 	private val stackAPI: StackExchangeApi,
 	private val programmersClassification: TextClassification,
+	private val taskData: CommentsScanTaskData,
 	poster: DugaPoster
 ) {
     private val logger = LoggerFactory.getLogger(CommentsScanTask::class.java)
-    
-    private var nextFetch = Instant.now()
-    private var lastComment: Long = 0
-    private var fromDate: Long = 0
-    private var remainingQuota: Long = 0
-    
+
 	private val codeReview = poster.room("8595")
 	private val debug = poster.room("20298")
 	private val programmers = poster.room("160979")
 	private val softwareRecs = poster.room("20298")
 
-	suspend fun run() {
+	suspend fun run(scope: CoroutineScope) {
 		val now = Instant.now()
-    	if (!now.isAfter(nextFetch)) {
-    		logger.info("Comments scan next fetch is at $nextFetch and now is $now, need to wait a bit more, returning.")
+		taskData.load()
+    	if (!now.isAfter(taskData.nextFetch)) {
+    		logger.info("Comments scan next fetch is at ${taskData.nextFetch} and now is $now, need to wait a bit more, returning.")
     		return;
     	}
 
-		val comments = stackAPI.fetchComments("stackoverflow", fromDate)
+		val comments = stackAPI.fetchComments("stackoverflow", taskData.fromDate)
 		if (comments == null) {
-			logger.error("Unable to get comments from $fromDate")
+			logger.error("Unable to get comments from ${taskData.fromDate}")
 			return
 		}
 		val currentQuota = comments.get("quota_remaining").asLong()
-		if (currentQuota > remainingQuota && fromDate != 0L) {
+		if (currentQuota > taskData.remainingQuota && taskData.fromDate != 0L) {
 			debug.post(Instant.now().toString() + " Quota has been reset. Was " +
-				remainingQuota + " is now " + currentQuota)
+				taskData.remainingQuota + " is now " + currentQuota)
 		}
-		remainingQuota = currentQuota
+		taskData.remainingQuota = currentQuota
 
 		if (comments.get("backoff") != null) {
-			nextFetch = Instant.now().plusSeconds(comments.get("backoff").asLong() + 10)
+			taskData.nextFetch = Instant.now().plusSeconds(comments.get("backoff").asLong() + 10)
 			debug.post(Instant.now().toString() +
-					" Next fetch: " + nextFetch + " because of backoff " + comments.get("backoff"))
+					" Next fetch: " + taskData.nextFetch + " because of backoff " + comments.get("backoff"))
 			return
 		}
 
@@ -59,19 +55,19 @@ class CommentsScanTask(
 			debug.post(Instant.now().toString() + " Warning: Retrieved 100 comments. Might have missed some.")
 		}
 
-		val previousLastComment = lastComment
+		val previousLastComment = taskData.lastComment
 		for (comment in items.reversed()) {
 			if (comment.get("comment_id").asLong() <= previousLastComment) {
 				continue;
 			}
-			lastComment = Math.max(comment.get("comment_id").asLong(), lastComment)
-			fromDate = Math.max(comment.get("creation_date").asLong(), fromDate)
+			taskData.lastComment = Math.max(comment.get("comment_id").asLong(), taskData.lastComment)
+			taskData.fromDate = Math.max(comment.get("creation_date").asLong(), taskData.fromDate)
 			if (isInterestingCommentCR(comment)) {
 				logComment(comment, "Code Review")
 				codeReview.post(comment.get("link").asText())
 			}
 
-			classifyProgrammers(comment)
+			classifyProgrammers(scope, comment)
 
 			val softwareCertainty = CommentClassification.calcInterestingLevelSoftwareRecs(comment)
 
@@ -79,6 +75,7 @@ class CommentsScanTask(
 				softwareRecs.post(comment.get("link").asText())
 			}
 		}
+		taskData.save()
     }
 
 	private fun logComment(comment: JsonNode, site: String) {
@@ -93,7 +90,7 @@ class CommentsScanTask(
 		return commentText.contains("code review") || commentText.contains("codereview")
 	}
 
-	private fun classifyProgrammers(comment: JsonNode) {
+	private fun classifyProgrammers(scope: CoroutineScope, comment: JsonNode) {
         val oldClassification = CommentClassification.calcInterestingLevelProgrammers(comment);
         val programmersMLscore = programmersMLscore(comment)
 

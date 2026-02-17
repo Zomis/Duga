@@ -28,7 +28,10 @@ class StackExchangeApi(val httpClient: HttpClient, val apiKey: String?) {
     }
 
     suspend fun apiCall(apiCall: String, site: String, filter: String): JsonNode? {
-        if (apiKey == null) return null
+        if (apiKey == null) {
+            logger.warn("No Stack Exchange API Key set")
+            return null
+        }
         try {
             val url = buildURL(apiCall, site, filter, apiKey)
             logger.info("Stack Exchange API Call: $url")

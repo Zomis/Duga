@@ -4,18 +4,25 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import net.zomis.duga.chat.DugaClient
 import net.zomis.duga.chat.DugaPoster
+import net.zomis.duga.chat.LoggingPoster
 import net.zomis.duga.chat.SqsPoster
 import net.zomis.duga.features.DugaFeatures
 import net.zomis.duga.features.StackExchange
 import net.zomis.duga.server.webhooks.GitHubWebhook
 import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
+import net.zomis.duga.utils.stackexchange.DynamoDbAnswerInvalidationCheckData
+import net.zomis.duga.utils.stackexchange.ProgrammersClassification
+import net.zomis.duga.utils.stackexchange.QuestionScanTask
 import net.zomis.duga.utils.stackexchange.StackExchangeApi
 import net.zomis.duga.utils.stats.DugaStatsDynamoDB
+import net.zomis.machlearn.text.TextClassification
+import net.zomis.machlearn.text.TextFeatureMapper
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -31,7 +38,18 @@ class DugaLambda : RequestStreamHandler {
         node.has("Records") && node["Records"].isArray &&
             node["Records"].size() > 0 && node["Records"][0]["eventSource"]?.asText() == "aws:sqs"
     private val client by lazy { DugaClient() }
+    private val stackExchangeApi by lazy {
+        StackExchangeApi(client.client, System.getenv("STACK_EXCHANGE_API"))
+    }
+    private val commentsScanTaskPreTrained by lazy {
+        val words = mapper.readValue<List<String>>(this::class.java.classLoader.getResourceAsStream("mapper-words.json")!!)
+        val thetas = mapper.readValue<List<Double>>(this::class.java.classLoader.getResourceAsStream("mapper-thetas.json")!!)
+        val textFeatureMapper = TextFeatureMapper(*words.toTypedArray())
+        val classification = TextClassification(ProgrammersClassification::preprocessProgrammers, textFeatureMapper, thetas.toDoubleArray(), 0.4)
+        DugaTasks(poster, stackExchangeApi).commentScanPretrained(classification)
+    }
     private val poster = SqsPoster(System.getenv("SQS_QUEUE"))
+//    private val poster = LoggingPoster()
 
     override fun handleRequest(
         input: InputStream,
@@ -52,7 +70,6 @@ class DugaLambda : RequestStreamHandler {
                 StackExchange(poster).weeklyUpdate()
             }
             "unanswered" -> {
-                val stackExchangeApi = StackExchangeApi(client.client, System.getenv("STACK_EXCHANGE_API"))
                 StackExchange(poster).codeReviewUnanswered(stackExchangeApi)
             }
             "star-race" -> {
@@ -62,6 +79,8 @@ class DugaLambda : RequestStreamHandler {
                     listOf("rubberduck-vba/Rubberduck", "decalage2/oletools")
                 )
             }
+            "comment-scan" -> runCommentScan(this)
+            "answer-invalidation" -> runAnswerInvalidationCheck()
             "daily-stats" -> {
                 DugaFeatures(poster).dailyStats(DugaStatsDynamoDB(), clearStats = false)
             }
@@ -71,6 +90,16 @@ class DugaLambda : RequestStreamHandler {
                 println(context)
             }
         }
+    }
+
+    suspend fun runAnswerInvalidationCheck() {
+        QuestionScanTask(poster, stackExchangeApi, "codereview",
+            DynamoDbAnswerInvalidationCheckData()
+        ).run()
+    }
+
+    suspend fun runCommentScan(scope: CoroutineScope) {
+        commentsScanTaskPreTrained.run(scope)
     }
 
     private suspend fun handleSqs(

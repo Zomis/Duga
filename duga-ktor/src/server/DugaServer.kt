@@ -112,8 +112,11 @@ class DugaServer(
                     tasks.schedule(this, "REFRESH", Tasks.utcMidnight) { poster.postMessage("16134", "***REFRESH!***") }
                 }
                 args.check("comment-scan") {
-                    val commentsScanTask = dugaTasks.commentsScanTask(this)
-                    tasks.schedule(this, "Comments scanning", Schedule.every(1, ChronoUnit.MINUTES), commentsScanTask::run)
+                    // TEST: Needs saving of machine learning parameters for migration to lambda
+                    val commentsScanTask = dugaTasks.commentsScanTask()
+                    tasks.schedule(this, "Comments scanning", Schedule.every(1, ChronoUnit.MINUTES)) {
+                        commentsScanTask.run(this)
+                    }
                 }
                 args.check("answer-invalidation") {
                     tasks.schedule(this, "Invalidation checks", Schedule.every(5, ChronoUnit.MINUTES), dugaTasks::answerInvalidation)

@@ -87,7 +87,7 @@ object ProgrammersClassification {
         return feature.trim().length > (if (nGram > 1) 7 else 2)
     }
 
-    private fun preprocessProgrammers(textOriginal: String): String {
+    fun preprocessProgrammers(textOriginal: String): String {
         var text = textOriginal.lowercase()
         text = PROG_LINK.matcher(text).replaceAll("(link-to-programmers)")
         text = text.replace("<a href=\"([^\"]+)\">", "$1 ") // Extract links

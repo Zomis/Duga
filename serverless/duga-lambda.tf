@@ -46,6 +46,11 @@ resource "aws_lambda_function" "duga_lambda" {
   ]
 }
 
+resource "aws_cloudwatch_log_group" "duga_lambda_logs" {
+  name              = "/aws/lambda/${aws_lambda_function.duga_lambda.function_name}"
+  retention_in_days = 30
+}
+
 resource "aws_iam_role" "duga_lambda_role" {
   name = "duga-lambda-role"
 
