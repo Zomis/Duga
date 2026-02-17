@@ -30,6 +30,8 @@ class DugaLambda : RequestStreamHandler {
     private fun isSqsEvent(node: JsonNode): Boolean =
         node.has("Records") && node["Records"].isArray &&
             node["Records"].size() > 0 && node["Records"][0]["eventSource"]?.asText() == "aws:sqs"
+    private val client by lazy { DugaClient() }
+    private val poster = SqsPoster(System.getenv("SQS_QUEUE"))
 
     override fun handleRequest(
         input: InputStream,
@@ -37,7 +39,6 @@ class DugaLambda : RequestStreamHandler {
         context: Context
     ) = runBlocking {
         val node = mapper.readTree(input)
-        val poster = SqsPoster(System.getenv("SQS_QUEUE"))
 
         if (isSqsEvent(node)) {
             return@runBlocking handleSqs(node, output, context, poster, this)
@@ -51,12 +52,10 @@ class DugaLambda : RequestStreamHandler {
                 StackExchange(poster).weeklyUpdate()
             }
             "unanswered" -> {
-                val client = DugaClient()
                 val stackExchangeApi = StackExchangeApi(client.client, System.getenv("STACK_EXCHANGE_API"))
                 StackExchange(poster).codeReviewUnanswered(stackExchangeApi)
             }
             "star-race" -> {
-                val client = DugaClient()
                 val gitHubApi = GitHubApi(client.client, System.getenv("GITHUB_API"))
                 val hookString = HookString(DugaStatsDynamoDB(), gitHubApi, this)
                 StackExchange(poster).starRace(hookString, gitHubApi,
