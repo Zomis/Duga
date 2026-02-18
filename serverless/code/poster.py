@@ -32,7 +32,9 @@ def lambda_handler(event, context):
 
 def send_messages_to_room(room, texts, me, timeout=10):
     pending = len(texts)
-    deadline = time.time() + timeout
+    posttime = time.time() - 1 # Give some extra time for clock differences
+    deadline = posttime + timeout
+    print(f"Post time: {posttime}")
 
     with room.new_messages() as stream:
         for text in texts:
@@ -40,9 +42,12 @@ def send_messages_to_room(room, texts, me, timeout=10):
             room.send_message(text)
 
         for msg in stream:
-            print(f"Received message: {msg.content}")
+            print(f"Received message: {msg.content} {msg.time_stamp}")
+            if msg.time_stamp < posttime:
+                continue
             if msg.owner is me:
                 pending -= 1
+                print(f"Found message from self. {pending} pending")
 
                 if pending == 0:
                     return

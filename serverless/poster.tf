@@ -111,7 +111,7 @@ resource "aws_iam_role_policy" "poster_lambda_policy" {
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
   event_source_arn = aws_sqs_queue.duga_messages.arn
   function_name    = aws_lambda_function.duga_poster.arn
-  batch_size       = 10
+  batch_size       = 1
   enabled          = true
 }
 
