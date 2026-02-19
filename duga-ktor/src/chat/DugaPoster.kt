@@ -51,7 +51,7 @@ class LoggingPoster: DugaPoster {
 
 class SqsPoster(private val sqsQueue: String) : DugaPoster {
 
-    override suspend fun postMessage(room: String, message: String): PostResult? {
+    override suspend fun postMessage(room: String, message: String): PostResult {
         println("SQS Poster $room: $message")
         SqsClient { region = "eu-central-1" }.use { sqs ->
             val response = sqs.sendMessage {

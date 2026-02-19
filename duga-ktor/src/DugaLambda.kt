@@ -9,22 +9,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import net.zomis.duga.chat.DugaClient
 import net.zomis.duga.chat.DugaPoster
-import net.zomis.duga.chat.LoggingPoster
 import net.zomis.duga.chat.SqsPoster
 import net.zomis.duga.features.DugaFeatures
 import net.zomis.duga.features.StackExchange
 import net.zomis.duga.server.webhooks.GitHubWebhook
+import net.zomis.duga.server.webhooks.StatsWebhook
 import net.zomis.duga.utils.github.GitHubApi
 import net.zomis.duga.utils.github.HookString
+import net.zomis.duga.utils.github.text
 import net.zomis.duga.utils.stackexchange.DynamoDbAnswerInvalidationCheckData
 import net.zomis.duga.utils.stackexchange.ProgrammersClassification
 import net.zomis.duga.utils.stackexchange.QuestionScanTask
 import net.zomis.duga.utils.stackexchange.StackExchangeApi
-import net.zomis.duga.utils.stats.DugaStatsDynamoDB
+import net.zomis.duga.utils.stats.DugaStatsNewDynamoDB
 import net.zomis.machlearn.text.TextClassification
 import net.zomis.machlearn.text.TextFeatureMapper
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.Base64
 
 class DugaLambda : RequestStreamHandler {
 
@@ -49,17 +51,19 @@ class DugaLambda : RequestStreamHandler {
         DugaTasks(poster, stackExchangeApi).commentScanPretrained(classification)
     }
     private val poster = SqsPoster(System.getenv("SQS_QUEUE"))
-//    private val poster = LoggingPoster()
 
     override fun handleRequest(
         input: InputStream,
         output: OutputStream,
         context: Context
-    ) = runBlocking {
+    ): Unit = runBlocking {
         val node = mapper.readTree(input)
 
         if (isSqsEvent(node)) {
             return@runBlocking handleSqs(node, output, context, poster, this)
+        }
+        if (isApiGateway(node)) {
+            return@runBlocking handleApiGateway(node, output, context, this)
         }
 
         val task = if (node.has("task")) node.get("task").textValue() else null
@@ -74,7 +78,7 @@ class DugaLambda : RequestStreamHandler {
             }
             "star-race" -> {
                 val gitHubApi = GitHubApi(client.client, System.getenv("GITHUB_API"))
-                val hookString = HookString(DugaStatsDynamoDB(), gitHubApi, this)
+                val hookString = HookString(DugaStatsNewDynamoDB(), gitHubApi, this)
                 StackExchange(poster).starRace(hookString, gitHubApi,
                     listOf("rubberduck-vba/Rubberduck", "decalage2/oletools")
                 )
@@ -82,7 +86,11 @@ class DugaLambda : RequestStreamHandler {
             "comment-scan" -> runCommentScan(this)
             "answer-invalidation" -> runAnswerInvalidationCheck()
             "daily-stats" -> {
-                DugaFeatures(poster).dailyStats(DugaStatsDynamoDB(), clearStats = false)
+                DugaFeatures(poster).dailyStats(DugaStatsNewDynamoDB(), clearStats = false)
+            }
+            "anti-freeze" -> {
+                val room = node.get("room").textValue()
+                poster.postMessage(room, "**Happy New Week!** *(This room does not freeze on my watch!)*")
             }
             else -> {
                 println("Unknown Task: $task")
@@ -90,6 +98,46 @@ class DugaLambda : RequestStreamHandler {
                 println(context)
             }
         }
+    }
+
+    private suspend fun handleApiGateway(
+        rootEvent: JsonNode,
+        output: OutputStream,
+        context: Context,
+        scope: CoroutineScope
+    ) {
+        val stats = DugaStatsNewDynamoDB()
+        val body = readBody(rootEvent)
+        val node = mapper.readTree(body)
+        println("Incoming stats: $body")
+
+        val currentStats = StatsWebhook.saveStatsNew(stats, node)
+        if (currentStats) {
+            output.writeResponse(200, "Stats is $currentStats")
+        } else {
+            output.writeResponse(403, "Invalid request")
+        }
+    }
+
+    private fun OutputStream.writeResponse(statusCode: Int, payload: Any) {
+        println("Response $statusCode: $payload")
+        val response = mapOf(
+            "statusCode" to statusCode,
+            "headers" to mapOf("Content-Type" to "application/json"),
+            "body" to mapper.writeValueAsString(payload)
+        )
+        mapper.writeValue(this, response)
+    }
+
+    fun readBody(event: JsonNode): String? {
+        val bodyNode = event.get("body") ?: return null
+        val raw = bodyNode.asText()
+
+        val isBase64 = event.get("isBase64Encoded")?.asBoolean() == true
+
+        return if (isBase64) {
+            String(Base64.getDecoder().decode(raw))
+        } else raw
     }
 
     suspend fun runAnswerInvalidationCheck() {
@@ -119,7 +167,7 @@ class DugaLambda : RequestStreamHandler {
             println(node)
             val client = DugaClient()
             val gitHubApi = GitHubApi(client.client, System.getenv("GITHUB_API"))
-            val hookString = HookString(DugaStatsDynamoDB(), gitHubApi, scope)
+            val hookString = HookString(DugaStatsNewDynamoDB(), gitHubApi, scope)
 
             println("Incoming $gitHubEvent to room $room")
             GitHubWebhook(poster, hookString).lambdaPost(mapper, output, room, gitHubEvent, node)

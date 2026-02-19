@@ -1,5 +1,5 @@
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "duga2.zomis.net"
+  domain_name       = "duga.zomis.net"
   validation_method = "DNS"
   lifecycle {
     create_before_destroy = true

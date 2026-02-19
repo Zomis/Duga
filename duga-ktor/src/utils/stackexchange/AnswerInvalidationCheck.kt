@@ -24,8 +24,10 @@ object AnswerInvalidationCheck {
             val questionLink = question.get("link").asText()
             val op = formatDisplayName(question.get("owner").get("display_name").asText())
             val questionId = question.get("question_id").asLong()
-            if (edited >= lastCheck.epochSecond && question.get("answer_count").asLong() > 0) {
-                logger.info("Question {} edited at {}, last check was at {}", questionId, edited, lastCheck.epochSecond)
+            val answerCount = question.get("answer_count").asLong()
+            logger.info("Question $questionId edited at $edited, last check was at ${lastCheck.epochSecond}. Answer count $answerCount")
+            if (edited >= lastCheck.epochSecond && answerCount > 0) {
+                logger.info("Fetch edits for $questionId")
                 val edits = stackExchangeAPI.apiCall(editCall(questionId), "codereview", "!9YdnS7lAD")
                     ?: throw IllegalStateException("Unable to get edits for $questionId")
                 poster.postMessage("20298", "Edits fetched for $questionId: ${edits.get("items").size()}. quota remaining ${edits.get("quota_remaining")}")

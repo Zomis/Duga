@@ -1,15 +1,18 @@
 package net.zomis.duga.utils.stats
 
+import aws.sdk.kotlin.services.dynamodb.DynamoDbClient
+import aws.sdk.kotlin.services.dynamodb.getItem
+import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
+import aws.sdk.kotlin.services.dynamodb.model.DeleteItemRequest
+import aws.sdk.kotlin.services.dynamodb.putItem
+import aws.sdk.kotlin.services.dynamodb.query
+import aws.sdk.kotlin.services.dynamodb.scan
 import com.fasterxml.jackson.databind.JsonNode
+import kotlinx.coroutines.runBlocking
+import net.zomis.duga.server.webhooks.StatsWebhook
 import net.zomis.duga.utils.github.text
 import org.slf4j.LoggerFactory
-import software.amazon.awssdk.http.apache.ApacheHttpClient
 import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue
-import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest
 
 data class DugaStat(val key: String, val displayName: String, val url: String) {
     private val values = mutableMapOf<String, Int>()
@@ -34,35 +37,35 @@ data class DugaStat(val key: String, val displayName: String, val url: String) {
     }
 }
 interface DugaStats {
-    fun addKey(key: String, displayName: String, url: String, category: String, value: Int)
-    fun add(group: String, url: String, category: String, value: Int) {
+    suspend fun addKey(key: String, displayName: String, url: String, category: String, value: Int)
+    suspend fun add(group: String, url: String, category: String, value: Int) {
         this.addKey("github/$group", group, url, category, value)
     }
-    fun addIssue(issue: JsonNode, change: Int) {
+    fun addIssue(issue: JsonNode, change: Int) = runBlocking {
         if (change > 0) {
-            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues opened", 1)
+            add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues opened", 1)
         } else {
-            this.add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues closed", 1)
+            add(issue.text("repository.full_name"), issue.text("repository.html_url"), "issues closed", 1)
         }
     }
-    fun addIssueComment(comment: JsonNode) {
-        this.add(comment.text("repository.full_name"), comment.text("repository.html_url"), "issue comments", 1)
+    fun addIssueComment(comment: JsonNode) = runBlocking {
+        add(comment.text("repository.full_name"), comment.text("repository.html_url"), "issue comments", 1)
     }
-    fun addCommits(json: JsonNode, commits: List<JsonNode>) {
-        this.add(json.text("repository.full_name"), json.text("repository.html_url"), "commits", commits.size)
+    fun addCommits(json: JsonNode, commits: List<JsonNode>) = runBlocking {
+        add(json.text("repository.full_name"), json.text("repository.html_url"), "commits", commits.size)
     }
-    fun currentStats(): List<DugaStat>
-    fun clearStats(): List<DugaStat>
-    fun addAdditionsDeletions(repository: JsonNode?, additions: Int, deletions: Int) {
+    suspend fun currentStats(): List<DugaStat>
+    suspend fun clearStats(): List<DugaStat>
+    suspend fun addAdditionsDeletions(repository: JsonNode?, additions: Int, deletions: Int) {
         if (repository == null) return
         this.add(repository.text("full_name"), repository.text("html_url"), "additions", additions)
         this.add(repository.text("full_name"), repository.text("html_url"), "deletions", deletions)
     }
 }
 class DugaStatsNoOp: DugaStats {
-    override fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {}
-    override fun currentStats(): List<DugaStat> = emptyList()
-    override fun clearStats(): List<DugaStat> = emptyList()
+    override suspend fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {}
+    override suspend fun currentStats(): List<DugaStat> = emptyList()
+    override suspend fun clearStats(): List<DugaStat> = emptyList()
 }
 
 class DugaStatsInternalMap: DugaStats {
@@ -75,12 +78,12 @@ class DugaStatsInternalMap: DugaStats {
         }
     }
 
-    override fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {
+    override suspend fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {
         val stat = stat(key, displayName, url)
         stat.add(category, value)
     }
 
-    override fun clearStats(): List<DugaStat> {
+    override suspend fun clearStats(): List<DugaStat> {
         synchronized(lock) {
             val current = stats.values.toList()
             stats.clear()
@@ -88,7 +91,7 @@ class DugaStatsInternalMap: DugaStats {
         }
     }
 
-    override fun currentStats(): List<DugaStat> {
+    override suspend fun currentStats(): List<DugaStat> {
         synchronized(lock) {
             return stats.values.toList()
         }
@@ -96,7 +99,7 @@ class DugaStatsInternalMap: DugaStats {
 
 }
 
-class DugaStatsDynamoDB: DugaStats {
+class DugaStatsDynamoDB : DugaStats {
     val tableName = "Duga-Stats"
     val fieldKey = "Key"
     val fieldDisplayName = "DisplayName"
@@ -104,44 +107,51 @@ class DugaStatsDynamoDB: DugaStats {
 
     private val logger = LoggerFactory.getLogger(DugaStatsDynamoDB::class.java)
 
-    private val dynamoDb = DynamoDbClient.builder()
-            .region(Region.EU_CENTRAL_1)
-            .httpClient(ApacheHttpClient.builder().build())
-            .build()
+    private val dynamoDb = DynamoDbClient { region = Region.EU_CENTRAL_1.id() }
 
-    override fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {
+    override suspend fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {
         val itemValues = mapOf(
-            fieldKey to AttributeValue.builder().s(key).build(),
-            fieldDisplayName to AttributeValue.builder().s(displayName).build()
+            fieldKey to AttributeValue.S(key),
+            fieldDisplayName to AttributeValue.S(displayName)
         )
-        val item = dynamoDb.getItem { it.tableName(tableName).key(itemValues) }
+        val item = dynamoDb.getItem {
+            this.tableName = this@DugaStatsDynamoDB.tableName
+            this.key = itemValues
+        }
         logger.info("addKey returned {}", item)
 
-        if (item.hasItem()) {
-            dynamoDb.putItem(PutItemRequest.builder().tableName(tableName).item(
-                item.item().toMutableMap().also {
-                    val newValue = (it[category]?.n()?.toInt() ?: 0) + value
-                    it[category] = AttributeValue.builder().n(newValue.toString()).build()
+        if (item.item != null) {
+            dynamoDb.putItem {
+                this.tableName = this@DugaStatsDynamoDB.tableName
+                this.item = item.item!!.toMutableMap().also {
+                    val newValue = (it[category]?.asN()?.toInt() ?: 0) + value
+                    it[category] = AttributeValue.N(newValue.toString())
                 }
-            ).build())
+            }
         } else {
-            dynamoDb.putItem(PutItemRequest.builder().tableName(tableName).item(itemValues + mapOf(
-                fieldUrl to AttributeValue.builder().s(url).build(),
-                category to AttributeValue.builder().n(value.toString()).build()
-            )).build())
+            dynamoDb.putItem {
+                this.tableName = this@DugaStatsDynamoDB.tableName
+                this.item = itemValues + mapOf(
+                    fieldUrl to AttributeValue.S(url),
+                    category to AttributeValue.N(value.toString())
+                )
+            }
         }
     }
 
-    override fun currentStats(): List<DugaStat> = allStats(clear = false)
-    override fun clearStats(): List<DugaStat> = allStats(clear = true)
+    override suspend fun currentStats(): List<DugaStat> = allStats(clear = false)
+    override suspend fun clearStats(): List<DugaStat> = allStats(clear = true)
 
-    private fun allStats(clear: Boolean): List<DugaStat> {
-        val scanResponse = dynamoDb.scan(ScanRequest.builder().tableName(tableName).build())
-        val results = scanResponse.items().map { item ->
+    private suspend fun allStats(clear: Boolean): List<DugaStat> {
+        val scanResponse = dynamoDb.scan {
+            this.tableName = this@DugaStatsDynamoDB.tableName
+        }
+        val items = scanResponse.items ?: return emptyList()
+        val results = items.map { item ->
             logger.info("scanResponse returned {}", item)
-            val stat = DugaStat(item.getValue(fieldKey).s(), item.getValue(fieldDisplayName).s(), item.getValue(fieldUrl).s())
+            val stat = DugaStat(item.getValue(fieldKey).asS(), item.getValue(fieldDisplayName).asS(), item.getValue(fieldUrl).asS())
             item.filter { e -> e.key !in setOf(fieldKey, fieldDisplayName, fieldUrl) }.forEach { e ->
-                stat.add(e.key, e.value.n().toInt())
+                stat.add(e.key, e.value.asN().toInt())
             }
             stat
         }
@@ -149,12 +159,114 @@ class DugaStatsDynamoDB: DugaStats {
             return results
         }
 
-        val remove = scanResponse.items().map {
-            DeleteItemRequest.builder().tableName(tableName).key(it.filter { e -> e.key in setOf(fieldKey, fieldDisplayName) }).build()
+        val remove = items.map {
+            DeleteItemRequest {
+                this.tableName = this@DugaStatsDynamoDB.tableName
+                key = it.filter { e -> e.key in setOf(fieldKey, fieldDisplayName) }
+            }
         }
         remove.forEach {
             dynamoDb.deleteItem(it)
         }
         return results
+    }
+}
+
+class DugaStatsNewDynamoDB : DugaStats {
+    val tableName = "duga"
+    val PK = "PK"
+    val SK = "SK"
+    val fieldKey = SK
+    val fieldDisplayName = "displayName"
+    val fieldUrl = "url"
+
+    private val logger = LoggerFactory.getLogger(DugaStatsDynamoDB::class.java)
+
+    private val dynamoDb = DynamoDbClient { region = Region.EU_CENTRAL_1.id() }
+
+    override suspend fun addKey(key: String, displayName: String, url: String, category: String, value: Int) {
+        val itemValues = mapOf(
+            PK to AttributeValue.S("stats"),
+            SK to AttributeValue.S(key),
+//            fieldDisplayName to AttributeValue.S(displayName)
+        )
+        val item = dynamoDb.getItem {
+            this.tableName = this@DugaStatsNewDynamoDB.tableName
+            this.key = itemValues
+        }
+        logger.info("addKey returned {}", item)
+
+        if (item.item != null) {
+            dynamoDb.putItem {
+                this.tableName = this@DugaStatsNewDynamoDB.tableName
+                this.item = item.item!!.toMutableMap().also {
+                    val newValue = (it[category]?.asN()?.toInt() ?: 0) + value
+                    it[category] = AttributeValue.N(newValue.toString())
+                }
+            }
+        } else {
+            dynamoDb.putItem {
+                this.tableName = this@DugaStatsNewDynamoDB.tableName
+                this.item = itemValues + mapOf(
+                    fieldUrl to AttributeValue.S(url),
+                    fieldDisplayName to AttributeValue.S(displayName),
+                    category to AttributeValue.N(value.toString())
+                )
+            }
+        }
+    }
+
+    override suspend fun currentStats(): List<DugaStat> = allStats(clear = false)
+    override suspend fun clearStats(): List<DugaStat> = allStats(clear = true)
+
+    private suspend fun allStats(clear: Boolean): List<DugaStat> {
+        val scanResponse = dynamoDb.query {
+            this.tableName = this@DugaStatsNewDynamoDB.tableName
+            keyConditionExpression = "PK = :pk"
+            expressionAttributeValues = mapOf(":pk" to AttributeValue.S("stats"))
+        }
+        val items = scanResponse.items ?: return emptyList()
+        val results = items.map { item ->
+            logger.info("scanResponse returned {}", item)
+            val stat = DugaStat(item.getValue(fieldKey).asS(), item.getValue(fieldDisplayName).asS(), item.getValue(fieldUrl).asS())
+            item.filter { e -> e.key !in setOf(PK, fieldKey, fieldDisplayName, fieldUrl) }.forEach { e ->
+                stat.add(e.key, e.value.asN().toInt())
+            }
+            stat
+        }
+        if (!clear) {
+            return results
+        }
+
+        val remove = items.map {
+            DeleteItemRequest {
+                this.tableName = this@DugaStatsNewDynamoDB.tableName
+                key = it.filter { e -> e.key in setOf(fieldKey, fieldDisplayName) }
+            }
+        }
+        remove.forEach {
+            dynamoDb.deleteItem(it)
+        }
+        return results
+    }
+
+    suspend fun fetchConfig(authToken: String, application: String): StatsWebhook.Config.ItemConfig? {
+        val item = dynamoDb.getItem {
+            this.tableName = this@DugaStatsNewDynamoDB.tableName
+            this.key = mapOf(
+                PK to AttributeValue.S("stats-config"),
+                SK to AttributeValue.S(authToken),
+            )
+        }.item
+        if (item == null) return null
+        val foundDisplayName = item["displayName"]?.asS()
+        if (foundDisplayName != application) {
+            logger.warn("Mismatching stats config: Found $foundDisplayName but expected $application")
+            return null
+        }
+
+        return StatsWebhook.Config.ItemConfig(
+            authToken, application, item["url"]?.asS() ?: ""
+        )
     }
 }

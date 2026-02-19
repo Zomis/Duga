@@ -10,6 +10,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import net.zomis.duga.utils.stats.DugaStats
+import net.zomis.duga.utils.stats.DugaStatsNewDynamoDB
 import org.slf4j.LoggerFactory
 
 object StatsWebhook {
@@ -43,7 +44,7 @@ object StatsWebhook {
         }
     }
 
-    private fun saveStats(stats: DugaStats, node: JsonNode, config: Config): Boolean {
+    private suspend fun saveStats(stats: DugaStats, node: JsonNode, config: Config): Boolean {
         logger.info("Incoming: {}", node)
         val authToken = node["authToken"].asText()
         val application = node["application"].asText()
@@ -53,11 +54,27 @@ object StatsWebhook {
             logger.warn("No stats config found for authToken '$authToken' and application '$application'")
             return false
         }
-
         val secretKey = "$authToken/$application"
-        val statsMap = statsNode.fields().asSequence().associate { it.key to it.value.asInt() }
+        val statsMap = statsNode.properties().associate { it.key to it.value.asInt() }
         statsMap.forEach {
             stats.addKey(secretKey, application, itemConfig.url, it.key, it.value)
+        }
+        return true
+    }
+
+    suspend fun saveStatsNew(stats: DugaStatsNewDynamoDB, node: JsonNode): Boolean {
+        logger.info("Incoming: {}", node)
+        val authToken = node["authToken"].asText()
+        val application = node["application"].asText()
+        val statsNode = node["stats"] as ObjectNode
+        val itemConfig = stats.fetchConfig(authToken, application)
+        if (itemConfig == null) {
+            logger.warn("No stats config found for authToken '$authToken' and application '$application'")
+            return false
+        }
+        val statsMap = statsNode.properties().associate { it.key to it.value.asInt() }
+        statsMap.forEach {
+            stats.addKey(authToken, application, itemConfig.url, it.key, it.value)
         }
         return true
     }

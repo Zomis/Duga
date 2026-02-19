@@ -3,7 +3,6 @@ package net.zomis.duga.utils.stackexchange
 import net.zomis.duga.chat.DugaPoster
 import org.slf4j.LoggerFactory
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 class QuestionScanTask(
     val poster: DugaPoster,
@@ -20,11 +19,11 @@ class QuestionScanTask(
     suspend fun run() {
         data.load()
         val previousCheck = data.lastCheck
-        data.lastCheck = Instant.now()
+//        data.lastCheck = Instant.now()
         val questions = stackApi.apiCall(LATEST_QUESTIONS, site, FILTER)
-        val t = questions?.get("items")?.map { it.get("creation_date")?.asLong() ?: 0 }?.maxOrNull() ?: 0
-        logger.info("lastCheck highest post time is {}, previous lastCheck is {}", t, data.lastCheck.epochSecond)
-        data.lastCheck = Instant.ofEpochSecond(maxOf(data.lastCheck.epochSecond, t))
+        val questionLastActivity = questions?.get("items")?.map { it.get("last_activity_date")?.asLong() ?: 0 }?.maxOrNull() ?: 0
+        logger.info("lastCheck highest post time is $questionLastActivity, previous lastCheck is ${previousCheck.epochSecond}")
+        data.lastCheck = Instant.ofEpochSecond(questionLastActivity)
         AnswerInvalidationCheck.perform(poster, questions, previousCheck, stackApi)
         data.save()
     }
