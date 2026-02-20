@@ -2,6 +2,7 @@ resource "aws_scheduler_schedule" "anti_freeze" {
   group_name          = aws_scheduler_schedule_group.duga_tasks.name
   name                = "duga-task-anti-freeze"
   schedule_expression = "cron(0 0 ? * MON *)"
+  description         = "Duga task: Prevent chatroom from freezing"
   flexible_time_window {
     mode = "OFF"
     # FLEXIBLE or OFF

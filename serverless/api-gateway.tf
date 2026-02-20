@@ -1,6 +1,7 @@
 resource "aws_apigatewayv2_api" "api" {
   name          = "duga-http"
   protocol_type = "HTTP"
+  description   = "Duga API Gateway, for webhook and stats"
 }
 
 resource "aws_apigatewayv2_integration" "lambda" {
@@ -8,6 +9,7 @@ resource "aws_apigatewayv2_integration" "lambda" {
   integration_type       = "AWS_PROXY"
   integration_uri        = aws_lambda_function.duga_webhook_lambda.invoke_arn
   payload_format_version = "2.0"
+  description            = "Duga call webhook lambda (needs immediate response to not time out)"
 }
 
 resource "aws_apigatewayv2_route" "webhook" {
@@ -29,6 +31,7 @@ resource "aws_apigatewayv2_integration" "duga_lambda" {
   integration_type       = "AWS_PROXY"
   integration_uri        = aws_lambda_function.duga_lambda.invoke_arn
   payload_format_version = "2.0"
+  description            = "Duga call main lambda (for things not requiring an immediate response)"
 }
 
 resource "aws_apigatewayv2_route" "stats" {
@@ -41,6 +44,7 @@ resource "aws_apigatewayv2_stage" "prod" {
   api_id      = aws_apigatewayv2_api.api.id
   name        = "$default"
   auto_deploy = true
+  description = "Duga default production stage for API"
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_logs.arn
 

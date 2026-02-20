@@ -1,5 +1,6 @@
 resource "aws_iam_role" "scheduler_role" {
-  name = "kotlin-lambda-scheduler-role"
+  name        = "kotlin-lambda-scheduler-role"
+  description = "Duga IAM role for scheduled tasks"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

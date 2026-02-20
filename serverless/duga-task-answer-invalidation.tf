@@ -2,6 +2,7 @@ resource "aws_scheduler_schedule" "answer_invalidation" {
   group_name          = aws_scheduler_schedule_group.duga_tasks.name
   name                = "duga-task-answer-invalidation"
   schedule_expression = "cron(0/5 * 1/1 * ? *)"
+  description         = "Duga task: Check for answer invalidations"
   flexible_time_window {
     mode = "FLEXIBLE"
     maximum_window_in_minutes = 3

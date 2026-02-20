@@ -2,6 +2,7 @@ resource "aws_scheduler_schedule" "week_update" {
   group_name          = aws_scheduler_schedule_group.duga_tasks.name
   name                = "duga-task-weekly-update"
   schedule_expression = "cron(0 17 ? * MON *)"
+  description         = "Duga task: Simon's custom reminder"
   flexible_time_window {
     mode = "OFF"
     # FLEXIBLE or OFF

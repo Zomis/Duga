@@ -2,6 +2,7 @@ resource "aws_scheduler_schedule" "daily_stats" {
   group_name          = aws_scheduler_schedule_group.duga_tasks.name
   name                = "duga-task-daily-stats"
   schedule_expression = "cron(0 0 1/1 * ? *)"
+  description         = "Duga task: Post daily statistics (GitHub and stats endpoint)"
   flexible_time_window {
     mode = "OFF"
     # FLEXIBLE or OFF

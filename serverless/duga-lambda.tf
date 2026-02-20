@@ -20,6 +20,7 @@ resource "aws_s3_object" "lambda_jar" {
 resource "aws_lambda_function" "duga_lambda" {
   function_name = "duga-lambda"
   role          = aws_iam_role.duga_lambda_role.arn
+  description   = "Duga main Lambda function"
 
   runtime = "java17"
   handler = "net.zomis.duga.DugaLambda::handleRequest"
@@ -52,7 +53,8 @@ resource "aws_cloudwatch_log_group" "duga_lambda_logs" {
 }
 
 resource "aws_iam_role" "duga_lambda_role" {
-  name = "duga-lambda-role"
+  name        = "duga-lambda-role"
+  description = "Duga IAM role for Lambda"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

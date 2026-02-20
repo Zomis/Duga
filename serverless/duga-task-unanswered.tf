@@ -2,6 +2,7 @@ resource "aws_scheduler_schedule" "unanswered" {
   group_name          = aws_scheduler_schedule_group.duga_tasks.name
   name                = "duga-task-unanswered"
   schedule_expression = "cron(0 0 1/1 * ? *)"
+  description         = "Duga task: Code Review unanswered questions daily midnight update"
   flexible_time_window {
     mode = "OFF"
     # FLEXIBLE or OFF

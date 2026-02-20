@@ -48,6 +48,7 @@ resource "aws_lambda_function" "duga_poster" {
   runtime         = "python3.11"
   timeout         = 30
   memory_size     = 512
+  description     = "Duga lambda for posting chat messages from SQS"
 
   layers = [aws_lambda_layer_version.chatexchange.arn]
 
@@ -62,7 +63,8 @@ resource "aws_lambda_function" "duga_poster" {
 
 # IAM role for Lambda function
 resource "aws_iam_role" "poster_lambda_role" {
-  name = "duga-poster-lambda-role"
+  name        = "duga-poster-lambda-role"
+  description = "Duga IAM role for posting chat messages"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
