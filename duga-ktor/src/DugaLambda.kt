@@ -86,7 +86,7 @@ class DugaLambda : RequestStreamHandler {
             "comment-scan" -> runCommentScan(this)
             "answer-invalidation" -> runAnswerInvalidationCheck()
             "daily-stats" -> {
-                DugaFeatures(poster).dailyStats(DugaStatsNewDynamoDB(), clearStats = false)
+                DugaFeatures(poster).dailyStats(DugaStatsNewDynamoDB(), clearStats = true)
             }
             "anti-freeze" -> {
                 val room = node.get("room").textValue()

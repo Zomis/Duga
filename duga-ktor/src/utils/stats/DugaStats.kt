@@ -241,7 +241,7 @@ class DugaStatsNewDynamoDB : DugaStats {
         val remove = items.map {
             DeleteItemRequest {
                 this.tableName = this@DugaStatsNewDynamoDB.tableName
-                key = it.filter { e -> e.key in setOf(fieldKey, fieldDisplayName) }
+                key = it.filter { e -> e.key in setOf(PK, SK) }
             }
         }
         remove.forEach {
