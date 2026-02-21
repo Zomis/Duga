@@ -22,7 +22,7 @@ class StackExchange(val poster: DugaPoster) {
             it.first + " ${it.second} stars"
         }
         // TODO: Discord poster
-        poster.postMessage("14929", list)
+        poster.postMessage("20298", list)
     }
 
     suspend fun codeReviewUnanswered(stackExchangeApi: StackExchangeApi) {

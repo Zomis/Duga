@@ -22,6 +22,9 @@ def lambda_handler(event, context):
 
     for room_id, texts in messages_by_room.items():
         print(f"Handling room {room_id}")
+        if room_id == 14929:
+            print(f"Skipping room {room_id}")
+            continue
         room = client.get_room(room_id)
         send_messages_to_room(room, texts, me)
         print(f"Finished handling of room {room_id}")
