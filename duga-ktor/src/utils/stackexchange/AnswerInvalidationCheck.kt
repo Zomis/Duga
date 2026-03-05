@@ -10,7 +10,13 @@ object AnswerInvalidationCheck {
 
     private val logger = LoggerFactory.getLogger(AnswerInvalidationCheck::class.java)
 
-    suspend fun perform(poster: DugaPoster, result: JsonNode?, lastCheck: Instant, stackExchangeAPI: StackExchangeApi) {
+    suspend fun perform(
+        poster: DugaPoster,
+        result: JsonNode?,
+        lastCheck: Instant,
+        stackExchangeAPI: StackExchangeApi,
+        nowNow: Instant,
+    ) {
         if (result == null) {
             logger.error("No questions gathered for Answer Invalidation")
             return
@@ -30,7 +36,9 @@ object AnswerInvalidationCheck {
                 logger.info("Fetch edits for $questionId")
                 val edits = stackExchangeAPI.apiCall(editCall(questionId), "codereview", "!9YdnS7lAD")
                     ?: throw IllegalStateException("Unable to get edits for $questionId")
-                poster.postMessage("20298", "Edits fetched for $questionId: ${edits.get("items").size()}. quota remaining ${edits.get("quota_remaining")}")
+
+                poster.postMessage("20298", "Edits fetched for $questionId: ${edits.get("items").size()}. quota remaining ${edits.get("quota_remaining")}. Edited at $edited, lastcheck at ${lastCheck.epochSecond}, now-now ${nowNow.epochSecond}")
+
                 val possibleInvalidations = codeChanges(edits, lastCheck)
                 logger.info("Question {} has possible invalidations: {}", questionId, possibleInvalidations.size)
                 if (possibleInvalidations.isNotEmpty()) {
